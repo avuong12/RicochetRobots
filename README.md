@@ -8,7 +8,7 @@ The Goal: Find the shortest path to get the robot of the same color as the token
 With multiple players: Be the first to find the shortest path to get the robot to the target spot.
 A player that finds the path calls out the number of steps the robot takes to get to the target spot.
 A one minute timer starts and other players have one minute to find a shorter path.
--Restrictions:
+- Restrictions:
   1. Determining the path must be done visually. No hands on the board until the player with the short path bid can show the path.
   2. Robots can only move up, down, left, right.
   3. The robots must hit a wall to stop moving. 
