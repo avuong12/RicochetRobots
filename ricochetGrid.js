@@ -26,8 +26,50 @@ class RicochetGrid {
       }
       this.grid.push(row);
     }
-  }
 
+    // make center inaccessable cells
+    // the inaccessableCells are the four cells in the center of the board.
+    let centerPoint = Math.floor(this.rows / 2);
+
+    this.setValue(centerPoint - 1, centerPoint - 1, INACCESSABLE_CELL);
+    this.setValue(centerPoint - 1, centerPoint, INACCESSABLE_CELL);
+    this.setValue(centerPoint, centerPoint - 1, INACCESSABLE_CELL);
+    this.setValue(centerPoint, centerPoint, INACCESSABLE_CELL);
+
+    // set up board walls
+    // The top boarder
+    for (let c = 0; c < this.columns; c++) {
+      this.setWall(0, c, UP);
+    }
+
+    // The bottom boarder
+    for (let c = 0; c < this.columns; c++) {
+      this.setWall(this.rows - 1, c, DOWN);
+    }
+
+    // The left boarder
+    for (let r = 0; r < this.rows; r++) {
+      this.setWall(r, 0, LEFT);
+    }
+
+    // The right boarder
+    for (let r = 0; r < this.rows; r++) {
+      this.setWall(r, this.columns - 1, RIGHT);
+    }
+
+    // set up inaccessable walls
+    this.setWall(centerPoint - 1, centerPoint - 1, LEFT);
+    this.setWall(centerPoint - 1, centerPoint - 1, UP);
+
+    this.setWall(centerPoint - 1, centerPoint, UP);
+    this.setWall(centerPoint - 1, centerPoint, RIGHT);
+
+    this.setWall(centerPoint, centerPoint - 1, LEFT);
+    this.setWall(centerPoint, centerPoint - 1, DOWN);
+
+    this.setValue(centerPoint, centerPoint, RIGHT);
+    this.setValue(centerPoint, centerPoint, DOWN);
+  }
   // getValue function will return the value in the cell at the input coordinate
   getValue(row, column) {
     return this.grid[row][column].getCellValue();
