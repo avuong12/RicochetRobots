@@ -15,7 +15,7 @@ class GridCell {
     this.value = EMPTY_CELL;
     // The target is unique. It has a color and a shape. //
     // Set to null
-    this.target = { color: undefined, shape: undefined };
+    this.target = undefined;
     //
     this.walls = [];
   }
@@ -33,12 +33,12 @@ class GridCell {
 
   // setTargetOnCell function will set a target in the cell.
   setTargetOnCell(color, shape) {
+    this.target = {};
     this.target.color = color;
     this.target.shape = shape;
   }
 
   // setWallOnCell function will set walls on the cell given the side of the well.
-  // Make function set wall of the other cell
   setWallOnCell(side) {
     this.walls.push(side);
   }
