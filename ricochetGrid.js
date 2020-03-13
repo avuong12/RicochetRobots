@@ -46,6 +46,15 @@ class RicochetGrid {
   // setWall function will set the wall(s) in the cell.
   setWall(row, column, side) {
     this.grid[row][column].setWallOnCell(side);
+    if (side === LIFT) {
+      this.grid[row][column + 1].setWallOnCell(RIGHT);
+    } else if (side === RIGHT) {
+      this.grid[row][column - 1].setWallOnCell(LEFT);
+    } else if (side === UP) {
+      this.grid[row - 1][column].setWallOnCell(DOWN);
+    } else if (side === DOWN) {
+      this.grid[row + 1][column].setWallOnCell(UP);
+    }
   }
 
   // getRobotPosition function will generate a random number used for row and column of robot.
