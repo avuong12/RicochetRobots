@@ -2,17 +2,18 @@
 const EMPTY_CELL = 0;
 const INACCESSABLE_CELL = 1;
 const ROBOT_CELL = 2;
-const RIGHT = 3;
-const LEFT = 4;
-const UP = 5;
-const DOWN = 6;
+const RIGHT = 2;
+const LEFT = 3;
+const UP = 0;
+const DOWN = 1;
 
 // The class will define the properties of a cell in the grid.
 class GridCell {
   constructor() {
     this.value = EMPTY_CELL;
-    // The target is unique. It has a color and a shape
-    this.target = { color: 'color', shape: 'shape' };
+    // The target is unique. It has a color and a shape. //
+    // Set to null
+    this.target = { color: undefined, shape: undefined };
     //
     this.walls = [];
   }
@@ -34,7 +35,8 @@ class GridCell {
     this.target.shape = shape;
   }
 
-  // setWallOnCell function will set walls on the cell given the side of the well .
+  // setWallOnCell function will set walls on the cell given the side of the well.
+  // Make function set wall of the other cell
   setWallOnCell(side) {
     this.walls.push(side);
   }
