@@ -37,23 +37,15 @@ class RicochetGrid {
     this.setValue(centerPoint, centerPoint, INACCESSABLE_CELL);
 
     // set up board walls
-    // The top boarder
+    // The top and bottom boarders
     for (let c = 0; c < this.columns; c++) {
       this.setWall(0, c, UP);
-    }
-
-    // The bottom boarder
-    for (let c = 0; c < this.columns; c++) {
       this.setWall(this.rows - 1, c, DOWN);
     }
 
-    // The left boarder
+    // The left and right boarders
     for (let r = 0; r < this.rows; r++) {
       this.setWall(r, 0, LEFT);
-    }
-
-    // The right boarder
-    for (let r = 0; r < this.rows; r++) {
       this.setWall(r, this.columns - 1, RIGHT);
     }
 
