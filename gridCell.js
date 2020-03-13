@@ -19,16 +19,9 @@ class GridCell {
     return this.value;
   }
 
-  // setRobotOnCell function will set robot in the cell.
-  setRobotOnCell() {
-    if (this.value === EMPTY_CELL) {
-      this.value = ROBOT_CELL;
-    }
-  }
-
-  // setInaccessbleCell function will make a cell inaccesable.
-  setInaccessableCell() {
-    this.value = INACCESSABLE_CELL;
+  // setCellValue function will set the value in the cell.
+  setCellValue(value) {
+    this.value = value;
   }
 
   // setTargetOnCell function will set a target in the cell.
@@ -37,8 +30,8 @@ class GridCell {
     this.target.shape = shape;
   }
 
-  // setWallonCell function will set walls on the cell given the side of the well .
-  setWallonCell(side) {
+  // setWallOnCell function will set walls on the cell given the side of the well .
+  setWallonCellOnCell(side) {
     this.walls.push(side);
   }
 }
