@@ -48,11 +48,11 @@ class RicochetGrid {
     this.grid[row][column].setWallOnCell(side);
     if (side === LEFT && column > 0) {
       this.grid[row][column - 1].setWallOnCell(RIGHT);
-    } else if (side === RIGHT && column < this.columns) {
+    } else if (side === RIGHT && column < this.columns - 1) {
       this.grid[row][column + 1].setWallOnCell(LEFT);
     } else if (side === UP && row > 0) {
       this.grid[row - 1][column].setWallOnCell(DOWN);
-    } else if (side === DOWN && row < this.rows) {
+    } else if (side === DOWN && row < this.rows - 1) {
       this.grid[row + 1][column].setWallOnCell(UP);
     }
   }
