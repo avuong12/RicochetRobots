@@ -49,23 +49,22 @@ class RicochetGrid {
   }
 
   // getRobotPosition function will generate a random number used for row and column of robot.
-  getRobotPosition(max) {
+  generateRandomNumber(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  // robotPosition function will set the row and column for the input color of robot.
-  robotPostion(color) {
+  // robotPosition function will set the row and column for the input color of robot. While loop. Keep generating row and column number until you find an empty cell.
+  initializedRobotPosition() {
     for (let i = 0; i < this.robots.length; i++) {
-      if (this.robots[i].color === color) {
-        let robotRow = this.getRobotPosition(this.rows);
-        let robotColumn = this.getRobotPosition(this.columns);
-        if (this.getValue(robotRow, robotColumn) === EMPTY_CELL) {
-          this.robots[i].row = this.getRobotPosition(this.rows);
-          this.robots[i].column = this.getRobotPosition(this.columns);
-        } else {
-          this.robotPostion(color);
-        }
+      let row = this.generateRandomNumber(this.rows);
+      let column = this.generateRandomNumber(this.columns);
+      while (this.getValue(row, column) !== EMPTY_CELL) {
+        row = this.generateRandomNumber(this.rows);
+        column = this.generateRandomNumber(this.columns);
       }
+      this.robots[i].row = row;
+      this.robots[i].column = column;
+      this.setValue(row, column, ROBOT_CELL);
     }
   }
 }

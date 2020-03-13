@@ -2,10 +2,12 @@
 const EMPTY_CELL = 0;
 const INACCESSABLE_CELL = 1;
 const ROBOT_CELL = 2;
-const RIGHT = 2;
-const LEFT = 3;
+
+// Side of the Wall.
 const UP = 0;
 const DOWN = 1;
+const RIGHT = 2;
+const LEFT = 3;
 
 // The class will define the properties of a cell in the grid.
 class GridCell {
