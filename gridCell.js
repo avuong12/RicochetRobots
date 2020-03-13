@@ -2,6 +2,10 @@
 const EMPTY_CELL = 0;
 const INACCESSABLE_CELL = 1;
 const ROBOT_CELL = 2;
+const RIGHT = 3;
+const LEFT = 4;
+const UP = 5;
+const DOWN = 6;
 
 // The class will define the properties of a cell in the grid.
 class GridCell {
@@ -31,9 +35,7 @@ class GridCell {
   }
 
   // setWallOnCell function will set walls on the cell given the side of the well .
-  setWallonCellOnCell(side) {
+  setWallOnCell(side) {
     this.walls.push(side);
   }
 }
-
-export default GridCell;

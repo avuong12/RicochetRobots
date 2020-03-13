@@ -1,5 +1,4 @@
-import GridCell from './gridCell';
-import Grid from './grid';
+// import GridCell from './gridCell';
 
 // The class will define the Ricochet Grid
 class RicochetGrid {
@@ -39,5 +38,4 @@ class RicochetGrid {
   }
 }
 
-// Make the Ricochet Robot Grid
-const newGrid = new RicochetGrid(16, 16);
+// export default RicochetGrid;

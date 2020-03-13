@@ -5,4 +5,4 @@ class Robot {
   }
 }
 
-export default Robot;
+// export default Robot;
