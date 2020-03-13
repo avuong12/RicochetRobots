@@ -54,7 +54,7 @@ class RicochetGrid {
   }
 
   // robotPosition function will set the row and column for the input color of robot. While loop. Keep generating row and column number until you find an empty cell.
-  initializedRobotPosition() {
+  initializedRobotPositions() {
     for (let i = 0; i < this.robots.length; i++) {
       let row = this.generateRandomNumber(this.rows);
       let column = this.generateRandomNumber(this.columns);

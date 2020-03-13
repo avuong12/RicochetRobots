@@ -33,6 +33,7 @@ gameGrid.setWall(0, 12, LEFT);
 gameGrid.setValue(0, 13, EMPTY_CELL);
 gameGrid.setValue(0, 14, EMPTY_CELL);
 gameGrid.setValue(0, 15, EMPTY_CELL);
+gameGrid.initializedRobotPositions();
 
 function loadApp() {
   console.log('loadApp called.');
