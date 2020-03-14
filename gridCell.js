@@ -9,6 +9,19 @@ const DOWN = 1;
 const RIGHT = 2;
 const LEFT = 3;
 
+// Color of target.
+const GREEN_TARGET = 0;
+const RED_TARGET = 1;
+const BLUE_TARGET = 2;
+const YELLOW_TARGET = 3;
+const WILD_TARGET = 4;
+
+// Shape of target.
+const CRICLE_TARGET = 0;
+const TRIANGLE_TARGET = 3;
+const SQUARE_TARGET = 4;
+const HEXAGON_TARGET = 6;
+
 // The class will define the properties of a cell in the grid.
 class GridCell {
   constructor() {

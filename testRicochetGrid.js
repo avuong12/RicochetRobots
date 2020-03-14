@@ -58,6 +58,26 @@ let walls = [
   { row: 15, column: 13, side: RIGHT },
 ];
 
+let targets = [
+  { row: 1, column: 5, color: BLUE_TARGET, shape: CRICLE_TARGET },
+  { row: 2, column: 7, color: WILD_TARGET, shape: VORTEX_TARGET },
+  { row: 2, column: 11, color: RED_TARGET, shape: SQUARE_TARGET },
+  { row: 3, column: 13, color: YELLOW_TARGET, shape: CRICLE_TARGET },
+  { row: 4, column: 3, color: RED_TARGET, shape: HEXAGON_TARGET },
+  { row: 4, column: 10, color: GREEN_TARGET, shape: HEXAGON_TARGET },
+  { row: 5, column: 6, color: GREEN_TARGET, shape: SQUARE_TARGET },
+  { row: 5, column: 12, color: BLUE_TARGET, shape: TRIANGLE_TARGET },
+  { row: 6, column: 1, color: YELLOW_TARGET, shape: TRIANGLE_TARGET },
+  { row: 9, column: 3, color: YELLOW_TARGET, shape: HEXAGON_TARGET },
+  { row: 9, column: 12, color: BLUE_TARGET, shape: HEXAGON_TARGET },
+  { row: 10, column: 10, color: YELLOW_TARGET, shape: SQUARE_TARGET },
+  { row: 11, column: 1, color: RED_TARGET, shape: CRICLE_TARGET },
+  { row: 12, column: 6, color: BLUE_TARGET, shape: SQUARE_TARGET },
+  { row: 12, column: 14, color: RED_TARGET, shape: TRIANGLE_TARGET },
+  { row: 14, column: 2, color: GREEN_TARGET, shape: TRIANGLE_TARGET },
+  { row: 14, column: 11, color: GREEN_TARGET, shape: CRICLE_TARGET },
+];
+
 gameGrid.setValue(0, 0, EMPTY_CELL);
 gameGrid.setValue(0, 1, EMPTY_CELL);
 gameGrid.setValue(0, 2, EMPTY_CELL);
