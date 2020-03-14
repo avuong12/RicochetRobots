@@ -5,6 +5,12 @@ const RED_ROBOT = 1;
 const BLUE_ROBOT = 2;
 const YELLOW_ROBOT = 3;
 
+// Move Directions
+const MOVE_UP = 0;
+const MOVE_DOWN = 1;
+const MOVE_RIGHT = 2;
+const MOVE_LEFT = 3;
+
 // The class will define the Ricochet Grid
 class RicochetGrid {
   constructor(rows, columns) {
@@ -156,6 +162,35 @@ class RicochetGrid {
   // getCurrentTarget function returns the currentTarget.
   getCurrentTarget() {
     return this.currentTarget;
+  }
+
+  // getWalls function will return the walls in a given cell.
+  getWalls(row, column) {
+    return this.grid[row][column].walls;
+  }
+
+  // movesForRobot function will return the possible directions a given robot can move.
+  movesForRobot(robot) {
+    let possibleMoves = [];
+    for (let i = 0; i < this.robots.length; i++) {
+      if (this.robots[i].color === robot) {
+        let robot = this.robots[i];
+        let robotWalls = this.getWalls(robot.row, robot.column);
+        if (!robotWalls.includes(UP)) {
+          possibleMoves.push(MOVE_UP);
+        }
+        if (!robotWalls.includes(DOWN)) {
+          possibleMoves.push(MOVE_DOWN);
+        }
+        if (!robotWalls.includes(LEFT)) {
+          possibleMoves.push(MOVE_LEFT);
+        }
+        if (!robotWalls.includes(RIGHT)) {
+          possibleMoves.push(MOVE_RIGHT);
+        }
+        return possibleMoves;
+      }
+    }
   }
 }
 
