@@ -81,6 +81,8 @@ let targets = [
 gameGrid.setWalls(walls);
 gameGrid.setTargets(targets);
 gameGrid.initializedRobotPositions();
+gameGrid.pickNextTarget();
+gameGrid.pickNextTarget();
 
 function loadApp() {
   console.log('loadApp called.');

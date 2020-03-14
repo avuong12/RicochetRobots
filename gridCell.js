@@ -18,10 +18,10 @@ const WILD_TARGET = 4;
 
 // Shape of target.
 const CRICLE_TARGET = 0;
-const TRIANGLE_TARGET = 3;
-const SQUARE_TARGET = 4;
-const HEXAGON_TARGET = 6;
-const VORTEX_TARGET = 7;
+const TRIANGLE_TARGET = 1;
+const SQUARE_TARGET = 2;
+const HEXAGON_TARGET = 3;
+const VORTEX_TARGET = 4;
 
 // The class will define the properties of a cell in the grid.
 class GridCell {

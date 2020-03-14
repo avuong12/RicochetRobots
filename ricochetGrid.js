@@ -61,6 +61,12 @@ class RicochetGrid {
 
     this.setValue(centerPoint, centerPoint, RIGHT);
     this.setValue(centerPoint, centerPoint, DOWN);
+
+    // A list of targets.
+    this.targets = [];
+
+    // A list of perviousTargets
+    this.previousTargets = [];
   }
   // getValue function will return the value in the cell at the input coordinate
   getValue(row, column) {
@@ -75,6 +81,7 @@ class RicochetGrid {
   // setTarget function will set the target in the cell.
   setTarget(row, column, color, shape) {
     this.grid[row][column].setTargetOnCell(color, shape);
+    this.targets.push({ color: color, shape: shape });
   }
 
   // setWall function will set the wall(s) in the cell.
@@ -128,6 +135,17 @@ class RicochetGrid {
         targets[i].shape
       );
     }
+  }
+
+  // pickNextTarget function will return the next target.
+  pickNextTarget() {
+    let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
+    let currentTarget = this.targets[randomTargetIdx];
+    while (this.previousTargets.includes(currentTarget)) {
+      currentTarget = this.targets[randomTargetIdx];
+    }
+    this.previousTargets.push(currentTarget);
+    return currentTarget;
   }
 }
 
