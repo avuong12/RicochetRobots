@@ -112,16 +112,21 @@ class RicochetGrid {
   }
 
   // setInteriorWalls function will set the walls on the grid. given an array of all the walls
-  setWalls(allWalls) {
-    for (let i = 0; i < allWalls.length; i++) {
-      this.setWall(i.row, i.column, i.side);
+  setWalls(walls) {
+    for (let i = 0; i < walls.length; i++) {
+      this.setWall(walls[i].row, walls[i].column, walls[i].side);
     }
   }
 
   // setTargets function will set the targets on the grid given an array of all the targets.
-  setTargets(allTargets) {
-    for (let i = 0; i < allTargets.length; i++) {
-      this.setTarget(i.row, i.column, i.color, i.shape);
+  setTargets(targets) {
+    for (let i = 0; i < targets.length; i++) {
+      this.setTarget(
+        targets[i].row,
+        targets[i].column,
+        targets[i].color,
+        targets[i].shape
+      );
     }
   }
 }
