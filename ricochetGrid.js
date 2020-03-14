@@ -185,41 +185,37 @@ class RicochetGrid {
   }
 
   // movesForRobot function will return the possible directions a given robot can move.
-  movesForRobot(robot) {
+  movesForRobot(robotColor) {
     let possibleMoves = [];
-    for (let key in this.robots) {
-      if (this.robots[key].color === robot) {
-        let robot = this.robots[key];
-        let row = robot.row;
-        let column = robot.column;
-        let robotWalls = this.grid[robot.row][robot.column].getWalls();
-        if (
-          !robotWalls.includes(UP) &&
-          this.getValue(row - 1, column) === EMPTY_CELL
-        ) {
-          possibleMoves.push(MOVE_UP);
-        }
-        if (
-          !robotWalls.includes(DOWN) &&
-          this.getValue(row + 1, column) === EMPTY_CELL
-        ) {
-          possibleMoves.push(MOVE_DOWN);
-        }
-        if (
-          !robotWalls.includes(LEFT) &&
-          this.getValue(row, column - 1) === EMPTY_CELL
-        ) {
-          possibleMoves.push(MOVE_LEFT);
-        }
-        if (
-          !robotWalls.includes(RIGHT) &&
-          this.getValue(row, column + 1) === EMPTY_CELL
-        ) {
-          possibleMoves.push(MOVE_RIGHT);
-        }
-        return possibleMoves;
-      }
+    let robot = this.robots[robotColor];
+    let row = robot.row;
+    let column = robot.column;
+    let robotWalls = this.grid[robot.row][robot.column].getWalls();
+    if (
+      !robotWalls.includes(UP) &&
+      this.getValue(row - 1, column) === EMPTY_CELL
+    ) {
+      possibleMoves.push(MOVE_UP);
     }
+    if (
+      !robotWalls.includes(DOWN) &&
+      this.getValue(row + 1, column) === EMPTY_CELL
+    ) {
+      possibleMoves.push(MOVE_DOWN);
+    }
+    if (
+      !robotWalls.includes(LEFT) &&
+      this.getValue(row, column - 1) === EMPTY_CELL
+    ) {
+      possibleMoves.push(MOVE_LEFT);
+    }
+    if (
+      !robotWalls.includes(RIGHT) &&
+      this.getValue(row, column + 1) === EMPTY_CELL
+    ) {
+      possibleMoves.push(MOVE_RIGHT);
+    }
+    return possibleMoves;
   }
 }
 
