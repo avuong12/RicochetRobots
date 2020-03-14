@@ -56,4 +56,8 @@ class GridCell {
   setWallOnCell(side) {
     this.walls.push(side);
   }
+
+  getWalls() {
+    return this.walls;
+  }
 }

@@ -16,12 +16,27 @@ class RicochetGrid {
   constructor(rows, columns) {
     this.rows = rows;
     this.columns = columns;
-    this.robots = [
-      { color: GREEN_ROBOT, row: undefined, column: undefined },
-      { color: RED_ROBOT, row: undefined, column: undefined },
-      { color: BLUE_ROBOT, row: undefined, column: undefined },
-      { color: YELLOW_ROBOT, row: undefined, column: undefined },
-    ];
+    this.robots = {};
+    this.robots[GREEN_ROBOT] = {
+      color: GREEN_ROBOT,
+      row: undefined,
+      column: undefined,
+    };
+    this.robots[RED_ROBOT] = {
+      color: RED_ROBOT,
+      row: undefined,
+      column: undefined,
+    };
+    this.robots[BLUE_ROBOT] = {
+      color: BLUE_ROBOT,
+      row: undefined,
+      column: undefined,
+    };
+    this.robots[YELLOW_ROBOT] = {
+      color: YELLOW_ROBOT,
+      row: undefined,
+      column: undefined,
+    };
 
     this.grid = [];
     for (let r = 0; r < this.rows; r++) {
@@ -115,15 +130,15 @@ class RicochetGrid {
 
   // robotPosition function will set the row and column for the input color of robot. While loop. Keep generating row and column number until you find an empty cell.
   initializedRobotPositions() {
-    for (let i = 0; i < this.robots.length; i++) {
+    for (let key in this.robots) {
       let row = this.generateRandomNumber(this.rows);
       let column = this.generateRandomNumber(this.columns);
       while (this.getValue(row, column) !== EMPTY_CELL) {
         row = this.generateRandomNumber(this.rows);
         column = this.generateRandomNumber(this.columns);
       }
-      this.robots[i].row = row;
-      this.robots[i].column = column;
+      this.robots[key].row = row;
+      this.robots[key].column = column;
       this.setValue(row, column, ROBOT_CELL);
     }
   }
@@ -172,20 +187,34 @@ class RicochetGrid {
   // movesForRobot function will return the possible directions a given robot can move.
   movesForRobot(robot) {
     let possibleMoves = [];
-    for (let i = 0; i < this.robots.length; i++) {
-      if (this.robots[i].color === robot) {
-        let robot = this.robots[i];
-        let robotWalls = this.getWalls(robot.row, robot.column);
-        if (!robotWalls.includes(UP)) {
+    for (let key in this.robots) {
+      if (this.robots[key].color === robot) {
+        let robot = this.robots[key];
+        let row = robot.row;
+        let column = robot.column;
+        let robotWalls = this.grid[robot.row][robot.column].getWalls();
+        if (
+          !robotWalls.includes(UP) &&
+          this.getValue(row - 1, column) === EMPTY_CELL
+        ) {
           possibleMoves.push(MOVE_UP);
         }
-        if (!robotWalls.includes(DOWN)) {
+        if (
+          !robotWalls.includes(DOWN) &&
+          this.getValue(row + 1, column) === EMPTY_CELL
+        ) {
           possibleMoves.push(MOVE_DOWN);
         }
-        if (!robotWalls.includes(LEFT)) {
+        if (
+          !robotWalls.includes(LEFT) &&
+          this.getValue(row, column - 1) === EMPTY_CELL
+        ) {
           possibleMoves.push(MOVE_LEFT);
         }
-        if (!robotWalls.includes(RIGHT)) {
+        if (
+          !robotWalls.includes(RIGHT) &&
+          this.getValue(row, column + 1) === EMPTY_CELL
+        ) {
           possibleMoves.push(MOVE_RIGHT);
         }
         return possibleMoves;
