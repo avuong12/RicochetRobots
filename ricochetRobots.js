@@ -7,10 +7,12 @@ class RicochetRobots {
     this.board.pickNextTarget();
   }
 
-  draw() {}
+  draw(node) {
+    node.innerHTML = 'draw called';
+  }
 }
 
 function loadApp() {
   let ricochetRobots = new RicochetRobots();
-  ricochetRobots.draw();
+  ricochetRobots.draw(document.getElementById('grid-canvas'));
 }
