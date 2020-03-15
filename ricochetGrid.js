@@ -143,6 +143,13 @@ class RicochetGrid {
     }
   }
 
+  // setRobotPostion function takes a color, row, and column and places robot in cell.
+  _setRobotPostion(robotColor, row, column) {
+    this.robots[robotColor].row = row;
+    this.robots[robotColor].column = column;
+    this.setValue(row, column, ROBOT_CELL);
+  }
+
   // setInteriorWalls function will set the walls on the grid. given an array of all the walls
   setWalls(walls) {
     for (let i = 0; i < walls.length; i++) {
