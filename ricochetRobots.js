@@ -81,6 +81,32 @@ class RicochetRobots {
       let cellSpan = document.getElementById(`${targetRow}, ${targetColumn}`);
       cellSpan.appendChild(targetSpan);
     }
+
+    // Draw Robots
+    let robots = this.board.getRobots();
+    for (let key in robots) {
+      let robotRowPosition = robots[key].row;
+      let robotColumnPosition = robots[key].column;
+      let robotColor = robots[key].color;
+
+      let robotSpan = document.createElement('span');
+      robotSpan.classList.toggle('robot');
+
+      if (robotColor === GREEN_ROBOT) {
+        robotSpan.classList.toggle('green-robot');
+      } else if (robotColor === RED_ROBOT) {
+        robotSpan.classList.toggle('red-robot');
+      } else if (robotColor === BLUE_ROBOT) {
+        robotSpan.classList.toggle('blue-robot');
+      } else if (robotColor === YELLOW_ROBOT) {
+        robotSpan.classList.toggle('yellow-robot');
+      }
+
+      let cellSpan = document.getElementById(
+        `${robotRowPosition}, ${robotColumnPosition}`
+      );
+      cellSpan.appendChild(robotSpan);
+    }
   }
 }
 

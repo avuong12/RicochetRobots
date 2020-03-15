@@ -165,6 +165,10 @@ class RicochetGrid {
     this.setValue(row, column, ROBOT_CELL);
   }
 
+  getRobots() {
+    return this.robots;
+  }
+
   // setInteriorWalls function will set the walls on the grid. given an array of all the walls
   setWalls(walls) {
     for (let i = 0; i < walls.length; i++) {
