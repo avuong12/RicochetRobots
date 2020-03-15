@@ -344,10 +344,10 @@ function testReachedTarget() {
   }
 }
 
-function loadApp() {
+function runTests() {
   setupRobotBoard();
   testMovesForRobots();
   testMoveRobot();
   testReachedTarget();
-  console.log('loadApp called.');
+  console.log('runTests called.');
 }
