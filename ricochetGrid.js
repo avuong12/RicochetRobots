@@ -273,15 +273,11 @@ class RicochetGrid {
       return true;
     }
 
-    if (targetColor !== WILD_TARGET) {
-      let robotColor = targetRobotColorMap[targetColor];
-      if (
-        this.robots[robotColor].row === targetRow &&
-        this.robots[robotColor].column === targetColumn
-      ) {
-        return true;
-      }
-    }
+    let robotColor = targetRobotColorMap[targetColor];
+    return (
+      this.robots[robotColor].row === targetRow &&
+      this.robots[robotColor].column === targetColumn
+    );
   }
 }
 
