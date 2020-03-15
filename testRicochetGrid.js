@@ -105,44 +105,44 @@ function testRobotBoard() {
   }
 
   let possibleMovesForYellow = gameGrid.movesForRobot(YELLOW_ROBOT);
-  if (!possibleMovesForYellow.includes(MOVE_DOWN)) {
+  if (possibleMovesForYellow.includes(MOVE_DOWN)) {
     console.log('ERROR YELLOW CANNOT MOVE DOWN');
   }
-  if (!possibleMovesForYellow.includes(MOVE_LEFT)) {
+  if (possibleMovesForYellow.includes(MOVE_LEFT)) {
     console.log('ERROR YELLOW CANNOT MOVE LEFT');
   }
-  if (!possibleMovesForYellow.includes(MOVE_RIGHT)) {
-    console.log('ERROR YELLOW CANNOT MOVE DOWN RIGHT');
+  if (possibleMovesForYellow.includes(MOVE_RIGHT)) {
+    console.log('ERROR YELLOW CANNOT MOVE RIGHT');
   }
-  if (possibleMovesForYellow.includes(MOVE_UP)) {
-    console.log('ERROR RED SHOULD UP');
+  if (!possibleMovesForYellow.includes(MOVE_UP)) {
+    console.log('ERROR YELLOW SHOULD UP');
   }
 
   let possibleMovesForBlue = gameGrid.movesForRobot(BLUE_ROBOT);
-  if (possibleMovesForBlue.includes(MOVE_UP)) {
+  if (!possibleMovesForBlue.includes(MOVE_UP)) {
     console.log('ERROR BLUE CAN MOVE UP');
   }
-  if (!possibleMovesForBlue.includes(MOVE_DOWN)) {
+  if (possibleMovesForBlue.includes(MOVE_DOWN)) {
     console.log('ERROR BLUE CANNOT MOVE DOWN RIGHT');
   }
-  if (possibleMovesForBlue.includes(MOVE_LEFT)) {
+  if (!possibleMovesForBlue.includes(MOVE_LEFT)) {
     console.log('ERROR BLUE CAN MOVE LEFT');
   }
-  if (!possibleMovesForBlue.includes(MOVE_RIGHT)) {
+  if (possibleMovesForBlue.includes(MOVE_RIGHT)) {
     console.log('ERROR BLUE CANNOT MOVE RIGHT');
   }
 
   let possibleMovesForGreen = gameGrid.movesForRobot(GREEN_ROBOT);
-  if (!possibleMovesForGreen.includes(MOVE_DOWN)) {
+  if (possibleMovesForGreen.includes(MOVE_DOWN)) {
     console.log('ERROR GREEN CANNOT MOVE DOWN');
   }
-  if (possibleMovesForGreen.includes(MOVE_LEFT)) {
+  if (!possibleMovesForGreen.includes(MOVE_LEFT)) {
     console.log('ERROR GREEN CAN MOVE LEFT');
   }
-  if (!possibleMovesForGreen.includes(MOVE_RIGHT)) {
+  if (possibleMovesForGreen.includes(MOVE_RIGHT)) {
     console.log('ERROR GREEN CANNOT MOVE RIGHT');
   }
-  if (!possibleMovesForGreen.includes(MOVE_UP)) {
+  if (possibleMovesForGreen.includes(MOVE_UP)) {
     console.log('ERROR GREEN CANNOT MOVE RIGHT');
   }
 }
