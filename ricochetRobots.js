@@ -19,6 +19,21 @@ class RicochetRobots {
         } else {
           newSpan.classList.toggle('empty-grid-cell');
         }
+
+        let cellWalls = this.board.getWalls(r, c);
+        if (cellWalls.includes(UP)) {
+          newSpan.classList.toggle('top-wall');
+        }
+        if (cellWalls.includes(DOWN)) {
+          newSpan.classList.toggle('bottom-wall');
+        }
+        if (cellWalls.includes(LEFT)) {
+          newSpan.classList.toggle('left-wall');
+        }
+        if (cellWalls.includes(RIGHT)) {
+          newSpan.classList.toggle('right-wall');
+        }
+
         newSpan.id = `${r},${c}`;
         newDiv.appendChild(newSpan);
       }

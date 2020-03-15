@@ -88,8 +88,8 @@ class RicochetGrid {
     this.setWall(centerPoint, centerPoint - 1, LEFT);
     this.setWall(centerPoint, centerPoint - 1, DOWN);
 
-    this.setValue(centerPoint, centerPoint, RIGHT);
-    this.setValue(centerPoint, centerPoint, DOWN);
+    this.setWall(centerPoint, centerPoint, RIGHT);
+    this.setWall(centerPoint, centerPoint, DOWN);
 
     // A list of targets.
     this.targets = [];

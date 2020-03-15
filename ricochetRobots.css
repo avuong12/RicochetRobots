@@ -15,9 +15,9 @@ div.grid-row {
 
 span.grid-cell {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 1px dotted black;
+  width: 32px;
+  height: 32px;
+  border: 1px dotted gray;
 }
 
 span.empty-grid-cell {
@@ -26,4 +26,20 @@ span.empty-grid-cell {
 
 span.inaccessable-grid-cell {
   background: gray;
+}
+
+span.top-wall {
+  border-top: 1px solid black;
+}
+
+span.bottom-wall {
+  border-bottom: 1px solid black;
+}
+
+span.left-wall {
+  border-left: 1px solid black;
+}
+
+span.right-wall {
+  border-right: 1px solid black;
 }
