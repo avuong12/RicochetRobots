@@ -149,3 +149,7 @@ span.robot {
   position: absolute;
   z-index: 2;
 }
+
+span.selected-robot {
+  border: 4px solid cyan;
+}

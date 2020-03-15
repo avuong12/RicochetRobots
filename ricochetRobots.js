@@ -5,6 +5,7 @@ class RicochetRobots {
     this.board.setTargets(targets);
     this.board.initializedRobotPositions();
     this.board.pickNextTarget();
+    this.board.selectedRobotColor = undefined;
   }
 
   draw(parentNode) {
@@ -92,13 +93,31 @@ class RicochetRobots {
       let robotSpan = document.createElement('span');
       robotSpan.classList.toggle('robot');
 
+      robotSpan.addEventListener('mouseup', event => {
+        event.target.classList.toggle('selected-robot');
+
+        if (event.target.id === 'green-robot') {
+          this.board.selectedRobotColor = GREEN_ROBOT;
+        } else if (event.target.id === 'red-robot') {
+          this.board.selectedRobotColor = RED_ROBOT;
+        } else if (event.target.id === 'blue-robot') {
+          this.board.selectedRobotColor = BLUE_ROBOT;
+        } else if (event.target.id === 'yellow-robot') {
+          this.board.selectedRobotColor = YELLOW_ROBOT;
+        }
+      });
+
       if (robotColor === GREEN_ROBOT) {
+        robotSpan.id = 'green-robot';
         robotSpan.classList.toggle('green-robot');
       } else if (robotColor === RED_ROBOT) {
+        robotSpan.id = 'red-robot';
         robotSpan.classList.toggle('red-robot');
       } else if (robotColor === BLUE_ROBOT) {
+        robotSpan.id = 'blue-robot';
         robotSpan.classList.toggle('blue-robot');
       } else if (robotColor === YELLOW_ROBOT) {
+        robotSpan.id = 'yellow-robot';
         robotSpan.classList.toggle('yellow-robot');
       }
 
