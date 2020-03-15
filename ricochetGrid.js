@@ -101,6 +101,13 @@ class RicochetGrid {
     this.currentTarget = undefined;
   }
 
+  getRows() {
+    return this.rows;
+  }
+
+  getColumns() {
+    return this.columns;
+  }
   // getValue function will return the value in the cell at the input coordinate
   getValue(row, column) {
     return this.grid[row][column].getCellValue();
