@@ -8,12 +8,17 @@ class RicochetRobots {
   }
 
   draw(parentNode) {
-    parentNode.innerHTML = 'draw called';
-
     for (let r = 0; r < this.board.getRows(); r++) {
       let newDiv = document.createElement('div');
+      newDiv.classList.toggle('grid-row');
       for (let c = 0; c < this.board.getColumns(); c++) {
         let newSpan = document.createElement('span');
+        newSpan.classList.toggle('grid-cell');
+        if (this.board.getValue(r, c) === INACCESSABLE_CELL) {
+          newSpan.classList.toggle('inaccessable-grid-cell');
+        } else {
+          newSpan.classList.toggle('empty-grid-cell');
+        }
         newSpan.id = `${r},${c}`;
         newDiv.appendChild(newSpan);
       }

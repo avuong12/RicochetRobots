@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+  /* TODO: do you need units for font-size? */
+  font-size: 14;
+}
+
+div#grid-canvas {
+  user-select: none;
+}
+
+div.grid-row {
+  display: flex;
+  width: min-content;
+}
+
+span.grid-cell {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px dotted black;
+}
+
+span.empty-grid-cell {
+  background: lightgoldenrodyellow;
+}
+
+span.inaccessable-grid-cell {
+  background: gray;
+}
