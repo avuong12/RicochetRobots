@@ -56,22 +56,26 @@ class RicochetRobots {
 
       if (targetColor === RED_TARGET) {
         targetSpan.classList.toggle('red-target');
-      }
-      if (targetColor === GREEN_TARGET) {
+      } else if (targetColor === GREEN_TARGET) {
         targetSpan.classList.toggle('green-target');
-      }
-      if (targetColor === BLUE_TARGET) {
+      } else if (targetColor === BLUE_TARGET) {
         targetSpan.classList.toggle('blue-target');
-      }
-      if (targetColor === YELLOW_TARGET) {
+      } else if (targetColor === YELLOW_TARGET) {
         targetSpan.classList.toggle('yellow-target');
-      }
-      if (targetColor === WILD_TARGET) {
+      } else if (targetColor === WILD_TARGET) {
         targetSpan.classList.toggle('wild-target');
       }
 
       if (targetShape === SQUARE_TARGET) {
         targetSpan.classList.toggle('square-target');
+      } else if (targetShape === CRICLE_TARGET) {
+        targetSpan.classList.toggle('circle-target');
+      } else if (targetShape === TRIANGLE_TARGET) {
+        targetSpan.classList.toggle('triangle-target');
+      } else if (targetShape === HEXAGON_TARGET) {
+        targetSpan.classList.toggle('hexagon-target');
+      } else if (targetShape === VORTEX_TARGET) {
+        targetSpan.classList.toggle('vortex-target');
       }
 
       let cellSpan = document.getElementById(`${targetRow}, ${targetColumn}`);
