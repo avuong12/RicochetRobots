@@ -172,6 +172,11 @@ class RicochetGrid {
     }
   }
 
+  // getTargets function will return the targets on the grid.
+  getTargets() {
+    return this.targets;
+  }
+
   // setTargets function will set the targets on the grid given an array of all the targets.
   setTargets(targets) {
     for (let i = 0; i < targets.length; i++) {

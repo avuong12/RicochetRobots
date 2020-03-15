@@ -8,11 +8,15 @@ class RicochetRobots {
   }
 
   draw(parentNode) {
+    // Draw empty cells for the board.
     for (let r = 0; r < this.board.getRows(); r++) {
       let newDiv = document.createElement('div');
       newDiv.classList.toggle('grid-row');
       for (let c = 0; c < this.board.getColumns(); c++) {
         let newSpan = document.createElement('span');
+        newSpan.id = `${r}, ${c}`;
+
+        // Draw cell.
         newSpan.classList.toggle('grid-cell');
         if (this.board.getValue(r, c) === INACCESSABLE_CELL) {
           newSpan.classList.toggle('inaccessable-grid-cell');
@@ -20,6 +24,7 @@ class RicochetRobots {
           newSpan.classList.toggle('empty-grid-cell');
         }
 
+        // Draw walls.
         let cellWalls = this.board.getWalls(r, c);
         if (cellWalls.includes(UP)) {
           newSpan.classList.toggle('top-wall');
@@ -34,10 +39,43 @@ class RicochetRobots {
           newSpan.classList.toggle('right-wall');
         }
 
-        newSpan.id = `${r},${c}`;
         newDiv.appendChild(newSpan);
       }
       parentNode.appendChild(newDiv);
+    }
+
+    // Draw targets.
+    let targets = this.board.getTargets();
+    for (let i = 0; i < targets.length; i++) {
+      let targetRow = targets[i].row;
+      let targetColumn = targets[i].column;
+      let targetColor = targets[i].color;
+      let targetShape = targets[i].shape;
+
+      let targetSpan = document.createElement('span');
+
+      if (targetColor === RED_TARGET) {
+        targetSpan.classList.toggle('red-target');
+      }
+      if (targetColor === GREEN_TARGET) {
+        targetSpan.classList.toggle('green-target');
+      }
+      if (targetColor === BLUE_TARGET) {
+        targetSpan.classList.toggle('blue-target');
+      }
+      if (targetColor === YELLOW_TARGET) {
+        targetSpan.classList.toggle('yellow-target');
+      }
+      if (targetColor === WILD_TARGET) {
+        targetSpan.classList.toggle('wild-target');
+      }
+
+      if (targetShape === SQUARE_TARGET) {
+        targetSpan.classList.toggle('square-target');
+      }
+
+      let cellSpan = document.getElementById(`${targetRow}, ${targetColumn}`);
+      cellSpan.appendChild(targetSpan);
     }
   }
 }

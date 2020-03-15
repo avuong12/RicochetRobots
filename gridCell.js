@@ -45,6 +45,10 @@ class GridCell {
     this.value = value;
   }
 
+  // getTargetOnCell function will return the target on the cell.
+  getTargetOnCell() {
+    return this.target;
+  }
   // setTargetOnCell function will set a target in the cell.
   setTargetOnCell(color, shape) {
     this.target = {};
