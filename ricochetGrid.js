@@ -224,6 +224,35 @@ class RicochetGrid {
     }
     return possibleMoves;
   }
+
+  // moveRobot function will set the given robot in the new cell base on the given direction.
+  moveRobot(robotColor, direction) {
+    // get current location of the robot
+    let initialRow = this.robots[robotColor].row;
+    let initialColumn = this.robots[robotColor].column;
+    this.setValue(initialRow, initialColumn, EMPTY_CELL);
+    while (this.movesForRobot(robotColor).includes(direction)) {
+      if (direction === MOVE_UP) {
+        // update the row of the robot.
+        this.robots[robotColor].row--;
+      } else if (direction === MOVE_DOWN) {
+        this.robots[robotColor].row++;
+      } else if (direction === MOVE_LEFT) {
+        this.robots[robotColor].column--;
+      } else if (direction === MOVE_RIGHT) {
+        this.robots[robotColor].column++;
+      }
+    }
+    this.setValue(
+      this.robots[robotColor].row,
+      this.robots[robotColor].column,
+      ROBOT_CELL
+    );
+  }
+
+  // reachTarget function will return true if the given robot reached it's target.
+  // get the location of the target. pickTarget function.
+  //
 }
 
 // export default RicochetGrid;

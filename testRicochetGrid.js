@@ -10,7 +10,7 @@
 //   DOWN,
 // } from './gridCell';
 
-function testRobotBoard() {
+function setupRobotBoard() {
   // Make the Ricochet Robot Grid
   let gameGrid = new RicochetGrid(16, 16);
 
@@ -82,9 +82,13 @@ function testRobotBoard() {
   gameGrid.setWalls(walls);
   gameGrid.setTargets(targets);
   gameGrid.pickNextTarget();
-  gameGrid.pickNextTarget();
 
-  //   gameGrid.initializedRobotPositions();
+  return gameGrid;
+}
+
+function testMovesForRobots() {
+  let gameGrid = setupRobotBoard();
+
   gameGrid._setRobotPostion(RED_ROBOT, 10, 9);
   gameGrid._setRobotPostion(YELLOW_ROBOT, 10, 10);
   gameGrid._setRobotPostion(BLUE_ROBOT, 14, 15);
@@ -147,7 +151,163 @@ function testRobotBoard() {
   }
 }
 
+function testMoveRobot() {
+  let gameGrid = setupRobotBoard();
+
+  gameGrid._setRobotPostion(RED_ROBOT, 12, 6);
+  gameGrid._setRobotPostion(YELLOW_ROBOT, 12, 3);
+  gameGrid._setRobotPostion(BLUE_ROBOT, 7, 4);
+  gameGrid._setRobotPostion(GREEN_ROBOT, 10, 14);
+
+  let initialRowForYellow = gameGrid.robots[YELLOW_ROBOT].row;
+  let initialColumnForYellow = gameGrid.robots[YELLOW_ROBOT].column;
+  gameGrid.moveRobot(YELLOW_ROBOT, MOVE_RIGHT);
+  let rowForYellow = gameGrid.robots[YELLOW_ROBOT].row;
+  let columnForYellow = gameGrid.robots[YELLOW_ROBOT].column;
+  if (rowForYellow !== 12) {
+    console.log(`ERROR ON MOVE_RIGHT: expected ${rowForYellow} to be 12`);
+  }
+  if (columnForYellow !== 5) {
+    console.log(`ERROR ON MOVE_RIGHT: expected ${columnForYellow} to be 5`);
+  }
+  if (gameGrid.getValue(rowForYellow, columnForYellow) !== ROBOT_CELL) {
+    console.log(
+      `ERROR ON CELL AFTER RIGHT ${gameGrid.getValue(
+        rowForYellow,
+        columnForYellow
+      )} is expected to be ROBOT_CELL`
+    );
+  }
+  if (
+    gameGrid.getValue(initialRowForYellow, initialColumnForYellow) !==
+    EMPTY_CELL
+  ) {
+    console.log(
+      `ERROR ON INITIAL CELL AFTER RIGHT ${gameGrid.getValue(
+        initialRowForYellow,
+        initialColumnForYellow
+      )} is expected to be EMPTY_CELL`
+    );
+  }
+
+  let initialRowForGreen = gameGrid.robots[GREEN_ROBOT].row;
+  let initialColumnForGreen = gameGrid.robots[GREEN_ROBOT].column;
+  gameGrid.moveRobot(GREEN_ROBOT, MOVE_RIGHT);
+  let rowForGreen = gameGrid.robots[GREEN_ROBOT].row;
+  let columnForGreen = gameGrid.robots[GREEN_ROBOT].column;
+  if (rowForGreen !== 10) {
+    console.log(`ERROR ON MOVE_RIGHT: expected ${rowForGreen} to be 10`);
+  }
+  if (columnForGreen !== 15) {
+    console.log(`ERROR ON MOVE_RIGHT: expected ${columnForGreen} to be 15`);
+  }
+  if (gameGrid.getValue(rowForGreen, columnForGreen) !== ROBOT_CELL) {
+    console.log(
+      `ERROR ON CELL AFTER RIGHT ${gameGrid.getValue(
+        rowForGreen,
+        columnForGreen
+      )} is expected to be ROBOT_CELL`
+    );
+  }
+  if (
+    gameGrid.getValue(initialRowForGreen, initialColumnForGreen) !== EMPTY_CELL
+  ) {
+    console.log(
+      `ERROR ON INITIAL CELL AFTER RIGHT ${gameGrid.getValue(
+        initialRowForGreen,
+        initialColumnForGreen
+      )} is expected to be EMPTY_CELL`
+    );
+  }
+
+  let previousRow = gameGrid.robots[GREEN_ROBOT].row;
+  let previousColumn = gameGrid.robots[GREEN_ROBOT].column;
+  gameGrid.moveRobot(GREEN_ROBOT, MOVE_LEFT);
+  rowForGreen = gameGrid.robots[GREEN_ROBOT].row;
+  columnForGreen = gameGrid.robots[GREEN_ROBOT].column;
+  if (rowForGreen !== 10) {
+    console.log(`ERROR ON MOVE_LEFT: expected ${rowForGreen} to be 10`);
+  }
+  if (columnForGreen !== 11) {
+    console.log(`ERROR ON MOVE_LEFT: expected ${columnForGreen} to be 11`);
+  }
+  if (gameGrid.getValue(rowForGreen, columnForGreen) !== ROBOT_CELL) {
+    console.log(
+      `ERROR ON CELL AFTER LEFT ${gameGrid.getValue(
+        rowForGreen,
+        columnForGreen
+      )} is expected to be ROBOT_CELL`
+    );
+  }
+  if (gameGrid.getValue(previousRow, previousColumn) !== EMPTY_CELL) {
+    console.log(
+      `ERROR ON INITIAL CELL AFTER RIGHT ${gameGrid.getValue(
+        previousRow,
+        previousColumn
+      )} is expected to be EMPTY_CELL`
+    );
+  }
+
+  previousRow = gameGrid.robots[GREEN_ROBOT].row;
+  previousColumn = gameGrid.robots[GREEN_ROBOT].column;
+  gameGrid.moveRobot(GREEN_ROBOT, MOVE_UP);
+  rowForGreen = gameGrid.robots[GREEN_ROBOT].row;
+  columnForGreen = gameGrid.robots[GREEN_ROBOT].column;
+  if (rowForGreen !== 3) {
+    console.log(`ERROR ON MOVE_UP: expected ${rowForGreen} to be 3`);
+  }
+  if (columnForGreen !== 11) {
+    console.log(`ERROR ON MOVE_UP: expected ${columnForGreen} to be 11`);
+  }
+  if (gameGrid.getValue(rowForGreen, columnForGreen) !== ROBOT_CELL) {
+    console.log(
+      `ERROR ON CELL AFTER UP ${gameGrid.getValue(
+        rowForGreen,
+        columnForGreen
+      )} is expected to be ROBOT_CELL`
+    );
+  }
+  if (gameGrid.getValue(previousRow, previousColumn) !== EMPTY_CELL) {
+    console.log(
+      `ERROR ON INITIAL CELL AFTER RIGHT ${gameGrid.getValue(
+        previousRow,
+        previousColumn
+      )} is expected to be EMPTY_CELL`
+    );
+  }
+
+  previousRow = gameGrid.robots[GREEN_ROBOT].row;
+  previousColumn = gameGrid.robots[GREEN_ROBOT].column;
+  gameGrid.moveRobot(GREEN_ROBOT, MOVE_DOWN);
+  rowForGreen = gameGrid.robots[GREEN_ROBOT].row;
+  columnForGreen = gameGrid.robots[GREEN_ROBOT].column;
+  if (rowForGreen !== 14) {
+    console.log(`ERROR ON MOVE_DOWN: expected ${rowForGreen} to be 14`);
+  }
+  if (columnForGreen !== 11) {
+    console.log(`ERROR ON MOVE_DOWN: expected ${rowForGreen} to be 11`);
+  }
+  if (gameGrid.getValue(rowForGreen, columnForGreen) !== ROBOT_CELL) {
+    console.log(
+      `ERROR ON CELL AFTER DOWN ${gameGrid.getValue(
+        rowForGreen,
+        columnForGreen
+      )} is expected to be ROBOT_CELL`
+    );
+  }
+  if (gameGrid.getValue(previousRow, previousColumn) !== EMPTY_CELL) {
+    console.log(
+      `ERROR ON INITIAL CELL AFTER RIGHT ${gameGrid.getValue(
+        previousRow,
+        previousColumn
+      )} is expected to be EMPTY_CELL`
+    );
+  }
+}
+
 function loadApp() {
-  testRobotBoard();
+  setupRobotBoard();
+  testMovesForRobots();
+  testMoveRobot();
   console.log('loadApp called.');
 }
