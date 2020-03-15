@@ -305,9 +305,49 @@ function testMoveRobot() {
   }
 }
 
+function testReachedTarget() {
+  let gameGrid = setupRobotBoard();
+
+  gameGrid._setRobotPostion(RED_ROBOT, 2, 7);
+  gameGrid._setRobotPostion(YELLOW_ROBOT, 12, 5);
+  gameGrid._setRobotPostion(BLUE_ROBOT, 4, 3);
+  gameGrid._setRobotPostion(GREEN_ROBOT, 14, 11);
+
+  gameGrid.currentTarget = {
+    row: 14,
+    column: 11,
+    color: GREEN_TARGET,
+    shape: CRICLE_TARGET,
+  };
+  if (!gameGrid.reachedTarget()) {
+    console.log('ERROR GREEN ROBOT REACHED TARGET');
+  }
+
+  gameGrid.currentTarget = {
+    row: 4,
+    column: 3,
+    color: RED_TARGET,
+    shape: HEXAGON_TARGET,
+  };
+  if (gameGrid.reachedTarget()) {
+    console.log('ERROR RED HEXAGON TARGET HAS NOT BEEN REACHED');
+  }
+
+  gameGrid.currentTarget = {
+    row: 2,
+    column: 7,
+    color: WILD_TARGET,
+    shape: VORTEX_TARGET,
+  };
+  if (!gameGrid.reachedTarget()) {
+    console.log('ERROR WILD TARGET HAS BEEN REACHED');
+  }
+}
+
 function loadApp() {
   setupRobotBoard();
   testMovesForRobots();
   testMoveRobot();
+  testReachedTarget();
   console.log('loadApp called.');
 }

@@ -5,6 +5,14 @@ const RED_ROBOT = 1;
 const BLUE_ROBOT = 2;
 const YELLOW_ROBOT = 3;
 
+// Maps robot color to target color.
+const targetRobotColorMap = {};
+targetRobotColorMap[GREEN_TARGET] = GREEN_ROBOT;
+targetRobotColorMap[RED_TARGET] = RED_ROBOT;
+targetRobotColorMap[BLUE_TARGET] = BLUE_ROBOT;
+targetRobotColorMap[YELLOW_TARGET] = YELLOW_ROBOT;
+targetRobotColorMap[WILD_TARGET] = undefined;
+
 // Move Directions
 const MOVE_UP = 0;
 const MOVE_DOWN = 1;
@@ -250,9 +258,31 @@ class RicochetGrid {
     );
   }
 
-  // reachTarget function will return true if the given robot reached it's target.
-  // get the location of the target. pickTarget function.
-  //
+  // reachedTarget function will return true if a robot with the same color of the target reached the target.
+  // get the location of the target. this.currentTarget
+  reachedTarget() {
+    let targetColor = this.currentTarget.color;
+    let targetRow = this.currentTarget.row;
+    let targetColumn = this.currentTarget.column;
+    // If there is not robot in the target cell, the target has not been reached and function will return false.
+    if (this.getValue(targetRow, targetColumn) !== ROBOT_CELL) {
+      return false;
+    }
+    // We know that there is a robot in the target cell. Any robot can reach the wild target.
+    if (targetColor === WILD_TARGET) {
+      return true;
+    }
+
+    if (targetColor !== WILD_TARGET) {
+      let robotColor = targetRobotColorMap[targetColor];
+      if (
+        this.robots[robotColor].row === targetRow &&
+        this.robots[robotColor].column === targetColumn
+      ) {
+        return true;
+      }
+    }
+  }
 }
 
 // export default RicochetGrid;
