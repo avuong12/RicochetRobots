@@ -14,6 +14,21 @@ class RicochetRobots {
     this.board.selectedRobotColor = undefined;
   }
 
+  selectNewTarget() {
+    // Deselect
+    this.toggleTargetHightlight();
+    this.board.pickNextTarget();
+    this.toggleTargetHightlight();
+  }
+
+  toggleTargetHightlight() {
+    let target = this.board.getCurrentTarget();
+    let targetRow = target.row;
+    let targetColumn = target.column;
+    let targetCell = document.getElementById(`${targetRow}, ${targetColumn}`);
+    targetCell.classList.toggle('target-cell');
+  }
+
   moveSelectedRobot(direction) {
     if (this.board.selectedRobotColor === undefined) {
       return;
@@ -50,6 +65,12 @@ class RicochetRobots {
     }
     this.moveSelectedRobot(moveDirection);
   }
+
+  getBoardAsString() {
+    return JSON.stringify(this.board.getRobots());
+  }
+
+  solve() {}
 
   draw(parentNode) {
     // Draw empty cells for the board.
@@ -178,12 +199,7 @@ class RicochetRobots {
     }
 
     // Hightlight current target cell.
-    let target = this.board.getCurrentTarget();
-    let targetRow = target.row;
-    let targetColumn = target.column;
-
-    let targetCell = document.getElementById(`${targetRow}, ${targetColumn}`);
-    targetCell.classList.toggle('target-cell');
+    this.toggleTargetHightlight();
   }
 }
 
