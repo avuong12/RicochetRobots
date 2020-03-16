@@ -19,5 +19,3 @@ A one minute timer starts and other players have one minute to find a shorter pa
 - The startingNode of a tree will be a state of the grid with the robot.
 - The childernNode will be possible states of the grid in one move.
 - The short path will be a breadthFristSearch to the leaf where the robot has reached the target spot.
-
-## Starting
