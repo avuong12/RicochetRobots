@@ -273,6 +273,20 @@ class RicochetGrid {
       ROBOT_CELL
     );
   }
+  // moveAllRobots for BTS.
+  moveAllRobots(newRobotsPostions) {
+    for (let key in newRobotsPostions) {
+      let initialRow = this.robots[key].row;
+      let initialColumn = this.robots[key].column;
+      this.setValue(initialRow, initialColumn, EMPTY_CELL);
+
+      let newRow = newRobotsPostions[key].row;
+      let newColumn = newRobotsPostions[key].column;
+      this.robots[key].row = newRow;
+      this.robots[key].column = newColumn;
+      this.setValue(newRow, newColumn, ROBOT_CELL);
+    }
+  }
 
   // reachedTarget function will return true if a robot with the same color of the target reached the target.
   // get the location of the target. this.currentTarget

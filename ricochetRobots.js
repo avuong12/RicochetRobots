@@ -66,11 +66,49 @@ class RicochetRobots {
     this.moveSelectedRobot(moveDirection);
   }
 
-  getBoardAsString() {
+  getRobotsAsString() {
     return JSON.stringify(this.board.getRobots());
   }
 
-  solve() {}
+  deepCopyRobots(object) {
+    return JSON.parse(JSON.stringify(object));
+  }
+
+  solve() {
+    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let visited = new Set();
+    let queue = [initalRobots];
+    while (queue.length > 0) {
+      let currentRobots = queue.shift();
+      visited.add(currentRobots);
+
+      // This reset the robots position
+      this.board.moveAllRobots(currentRobots);
+
+      // Check if final target has been reached.
+      if (this.board.reachedTarget()) {
+        this.board.moveAllRobots(initalRobots);
+        console.log('true');
+        return true;
+      }
+
+      for (let key in currentRobots) {
+        let movesForRobot = this.board.movesForRobot(currentRobots[key].color);
+        for (let i = 0; i < movesForRobot.length; i++) {
+          this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
+          let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
+          this.board.moveAllRobots(currentRobots);
+          if (!visited.has(newRobotPostions)) {
+            queue.push(newRobotPostions);
+          }
+        }
+      }
+    }
+
+    this.board.moveAllRobots(initalRobots);
+    console.log('false');
+    return false;
+  }
 
   draw(parentNode) {
     // Draw empty cells for the board.
