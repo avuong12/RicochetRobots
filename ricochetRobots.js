@@ -1,3 +1,9 @@
+const robotIdMap = {};
+robotIdMap[GREEN_ROBOT] = 'green-robot';
+robotIdMap[RED_ROBOT] = 'red-robot';
+robotIdMap[BLUE_ROBOT] = 'blue-robot';
+robotIdMap[YELLOW_ROBOT] = 'yellow-robot';
+
 class RicochetRobots {
   constructor() {
     this.board = new RicochetGrid(16, 16);
@@ -94,8 +100,15 @@ class RicochetRobots {
       robotSpan.classList.toggle('robot');
 
       robotSpan.addEventListener('mouseup', event => {
-        event.target.classList.toggle('selected-robot');
+        // Deselect the previously selected robot.
+        if (this.board.selectedRobotColor !== undefined) {
+          let robotId = robotIdMap[this.board.selectedRobotColor];
+          let selectedRobotSpan = document.getElementById(robotId);
+          selectedRobotSpan.classList.toggle('selected-robot');
+        }
 
+        // Select a the clicked robot.
+        event.target.classList.toggle('selected-robot');
         if (event.target.id === 'green-robot') {
           this.board.selectedRobotColor = GREEN_ROBOT;
         } else if (event.target.id === 'red-robot') {
