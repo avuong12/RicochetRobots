@@ -14,6 +14,29 @@ class RicochetRobots {
     this.board.selectedRobotColor = undefined;
   }
 
+  moveSelectedRobot(direction) {
+    if (this.board.selectedRobotColor === undefined) {
+      return;
+    }
+
+    // Remove the robot span and move it to the new position.
+    // get the cell the contains the robot removeChild.
+    let robotSpan = document.getElementById(
+      `${robotIdMap[this.board.selectedRobotColor]}`
+    );
+    robotSpan.parentNode.removeChild(robotSpan);
+
+    // when there is a selected robot.
+    this.board.moveRobot(this.board.selectedRobotColor, direction);
+
+    // move it to the span it belongs to.
+    let robots = this.board.getRobots();
+    let row = robots[this.board.selectedRobotColor].row;
+    let column = robots[this.board.selectedRobotColor].column;
+    let cellSpan = document.getElementById(`${row}, ${column}`);
+    cellSpan.appendChild(robotSpan);
+  }
+
   draw(parentNode) {
     // Draw empty cells for the board.
     for (let r = 0; r < this.board.getRows(); r++) {
@@ -142,7 +165,8 @@ class RicochetRobots {
   }
 }
 
+let ricochetRobots = undefined;
 function loadApp() {
-  let ricochetRobots = new RicochetRobots();
+  ricochetRobots = new RicochetRobots();
   ricochetRobots.draw(document.getElementById('grid-canvas'));
 }
