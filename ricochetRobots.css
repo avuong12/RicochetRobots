@@ -71,12 +71,12 @@ span.wild-target {
 }
 
 span.square-target {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: 1px solid black;
   display: inline-block;
-  margin-left: 1px;
-  margin-top: 1px;
+  margin-left: 3px;
+  margin-top: 3px;
   position: absolute;
 }
 
@@ -152,4 +152,8 @@ span.robot {
 
 span.selected-robot {
   border: 4px solid cyan;
+}
+
+span.target-cell {
+  background: cyan;
 }

@@ -176,6 +176,14 @@ class RicochetRobots {
       );
       cellSpan.appendChild(robotSpan);
     }
+
+    // Hightlight current target cell.
+    let target = this.board.getCurrentTarget();
+    let targetRow = target.row;
+    let targetColumn = target.column;
+
+    let targetCell = document.getElementById(`${targetRow}, ${targetColumn}`);
+    targetCell.classList.toggle('target-cell');
   }
 }
 
