@@ -37,6 +37,20 @@ class RicochetRobots {
     cellSpan.appendChild(robotSpan);
   }
 
+  keyboardHandler(key) {
+    let moveDirection = null;
+    if (key === 'ArrowUp') {
+      moveDirection = MOVE_UP;
+    } else if (key === 'ArrowDown') {
+      moveDirection = MOVE_DOWN;
+    } else if (key === 'ArrowLeft') {
+      moveDirection = MOVE_LEFT;
+    } else if (key === 'ArrowRight') {
+      moveDirection = MOVE_RIGHT;
+    }
+    this.moveSelectedRobot(moveDirection);
+  }
+
   draw(parentNode) {
     // Draw empty cells for the board.
     for (let r = 0; r < this.board.getRows(); r++) {
@@ -169,4 +183,7 @@ let ricochetRobots = undefined;
 function loadApp() {
   ricochetRobots = new RicochetRobots();
   ricochetRobots.draw(document.getElementById('grid-canvas'));
+  document.addEventListener('keydown', event => {
+    ricochetRobots.keyboardHandler(event.key);
+  });
 }
