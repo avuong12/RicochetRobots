@@ -77,10 +77,13 @@ class RicochetRobots {
   solve() {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let queue = [initalRobots];
+    let queue = [{ robots: initalRobots, depth: 0 }];
     while (queue.length > 0) {
-      let currentRobots = queue.shift();
+      let currentState = queue.shift();
+      let currentRobots = currentState.robots;
+      let currentDepth = currentState.depth;
       visited.add(currentRobots);
+      console.log('Current Depth:', currentDepth);
 
       // This reset the robots position
       this.board.moveAllRobots(currentRobots);
@@ -99,7 +102,7 @@ class RicochetRobots {
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
           if (!visited.has(newRobotPostions)) {
-            queue.push(newRobotPostions);
+            queue.push({ robots: newRobotPostions, depth: currentDepth + 1 });
           }
         }
       }
