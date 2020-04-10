@@ -74,7 +74,7 @@ class RicochetRobots {
     return JSON.parse(JSON.stringify(object));
   }
 
-  solve() {
+  solveBFS() {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
     let queue = [{ robots: initalRobots, depth: 0 }];
@@ -198,7 +198,7 @@ class RicochetRobots {
       let robotSpan = document.createElement('span');
       robotSpan.classList.toggle('robot');
 
-      robotSpan.addEventListener('mouseup', event => {
+      robotSpan.addEventListener('mouseup', (event) => {
         // Deselect the previously selected robot.
         if (this.board.selectedRobotColor !== undefined) {
           let robotId = robotIdMap[this.board.selectedRobotColor];
@@ -248,7 +248,7 @@ let ricochetRobots = undefined;
 function loadApp() {
   ricochetRobots = new RicochetRobots();
   ricochetRobots.draw(document.getElementById('grid-canvas'));
-  document.addEventListener('keydown', event => {
+  document.addEventListener('keydown', (event) => {
     ricochetRobots.keyboardHandler(event.key);
   });
 }
