@@ -84,6 +84,7 @@ class RicochetRobots {
       let currentDepth = currentState.depth;
       visited.add(currentRobots);
       console.log('Current Depth:', currentDepth);
+      console.log('Current Robots:', currentRobots);
 
       // This reset the robots position
       this.board.moveAllRobots(currentRobots);
