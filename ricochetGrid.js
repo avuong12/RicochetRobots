@@ -273,7 +273,7 @@ class RicochetGrid {
       ROBOT_CELL
     );
   }
-  // moveAllRobots for BTS.
+  // moveAllRobots for BFS.
   moveAllRobots(newRobotsPostions) {
     for (let key in newRobotsPostions) {
       let initialRow = this.robots[key].row;
