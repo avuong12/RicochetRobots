@@ -142,7 +142,6 @@ class RicochetRobots {
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
         this.board.moveAllRobots(initalRobots);
-        console.log('path:', currentState.path);
         return currentState.path;
       }
 
@@ -182,8 +181,10 @@ class RicochetRobots {
   // Increments maxDepth when there is no path at current maxDepth (similar to BFS).
   solveDFS() {
     for (let maxDepth = 0; maxDepth <= 10; maxDepth++) {
-      if (this.dfs(maxDepth)) {
-        return this.dfs(maxDepth);
+      let path = this.dfs(maxDepth);
+      if (path) {
+        console.log('path:', path);
+        return path;
       }
     }
     return null;
