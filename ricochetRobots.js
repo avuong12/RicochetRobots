@@ -83,56 +83,58 @@ class RicochetRobots {
       let currentRobots = currentState.robots;
       let currentDepth = currentState.depth;
       visited.add(currentRobots);
-      console.log('Current Depth:', currentDepth);
-      console.log('Current Robots:', currentRobots);
 
-      // This reset the robots position
+      // This moves the robots to the state that is being looked at.
       this.board.moveAllRobots(currentRobots);
 
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
+        // This resets the board to the initial condition.
         this.board.moveAllRobots(initalRobots);
-        console.log('true');
         return true;
       }
 
+      // Going through all the neighbors.
+      // Keys are the robots by color. Has color, row, and column
       for (let key in currentRobots) {
         let movesForRobot = this.board.movesForRobot(currentRobots[key].color);
         for (let i = 0; i < movesForRobot.length; i++) {
           this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
-          this.board.moveAllRobots(currentRobots);
           if (!visited.has(newRobotPostions)) {
             queue.push({ robots: newRobotPostions, depth: currentDepth + 1 });
           }
+          // reset robot position for the next neighbor.
+          this.board.moveAllRobots(currentRobots);
         }
       }
     }
-
+    // resets the board.
     this.board.moveAllRobots(initalRobots);
-    console.log('false');
     return false;
   }
 
-  solveDFS() {
+  solveDFS(maxDepth) {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let queue = [{ robots: initalRobots, depth: 0 }];
-    while (queue.length > 0) {
-      let currentState = queue.pop();
+    let stack = [{ robots: initalRobots, depth: 0 }];
+    while (stack.length > 0) {
+      let currentState = stack.pop();
       let currentRobots = currentState.robots;
       let currentDepth = currentState.depth;
       visited.add(currentRobots);
-      console.log('Current Depth:', currentDepth);
 
-      // This reset the robots position
+      // reset the robot position for the next neighbor.
       this.board.moveAllRobots(currentRobots);
 
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
         this.board.moveAllRobots(initalRobots);
-        console.log('true');
         return true;
+      }
+
+      if (currentDepth >= maxDepth) {
+        continue;
       }
 
       for (let key in currentRobots) {
@@ -142,7 +144,7 @@ class RicochetRobots {
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
           if (!visited.has(newRobotPostions)) {
-            queue.push({ robots: newRobotPostions, depth: currentDepth + 1 });
+            stack.push({ robots: newRobotPostions, depth: currentDepth + 1 });
           }
         }
       }
