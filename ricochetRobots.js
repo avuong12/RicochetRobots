@@ -77,7 +77,8 @@ class RicochetRobots {
   solveBFS() {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let queue = [{ robots: initalRobots, depth: 0 }];
+    let queue = [{ robots: initalRobots, depth: 0, path: [] }];
+
     while (queue.length > 0) {
       let currentState = queue.shift();
       let currentRobots = currentState.robots;
@@ -91,7 +92,8 @@ class RicochetRobots {
       if (this.board.reachedTarget()) {
         // This resets the board to the initial condition.
         this.board.moveAllRobots(initalRobots);
-        return true;
+        console.log('path:', currentState.path);
+        return currentState.path;
       }
 
       // Going through all the neighbors.
@@ -102,7 +104,17 @@ class RicochetRobots {
           this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
           if (!visited.has(newRobotPostions)) {
-            queue.push({ robots: newRobotPostions, depth: currentDepth + 1 });
+            queue.push({
+              robots: newRobotPostions,
+              depth: currentDepth + 1,
+              path: [
+                ...currentState.path,
+                {
+                  robot: currentRobots[key].color,
+                  direction: movesForRobot[i],
+                },
+              ],
+            });
           }
           // reset robot position for the next neighbor.
           this.board.moveAllRobots(currentRobots);
