@@ -126,10 +126,10 @@ class RicochetRobots {
     return false;
   }
 
-  solveDFS(maxDepth) {
+  dfs(maxDepth) {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let stack = [{ robots: initalRobots, depth: 0 }];
+    let stack = [{ robots: initalRobots, depth: 0, path: [] }];
     while (stack.length > 0) {
       let currentState = stack.pop();
       let currentRobots = currentState.robots;
@@ -142,7 +142,8 @@ class RicochetRobots {
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
         this.board.moveAllRobots(initalRobots);
-        return true;
+        console.log('path:', currentState.path);
+        return currentState.path;
       }
 
       if (currentDepth >= maxDepth) {
@@ -156,15 +157,36 @@ class RicochetRobots {
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
           if (!visited.has(newRobotPostions)) {
-            stack.push({ robots: newRobotPostions, depth: currentDepth + 1 });
+            stack.push({
+              robots: newRobotPostions,
+              depth: currentDepth + 1,
+              path: [
+                ...currentState.path,
+                {
+                  robot: currentRobots[key].color,
+                  direction: movesForRobot[i],
+                },
+              ],
+            });
           }
         }
       }
     }
 
+    // There is no path.
     this.board.moveAllRobots(initalRobots);
-    console.log('false');
-    return false;
+    return null;
+  }
+
+  // iterative deeping DFS to find the shortness path.
+  // Increments maxDepth when there is no path at current maxDepth (similar to BFS).
+  solveDFS() {
+    for (let maxDepth = 0; maxDepth <= 10; maxDepth++) {
+      if (this.dfs(maxDepth)) {
+        return this.dfs(maxDepth);
+      }
+    }
+    return null;
   }
 
   draw(parentNode) {
