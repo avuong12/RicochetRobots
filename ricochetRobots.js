@@ -19,6 +19,7 @@ class RicochetRobots {
     this.toggleTargetHightlight();
     this.board.pickNextTarget();
     this.toggleTargetHightlight();
+    this.clearPath();
   }
 
   toggleTargetHightlight() {
@@ -190,8 +191,14 @@ class RicochetRobots {
     return null;
   }
 
+  clearPath() {
+    let parentNode = document.getElementById('path-solution');
+    parentNode.innerHTML = '';
+  }
+
   drawPath(path) {
     // Draw empty cells for the board.
+    this.clearPath();
     let parentNode = document.getElementById('path-solution');
     let newDiv = document.createElement('div');
     newDiv.classList.toggle('grid-row');
