@@ -184,10 +184,96 @@ class RicochetRobots {
       let path = this.dfs(maxDepth);
       if (path) {
         console.log('path:', path);
+        this.drawPath(path);
         return path;
       }
     }
     return null;
+  }
+
+  // draw the path.
+  // drawPath(path) {
+  //   let parentNode = document.getElementById('path-solution');
+  //   if (path === null) {
+  //     return null;
+  //   }
+  //   let pathDiv = document.createElement('div');
+  //   for (let i = 0; i < path.length; i++) {
+  //     let robotColor = path[i].robot;
+  //     let direction = path[i].direction;
+  //     let newDirectionSpan = document.createElement('span');
+  //     newDirectionSpan.id = `cell-${i}`;
+
+  //     if (robotColor === GREEN_ROBOT) {
+  //       newDirectionSpan.classList.toggle('green-path');
+  //     } else if (robotColor === BLUE_ROBOT) {
+  //       newDirectionSpan.classList.toggle('blue-path');
+  //     } else if (robotColor === RED_ROBOT) {
+  //       newDirectionSpan.classList.toggle('red-path');
+  //     } else if (robotColor === YELLOW_ROBOT) {
+  //       newDirectionSpan.classList.toggle('yellow-path');
+  //     }
+
+  //     // if (direction === MOVE_UP) {
+  //     //   newDirectionSpan.classList.toggle('up-direction');
+  //     // } else if (direction === MOVE_DOWN) {
+  //     //   newDirectionSpan.classList.toggle('down-direction');
+  //     // } else if (direction === MOVE_LEFT) {
+  //     //   newDirectionSpan.classList.toggle('left-direction');
+  //     // } else if (direction === MOVE_RIGHT) {
+  //     //   newDirectionSpan.classList.toggle('right-direction');
+  //     // }
+
+  //     pathDiv.appendChild(newDirectionSpan);
+  //   }
+  //   parentNode.appendChild(pathDiv);
+  // }
+
+  drawPath(path) {
+    // Draw empty cells for the board.
+    let parentNode = document.getElementById('path-solution');
+    let newDiv = document.createElement('div');
+    newDiv.classList.toggle('grid-row');
+    for (let i = 0; i < path.length; i++) {
+      let robotColor = path[i].robot;
+      let direction = path[i].direction;
+      let cellSpan = document.createElement('span');
+
+      // Draw cell.
+      cellSpan.classList.toggle('grid-cell');
+      cellSpan.classList.toggle('empty-grid-cell');
+
+      // Draw robot.
+      let robotSpan = document.createElement('span');
+      robotSpan.classList.toggle('robot');
+      if (robotColor === GREEN_ROBOT) {
+        robotSpan.classList.toggle('green-robot');
+      } else if (robotColor === BLUE_ROBOT) {
+        robotSpan.classList.toggle('blue-robot');
+      } else if (robotColor === RED_ROBOT) {
+        robotSpan.classList.toggle('red-robot');
+      } else if (robotColor === YELLOW_ROBOT) {
+        robotSpan.classList.toggle('yellow-robot');
+      }
+
+      // Draw arrows.
+      let arrowSpan = document.createElement('span');
+      arrowSpan.classList.toggle('arrow');
+      if (direction === MOVE_UP) {
+        arrowSpan.classList.toggle('up-arrow');
+      } else if (direction === MOVE_DOWN) {
+        arrowSpan.classList.toggle('down-arrow');
+      } else if (direction === MOVE_LEFT) {
+        arrowSpan.classList.toggle('left-arrow');
+      } else if (direction === MOVE_RIGHT) {
+        arrowSpan.classList.toggle('right-arrow');
+      }
+
+      robotSpan.appendChild(arrowSpan);
+      cellSpan.appendChild(robotSpan);
+      newDiv.appendChild(cellSpan);
+    }
+    parentNode.appendChild(newDiv);
   }
 
   draw(parentNode) {
@@ -283,7 +369,7 @@ class RicochetRobots {
           selectedRobotSpan.classList.toggle('selected-robot');
         }
 
-        // Select a the clicked robot.
+        // Select a clicked robot.
         event.target.classList.toggle('selected-robot');
         if (event.target.id === 'green-robot') {
           this.board.selectedRobotColor = GREEN_ROBOT;

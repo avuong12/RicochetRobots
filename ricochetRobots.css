@@ -157,3 +157,31 @@ span.selected-robot {
 span.target-cell {
   background: cyan;
 }
+
+span.arrow {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  z-index: 2;
+}
+
+span.up-arrow {
+  transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+}
+
+span.down-arrow {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+span.left-arrow {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+span.right-arrow {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
