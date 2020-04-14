@@ -92,7 +92,7 @@ class RicochetRobots {
       if (this.board.reachedTarget()) {
         // This resets the board to the initial condition.
         this.board.moveAllRobots(initalRobots);
-        console.log('path:', currentState.path);
+        this.drawPath(currentState.path);
         return currentState.path;
       }
 
@@ -183,51 +183,12 @@ class RicochetRobots {
     for (let maxDepth = 0; maxDepth <= 10; maxDepth++) {
       let path = this.dfs(maxDepth);
       if (path) {
-        console.log('path:', path);
         this.drawPath(path);
         return path;
       }
     }
     return null;
   }
-
-  // draw the path.
-  // drawPath(path) {
-  //   let parentNode = document.getElementById('path-solution');
-  //   if (path === null) {
-  //     return null;
-  //   }
-  //   let pathDiv = document.createElement('div');
-  //   for (let i = 0; i < path.length; i++) {
-  //     let robotColor = path[i].robot;
-  //     let direction = path[i].direction;
-  //     let newDirectionSpan = document.createElement('span');
-  //     newDirectionSpan.id = `cell-${i}`;
-
-  //     if (robotColor === GREEN_ROBOT) {
-  //       newDirectionSpan.classList.toggle('green-path');
-  //     } else if (robotColor === BLUE_ROBOT) {
-  //       newDirectionSpan.classList.toggle('blue-path');
-  //     } else if (robotColor === RED_ROBOT) {
-  //       newDirectionSpan.classList.toggle('red-path');
-  //     } else if (robotColor === YELLOW_ROBOT) {
-  //       newDirectionSpan.classList.toggle('yellow-path');
-  //     }
-
-  //     // if (direction === MOVE_UP) {
-  //     //   newDirectionSpan.classList.toggle('up-direction');
-  //     // } else if (direction === MOVE_DOWN) {
-  //     //   newDirectionSpan.classList.toggle('down-direction');
-  //     // } else if (direction === MOVE_LEFT) {
-  //     //   newDirectionSpan.classList.toggle('left-direction');
-  //     // } else if (direction === MOVE_RIGHT) {
-  //     //   newDirectionSpan.classList.toggle('right-direction');
-  //     // }
-
-  //     pathDiv.appendChild(newDirectionSpan);
-  //   }
-  //   parentNode.appendChild(pathDiv);
-  // }
 
   drawPath(path) {
     // Draw empty cells for the board.

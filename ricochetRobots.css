@@ -148,6 +148,7 @@ span.robot {
   border-radius: 50%;
   position: absolute;
   z-index: 2;
+  text-align: center;
 }
 
 span.selected-robot {
@@ -159,7 +160,7 @@ span.target-cell {
 }
 
 span.arrow {
-  border: solid white;
+  border: solid cyan;
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
@@ -167,8 +168,8 @@ span.arrow {
 }
 
 span.up-arrow {
-  transform: rotate(0deg);
-  -webkit-transform: rotate(0deg);
+  transform: rotate(225deg);
+  -webkit-transform: rotate(225deg);
 }
 
 span.down-arrow {
