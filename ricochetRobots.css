@@ -1,11 +1,20 @@
 body {
   font-family: sans-serif;
-  /* TODO: do you need units for font-size? */
-  font-size: 14;
+  font-size: 14px;
 }
 
 div#grid-canvas {
   user-select: none;
+  display: inline-block;
+}
+
+.instructions {
+  float: right;
+  width: 30%;
+}
+
+.buttons {
+  display: block;
 }
 
 div.grid-row {

@@ -9,13 +9,20 @@
         <script type="text/javascript" src="ricochetRobots.js"></script>
     </head>
     <body onload="loadApp()">
+        <div id="title">
+            <h1>Ricochet Robots</h1>
+        </div>
         <div id="grid-canvas">
             <!-- HTML Print Out of Grid Will Go Here -->
         </div>
-        <div>
+        <div class="instructions">
+            <h2>How To Play</h2>
+        </div>
+        <div class="buttons">
             <button onclick="ricochetRobots.solveBFS()">BFS SOLVE</button>
             <button onclick="ricochetRobots.solveDFS()">DFS SOLVE</button>
             <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
+            <button onclick="ricochetRobots.resetPositions()">RESET</button>
         <div id="path-solution"></div>
       
     </bodyonload="loadApp()">

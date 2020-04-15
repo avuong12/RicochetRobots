@@ -12,6 +12,7 @@ class RicochetRobots {
     this.board.initializedRobotPositions();
     this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
+    this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
   }
 
   selectNewTarget() {
@@ -20,6 +21,8 @@ class RicochetRobots {
     this.board.pickNextTarget();
     this.toggleTargetHightlight();
     this.clearPath();
+    // initial robot position that can be reset to.
+    this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
   }
 
   toggleTargetHightlight() {
@@ -194,6 +197,35 @@ class RicochetRobots {
   clearPath() {
     let parentNode = document.getElementById('path-solution');
     parentNode.innerHTML = '';
+  }
+
+  resetPositions() {
+    // For referencing robots.
+    const robotSpans = {};
+
+    let robots = this.board.getRobots();
+    for (let key in robots) {
+      let robotColor = robots[key].color;
+
+      // Remove the robots from the DOM.
+      let robotSpan = document.getElementById(`${robotIdMap[key]}`);
+      robotSpan.parentNode.removeChild(robotSpan);
+      robotSpans[robotColor] = robotSpan;
+    }
+
+    // get the inital positions of the robots when a newtarget is selected.
+    this.board.moveAllRobots(this.initalRobotsPositions);
+
+    // move the robots to the initial positions in the DOM.
+    for (let key in this.initalRobotsPositions) {
+      let row = this.initalRobotsPositions[key].row;
+      let column = this.initalRobotsPositions[key].column;
+      let color = this.initalRobotsPositions[key].color;
+
+      // Draw the robot to the cell.
+      let cellSpan = document.getElementById(`${row}, ${column}`);
+      cellSpan.appendChild(robotSpans[color]);
+    }
   }
 
   drawPath(path) {
