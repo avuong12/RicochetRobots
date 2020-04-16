@@ -13,6 +13,15 @@ div#grid-canvas {
   width: 30%;
 }
 
+.timer-container {
+  float: right;
+  display: block;
+}
+
+#timer {
+  display: inherit;
+}
+
 .buttons {
   display: block;
 }

@@ -15,15 +15,21 @@
         <div id="grid-canvas">
             <!-- HTML Print Out of Grid Will Go Here -->
         </div>
-        <div class="instructions">
-            <h2>How To Play</h2>
+        <div class ="timer-container">
+            <button onclick="ricochetRobots.oneMinuteTimer()">START TIMER</button>
+            <div id="timer"></div>
         </div>
+        <!-- <div class="instructions">
+            <h2>How To Play</h2>
+        </div> -->
         <div class="buttons">
             <button onclick="ricochetRobots.solveBFS()">BFS SOLVE</button>
             <button onclick="ricochetRobots.solveDFS()">DFS SOLVE</button>
             <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
             <button onclick="ricochetRobots.resetPositions()">RESET</button>
-        <div id="path-solution"></div>
+            <div id="path-solution"></div>
+        </div>
+      
       
     </bodyonload="loadApp()">
 </html>

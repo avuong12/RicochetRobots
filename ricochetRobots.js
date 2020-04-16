@@ -13,6 +13,7 @@ class RicochetRobots {
     this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
     this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    this.currentTimer = undefined;
   }
 
   selectNewTarget() {
@@ -23,6 +24,8 @@ class RicochetRobots {
     this.clearPath();
     // initial robot position that can be reset to.
     this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    // Reset the time.
+    this.currentTimer = undefined;
   }
 
   toggleTargetHightlight() {
@@ -226,6 +229,36 @@ class RicochetRobots {
       let cellSpan = document.getElementById(`${row}, ${column}`);
       cellSpan.appendChild(robotSpans[color]);
     }
+  }
+
+  oneMinuteTimer() {
+    const updateTimer = () => {
+      let timerDiv = document.getElementById('timer');
+
+      if (this.currentTimer === undefined) {
+        timerDiv.innerHTML = '';
+        return;
+      }
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      const secondsRemaining = 60 - (currentTime - this.currentTimer);
+      if (secondsRemaining === 60) {
+        timerDiv.innerHTML = '1:00 min';
+        window.requestAnimationFrame(updateTimer);
+      } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
+        timerDiv.innerHTML = `0:${secondsRemaining} sec`;
+        window.requestAnimationFrame(updateTimer);
+      } else if (secondsRemaining < 10 && secondsRemaining > 0) {
+        timerDiv.innerHTML = `0:0${secondsRemaining} sec`;
+        window.requestAnimationFrame(updateTimer);
+      } else {
+        timerDiv.innerHTML = '';
+        alert('Time is Up! Reveal the Path.');
+      }
+    };
+
+    this.currentTimer = Math.floor(Date.now() / 1000);
+    window.requestAnimationFrame(updateTimer);
   }
 
   drawPath(path) {
