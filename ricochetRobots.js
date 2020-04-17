@@ -106,7 +106,10 @@ class RicochetRobots {
       let cellSpan = document.getElementById(
         `${cellArray[i].row}, ${cellArray[i].column}`
       );
-      // cellSpan.classList.add('traveled-cell');
+      cellSpan.classList.remove('traveled-blue-cell');
+      cellSpan.classList.remove('traveled-green-cell');
+      cellSpan.classList.remove('traveled-red-cell');
+      cellSpan.classList.remove('traveled-yellow-cell');
       cellSpan.classList.add(`${pathIdMap[color]}`);
     }
 
