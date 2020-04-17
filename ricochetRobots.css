@@ -43,8 +43,20 @@ span.empty-grid-cell {
   background: lightgoldenrodyellow;
 }
 
-span.traveled-grid-cell {
+span.traveled-blue-cell {
   background: lightskyblue;
+}
+
+span.traveled-green-cell {
+  background: lightgreen;
+}
+
+span.traveled-red-cell {
+  background: lightpink;
+}
+
+span.traveled-yellow-cell {
+  background: rgb(202, 205, 50);
 }
 
 span.inaccessable-grid-cell {

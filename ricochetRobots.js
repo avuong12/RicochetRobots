@@ -4,6 +4,12 @@ robotIdMap[RED_ROBOT] = 'red-robot';
 robotIdMap[BLUE_ROBOT] = 'blue-robot';
 robotIdMap[YELLOW_ROBOT] = 'yellow-robot';
 
+const pathIdMap = {};
+pathIdMap[GREEN_ROBOT] = 'traveled-green-cell';
+pathIdMap[RED_ROBOT] = 'traveled-red-cell';
+pathIdMap[BLUE_ROBOT] = 'traveled-blue-cell';
+pathIdMap[YELLOW_ROBOT] = 'traveled-yellow-cell';
+
 class RicochetRobots {
   constructor() {
     this.board = new RicochetGrid(16, 16);
@@ -59,7 +65,7 @@ class RicochetRobots {
     cellSpan.appendChild(robotSpan);
   }
 
-  tracePath(startCell, direction, endCell) {
+  tracePath(startCell, direction, endCell, color) {
     // array of the row/column pair that needs to be colored.
     let cellArray = [];
     let currentRow = startCell.row;
@@ -100,7 +106,8 @@ class RicochetRobots {
       let cellSpan = document.getElementById(
         `${cellArray[i].row}, ${cellArray[i].column}`
       );
-      cellSpan.classList.add('traveled-grid-cell');
+      // cellSpan.classList.add('traveled-cell');
+      cellSpan.classList.add(`${pathIdMap[color]}`);
     }
 
     // TODO: in reset function. clear cells.
@@ -133,11 +140,12 @@ class RicochetRobots {
     // end cell.
     let robotsAfterMove = this.board.getRobots();
     let selectedRobotMoved = robotsAfterMove[this.board.selectedRobotColor];
+    const selectedRobotColor = selectedRobotMoved.color;
     const endRow = selectedRobotMoved.row;
     const endColumn = selectedRobotMoved.column;
     const endCell = { row: endRow, column: endColumn };
 
-    this.tracePath(startCell, moveDirection, endCell);
+    this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
   }
 
   getRobotsAsString() {
@@ -295,6 +303,19 @@ class RicochetRobots {
       // Draw the robot to the cell.
       let cellSpan = document.getElementById(`${row}, ${column}`);
       cellSpan.appendChild(robotSpans[color]);
+    }
+
+    // remove traveled cells on the board.
+    for (let r = 0; r < this.board.getRows(); r++) {
+      // let newDiv = document.createElement('div');
+      // newDiv.classList.toggle('grid-row');
+      for (let c = 0; c < this.board.getColumns(); c++) {
+        let cellSpan = document.getElementById(`${r}, ${c}`);
+        cellSpan.classList.remove('traveled-blue-cell');
+        cellSpan.classList.remove('traveled-green-cell');
+        cellSpan.classList.remove('traveled-red-cell');
+        cellSpan.classList.remove('traveled-yellow-cell');
+      }
     }
   }
 
