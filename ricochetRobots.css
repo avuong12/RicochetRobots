@@ -43,6 +43,10 @@ span.empty-grid-cell {
   background: lightgoldenrodyellow;
 }
 
+span.traveled-grid-cell {
+  background: lightskyblue;
+}
+
 span.inaccessable-grid-cell {
   background: gray;
 }

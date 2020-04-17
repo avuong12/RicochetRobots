@@ -42,7 +42,7 @@ class RicochetRobots {
     }
 
     // Remove the robot span and move it to the new position.
-    // get the cell the contains the robot removeChild.
+    // get the cell that contains the robot removeChild.
     let robotSpan = document.getElementById(
       `${robotIdMap[this.board.selectedRobotColor]}`
     );
@@ -59,6 +59,53 @@ class RicochetRobots {
     cellSpan.appendChild(robotSpan);
   }
 
+  tracePath(startCell, direction, endCell) {
+    // array of the row/column pair that needs to be colored.
+    let cellArray = [];
+    let currentRow = startCell.row;
+    let endRow = endCell.row;
+    let currentColumn = startCell.column;
+    let endColumn = endCell.column;
+    // if direction is MOVE_UP, row is decremented.
+    if (direction === MOVE_UP) {
+      while (currentRow >= endRow) {
+        cellArray.push({ row: currentRow, column: endColumn });
+        currentRow--;
+      }
+    }
+    // if direction is MOVE_DOWN, row is incremented.
+    else if (direction === MOVE_DOWN) {
+      while (currentRow <= endRow) {
+        cellArray.push({ row: currentRow, column: endColumn });
+        currentRow++;
+      }
+    }
+    // if direction is MOVE_LEFT, column is decremented.
+    else if (direction === MOVE_LEFT) {
+      while (currentColumn >= endColumn) {
+        cellArray.push({ row: endRow, column: currentColumn });
+        currentColumn--;
+      }
+    }
+    // if direction is MOVE_RIGHT, coilumn is incremented.
+    else if (direction === MOVE_RIGHT) {
+      while (currentColumn <= endColumn) {
+        cellArray.push({ row: endRow, column: currentColumn });
+        currentColumn++;
+      }
+    }
+
+    // draw traveled cells.
+    for (let i = 0; i < cellArray.length; i++) {
+      let cellSpan = document.getElementById(
+        `${cellArray[i].row}, ${cellArray[i].column}`
+      );
+      cellSpan.classList.add('traveled-grid-cell');
+    }
+
+    // TODO: in reset function. clear cells.
+  }
+
   keyboardHandler(key) {
     let moveDirection = null;
     if (key === 'ArrowUp') {
@@ -70,7 +117,27 @@ class RicochetRobots {
     } else if (key === 'ArrowRight') {
       moveDirection = MOVE_RIGHT;
     }
+    // start cell.
+    if (this.board.selectedRobotColor === undefined) {
+      return;
+    }
+
+    let robots = this.board.getRobots();
+    let selectedRobot = robots[this.board.selectedRobotColor];
+    const startRow = selectedRobot.row;
+    const startColumn = selectedRobot.column;
+    const startCell = { row: startRow, column: startColumn };
+
     this.moveSelectedRobot(moveDirection);
+
+    // end cell.
+    let robotsAfterMove = this.board.getRobots();
+    let selectedRobotMoved = robotsAfterMove[this.board.selectedRobotColor];
+    const endRow = selectedRobotMoved.row;
+    const endColumn = selectedRobotMoved.column;
+    const endCell = { row: endRow, column: endColumn };
+
+    this.tracePath(startCell, moveDirection, endCell);
   }
 
   getRobotsAsString() {
@@ -239,11 +306,12 @@ class RicochetRobots {
         timerDiv.innerHTML = '';
         return;
       }
-
+      // Subsequent time after the timer was pressed.
       const currentTime = Math.floor(Date.now() / 1000);
       const secondsRemaining = 60 - (currentTime - this.currentTimer);
       if (secondsRemaining === 60) {
         timerDiv.innerHTML = '1:00 min';
+        //
         window.requestAnimationFrame(updateTimer);
       } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
         timerDiv.innerHTML = `0:${secondsRemaining} sec`;
@@ -253,11 +321,12 @@ class RicochetRobots {
         window.requestAnimationFrame(updateTimer);
       } else {
         timerDiv.innerHTML = '';
-        alert('Time is Up! Reveal the Path.');
+        alert('Time is Up! Bidder, Reveal the Path.');
       }
     };
-
+    // Tracks the time in which the timer was pressed.
     this.currentTimer = Math.floor(Date.now() / 1000);
+    // oneMinuteTimer is return. RequestAnimation is called once.
     window.requestAnimationFrame(updateTimer);
   }
 
