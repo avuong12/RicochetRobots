@@ -8,18 +8,28 @@ div#grid-canvas {
   display: inline-block;
 }
 
+.chat {
+  float: right;
+  width: 30%;
+  height: 800px;
+}
+
 .instructions {
   float: right;
   width: 30%;
 }
 
 .timer-container {
-  float: right;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 #timer {
-  display: inherit;
+  flex-direction: right;
+}
+
+#timer-button {
+  align-self: flex-start;
 }
 
 .buttons {

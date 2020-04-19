@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Ricochet Robots</title>
-        <link rel="stylesheet" href="ricochetRobots.css">
-        <script type="text/javascript" src="gridCell.js"></script>
-        <script type="text/javascript" src="ricochetGrid.js"></script>
-        <script type="text/javascript" src="boardElements.js"></script>
-        <script type="text/javascript" src="ricochetRobots.js"></script>
-    </head>
-    <body onload="loadApp()">
-        <div id="title">
-            <h1>Ricochet Robots</h1>
-        </div>
-        <div id="grid-canvas">
-            <!-- HTML Print Out of Grid Will Go Here -->
-        </div>
-        <div class ="timer-container">
-            <button onclick="ricochetRobots.oneMinuteTimer()">START TIMER</button>
-            <div id="timer"></div>
-        </div>
-        <!-- <div class="instructions">
+  <head>
+    <title>Ricochet Robots</title>
+    <link rel="stylesheet" href="ricochetRobots.css" />
+    <link rel="stylesheet" href="chat.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="chat.js"></script>
+    <script type="text/javascript" src="gridCell.js"></script>
+    <script type="text/javascript" src="ricochetGrid.js"></script>
+    <script type="text/javascript" src="boardElements.js"></script>
+    <script type="text/javascript" src="ricochetRobots.js"></script>
+  </head>
+  <body onload="loadApp(); loadChat()">
+    <div id="title">
+      <h1>Ricochet Robots</h1>
+    </div>
+    <div id="grid-canvas">
+      <!-- HTML Print Out of Grid Will Go Here -->
+    </div>
+    <div class="timer-container">
+      <button id="timer-button" onclick="ricochetRobots.oneMinuteTimer()">
+        START TIMER
+      </button>
+      <p id="timer"></p>
+    </div>
+    <!-- <div class="instructions">
             <h2>How To Play</h2>
         </div> -->
-        <div class="buttons">
-            <button onclick="ricochetRobots.solveBFS()">BFS SOLVE</button>
-            <button onclick="ricochetRobots.solveDFS()">DFS SOLVE</button>
-            <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
-            <button onclick="ricochetRobots.resetPositions()">RESET</button>
-            <div id="path-solution"></div>
-        </div>
-      
-      
-    </bodyonload="loadApp()">
+    <div class="buttons">
+      <button onclick="ricochetRobots.solveBFS()">BFS SOLVE</button>
+      <button onclick="ricochetRobots.solveDFS()">DFS SOLVE</button>
+      <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
+      <button onclick="ricochetRobots.resetPositions()">RESET</button>
+      <div id="path-solution"></div>
+    </div>
+    <div class="chat">
+      <ul id="messages"></ul>
+      <form id="form-message" action="">
+        <input id="input-message" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
+  </body>
 </html>
