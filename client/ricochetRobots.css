@@ -1,39 +1,6 @@
-body {
-  font-family: sans-serif;
-  font-size: 14px;
-}
-
 div#grid-canvas {
   user-select: none;
   display: inline-block;
-}
-
-.chat {
-  float: right;
-  width: 30%;
-  height: 800px;
-}
-
-.instructions {
-  float: right;
-  width: 30%;
-}
-
-.timer-container {
-  display: flex;
-  flex-direction: column;
-}
-
-#timer {
-  flex-direction: right;
-}
-
-#timer-button {
-  align-self: flex-start;
-}
-
-.buttons {
-  display: block;
 }
 
 div.grid-row {
