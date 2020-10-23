@@ -150,8 +150,8 @@ span.yellow-robot {
 }
 
 span.robot {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   border: 4px solid black;
   display: inline-block;
   margin-left: 4px;

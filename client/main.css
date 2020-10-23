@@ -5,8 +5,10 @@
 }
 body {
   font: 13px Helvetica, Arial;
-  display: flex;
   justify-content: space-evenly;
+}
+.main_container {
+  display: flex;
 }
 .game_block {
   flex: none;
@@ -19,4 +21,8 @@ body {
 .messages_block {
   flex: none;
   align-items: flex-start;
+}
+div#title {
+  text-align: center;
+  padding: 10px;
 }
