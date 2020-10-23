@@ -8,12 +8,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="chat.js"></script>
+    <script type="text/javascript" src="auction.js"></script>
     <script type="text/javascript" src="gridCell.js"></script>
     <script type="text/javascript" src="ricochetGrid.js"></script>
     <script type="text/javascript" src="boardElements.js"></script>
     <script type="text/javascript" src="ricochetRobots.js"></script>
   </head>
-  <body onload="loadApp(); loadChatApp()">
+  <body onload="loadApp(); loadChatApp(); loadAuctionApp()">
     <div id="title">
       <h1>Ricochet Robots</h1>
     </div>
@@ -43,6 +44,15 @@
         <form id="message-form" action="">
           <input id="m" autocomplete="off" /><button>Send</button>
         </form>
+      </div>
+      <div class="auction_block">
+        <h3>Auction</h3>
+        <ul id="auctions"></ul>
+        <form id="bid-form" action="">
+          <input id="bid" autocomplete="off" /><button>Send</button>
+        </form>
+        <div id="bidder"></div>
+        <div id="timer"></div>
       </div>
     </div>
   </body>
