@@ -1,0 +1,43 @@
+ul#auctions {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#auctions li {
+  padding: 5px 10px;
+}
+#auctions li:nth-child(odd) {
+  background: #eee;
+}
+form#bid-form {
+  background: #a9a0a0;
+  padding: 3px;
+  bottom: 0;
+  width: auto;
+}
+form#bid-form input#bid {
+  border: 0;
+  padding: 10px;
+  width: 80%;
+}
+form#bid-form button {
+  width: 20%;
+  background: rgb(130, 224, 255);
+  border: none;
+  padding: 10px;
+}
+
+div#bidder {
+  background-color: white;
+  height: 35px;
+  padding: 3px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+div#timer {
+  /* background-color: yellow; */
+  height: 35px;
+  padding: 3px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

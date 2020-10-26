@@ -33,23 +33,28 @@ class Auction {
       let timerDiv = document.getElementById('timer');
       if (this.currentTimer === undefined) {
         timerDiv.innerHTML = '';
+        timerDiv.style.color = 'white';
         return;
       }
       // Subsequent time after the timer was pressed.
       const currentTime = Math.floor(Date.now() / 1000);
       const secondsRemaining = 60 - (currentTime - this.currentTimer);
       if (secondsRemaining === 60) {
-        timerDiv.innerHTML = '1:00 min';
+        timerDiv.innerHTML = 'Time Remaining to Place Bid: 1:00 min';
+        timerDiv.style.backgroundColor = 'yellow';
         //
         window.requestAnimationFrame(updateTimer);
       } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
-        timerDiv.innerHTML = `0:${secondsRemaining} sec`;
+        timerDiv.innerHTML = `Time Remaining to Place Bid: 0:${secondsRemaining} sec`;
+        timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else if (secondsRemaining < 10 && secondsRemaining > 0) {
-        timerDiv.innerHTML = `0:0${secondsRemaining} sec`;
+        timerDiv.innerHTML = `Time Remaining to Place Bid: 0:0${secondsRemaining} sec`;
+        timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else {
         timerDiv.innerHTML = `Time is Up! Stop bidding. Reveal the Path ${this.lowestBidder.toUpperCase()}.`;
+        timerDiv.style.backgroundColor = 'yellow';
         this.currentTimer = undefined;
       }
     };

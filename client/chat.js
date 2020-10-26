@@ -8,7 +8,7 @@ class Chat {
     for (let i = 0; i < allNames.length; i++) {
       const usernames = document.getElementById('users');
       const newUsername = document.createElement('li');
-      newUsername.innerHTML = allNames[i];
+      newUsername.innerHTML = allNames[i].toUpperCase();
       usernames.appendChild(newUsername);
     }
   }
@@ -28,7 +28,7 @@ class Chat {
     }
     const usernames = document.getElementById('users');
     const newUsername = document.createElement('li');
-    newUsername.innerHTML = name;
+    newUsername.innerHTML = name.toUpperCase();
     usernames.appendChild(newUsername);
   }
 

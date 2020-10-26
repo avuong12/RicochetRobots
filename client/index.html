@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="main.css" />
     <link rel="stylesheet" href="ricochetRobots.css" />
     <link rel="stylesheet" href="chat.css" />
+    <link rel="stylesheet" href="usernames.css" />
+    <link rel="stylesheet" href="auction.css" />
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="chat.js"></script>
@@ -31,28 +33,40 @@
           <div id="path-solution"></div>
         </div>
       </div>
-      <div class="username_block">
-        <h3>Players</h3>
-        <ul id="users"></ul>
-        <form id="username" action="">
-          <input id="name" autocomplete="off" /><button>Send</button>
-        </form>
-      </div>
-      <div class="messages_block">
-        <h3>Chat Messages</h3>
-        <ul id="messages"></ul>
-        <form id="message-form" action="">
-          <input id="m" autocomplete="off" /><button>Send</button>
-        </form>
-      </div>
-      <div class="auction_block">
-        <h3>Auction</h3>
-        <ul id="auctions"></ul>
-        <form id="bid-form" action="">
-          <input id="bid" autocomplete="off" /><button>Send</button>
-        </form>
-        <div id="bidder"></div>
-        <div id="timer"></div>
+      <div class="submission_container">
+        <div id="username_block">
+          <h3>Players</h3>
+          <ul id="users"></ul>
+          <form id="username" action="">
+            <input
+              id="name"
+              autocomplete="off"
+              placeholder="Your Username"
+            /><button>Send</button>
+          </form>
+        </div>
+        <div id="messages_block">
+          <h3>Chat Messages</h3>
+          <ul id="messages"></ul>
+          <form id="message-form" action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+          </form>
+        </div>
+        <div id="auction_block">
+          <h3>Auction</h3>
+          <ul id="auctions"></ul>
+          <form id="bid-form" action="">
+            <input
+              id="bid"
+              autocomplete="off"
+              placeholder="Number of Steps"
+            /><button>Send</button>
+          </form>
+        </div>
+        <div id="bid_results">
+          <div id="bidder"></div>
+          <div id="timer"></div>
+        </div>
       </div>
     </div>
   </body>
