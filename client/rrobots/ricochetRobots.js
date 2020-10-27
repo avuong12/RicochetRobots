@@ -485,6 +485,8 @@ class RicochetRobots {
       let robotColor = robots[key].color;
 
       let robotSpan = document.createElement('span');
+      robotSpan.setAttribute('class', 'sr-only');
+      robotSpan.textContent = 'R';
       robotSpan.classList.toggle('robot');
 
       robotSpan.addEventListener('mouseup', (event) => {
