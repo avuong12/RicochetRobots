@@ -10,8 +10,8 @@ div.grid-row {
 
 span.grid-cell {
   display: inline-block;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border: 1px dotted gray;
   position: relative;
 }
