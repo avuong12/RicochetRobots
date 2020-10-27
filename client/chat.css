@@ -3,6 +3,9 @@ ul#messages {
   margin: 0;
   padding: 0;
   word-wrap: break-word;
+  max-height: 175px;
+  overflow-y: auto;
+  height: 80%;
 }
 #messages li {
   padding: 5px 10px;

@@ -57,6 +57,8 @@ class Chat {
     const newMessage = document.createElement('li');
     newMessage.innerHTML = message;
     messages.appendChild(newMessage);
+
+    scrollToBottom(messages);
   }
 
   setupSocketHandlers() {
@@ -99,3 +101,9 @@ function loadChatApp() {
   chatApp.requestUserNames();
   chatApp.requestChatHistory();
 }
+
+function scrollToBottom(elem) {
+  elem.scrollTop = elem.scrollHeight;
+}
+
+// scrollToBottom();

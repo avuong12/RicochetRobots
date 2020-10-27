@@ -12,16 +12,17 @@ div#title {
   padding: 20px;
 }
 .main_container {
-  display: flex;
+  display: inline-flex;
   justify-content: space-evenly;
 }
 div.game_block {
   flex: none;
-  align-items: flex-start;
+  align-items: center;
   padding: 20px;
 }
 div.submission_container {
   display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
@@ -34,10 +35,14 @@ div.submission_container {
   border-color: black;
 }
 #messages_block {
-  flex: none;
-  align-items: flex-start;
+  align-self: flex-end;
   border-style: groove;
   border-color: black;
+  max-height: 250px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 250px;
 }
 
 #auction_block {
