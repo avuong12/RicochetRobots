@@ -10,8 +10,8 @@ div.grid-row {
 
 span.grid-cell {
   display: inline-block;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border: 1px dotted gray;
   position: relative;
 }
@@ -67,7 +67,7 @@ span.blue-target {
 }
 
 span.yellow-target {
-  background: yellow;
+  background: #efd406;
   opacity: 0.5;
 }
 
@@ -82,8 +82,8 @@ span.wild-target {
 }
 
 span.square-target {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: 1px solid black;
   display: inline-block;
   margin-left: 3px;
@@ -92,8 +92,8 @@ span.square-target {
 }
 
 span.circle-target {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: 1px solid black;
   display: inline-block;
   margin-left: 1px;
@@ -113,8 +113,8 @@ span.triangle-target {
 }
 
 span.hexagon-target {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   display: inline-block;
   margin-left: 1px;
@@ -123,8 +123,8 @@ span.hexagon-target {
 }
 
 span.vortex-target {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: 1px solid black;
   display: inline-block;
   margin-left: 1px;
