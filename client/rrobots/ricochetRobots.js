@@ -89,6 +89,24 @@ class RicochetRobots {
     }
   }
 
+  removeRobots() {
+    // robots from previous game.
+    let previousRobots = this.board.getRobots();
+    for (let key in previousRobots) {
+      let robotRowPosition = previousRobots[key].row;
+      let robotColumnPosition = previousRobots[key].column;
+      let robotColor = previousRobots[key].color;
+      if (robotColumnPosition !== undefined && robotRowPosition !== undefined) {
+        console.log('in remove');
+        let cellSpan = document.getElementById(
+          `${robotRowPosition}, ${robotColumnPosition}`
+        );
+        let robotSpan = document.getElementById(`${robotIdMap[robotColor]}`);
+        cellSpan.removeChild(robotSpan);
+      }
+    }
+  }
+
   toggleTargetHightlight() {
     let target = this.board.getCurrentTarget();
     let targetRow = target.row;
@@ -561,6 +579,9 @@ class RicochetRobots {
     return false;
   }
 
+  // Get the robot moves.
+  sendRobotMove() {}
+
   setupSocketHandlersForBoard() {
     this.socket.on('get_selected_target', (data) => {
       // deselect here.
@@ -574,6 +595,7 @@ class RicochetRobots {
       this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
     this.socket.on('get_initial_robots_positions', (data) => {
+      this.removeRobots();
       this.board.initializedRobotPositions(JSON.parse(data));
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
