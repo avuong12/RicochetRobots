@@ -193,6 +193,17 @@ class RicochetGrid {
     }
   }
 
+  // pickNextTargetCandidate function will return a candidated for the next target.
+  pickNextTargetCandidate() {
+    let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
+    let nextTargetCandidate = this.targets[randomTargetIdx];
+    while (this.previousTargets.includes(nextTargetCandidate)) {
+      randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
+      nextTargetCandidate = this.targets[randomTargetIdx];
+    }
+    return nextTargetCandidate;
+  }
+
   // pickNextTarget function will return the next target.
   pickNextTarget() {
     let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
@@ -203,6 +214,13 @@ class RicochetGrid {
     }
     this.currentTarget = currentTarget;
     this.previousTargets.push(currentTarget);
+  }
+  // gets the target that is emitted from socket.
+  selectedTarget(target) {
+    console.log(`in target before: ${target}`);
+    this.currentTarget = JSON.parse(target);
+    this.previousTargets.push(JSON.parse(target));
+    console.log(`in target after: ${this.currentTarget}`);
   }
 
   // getCurrentTarget function returns the currentTarget.

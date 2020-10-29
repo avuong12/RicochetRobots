@@ -11,31 +11,30 @@ pathIdMap[BLUE_ROBOT] = 'traveled-blue-cell';
 pathIdMap[YELLOW_ROBOT] = 'traveled-yellow-cell';
 
 class RicochetRobots {
-  constructor() {
+  constructor(socket) {
     this.board = new RicochetGrid(16, 16);
     this.board.setWalls(walls);
     this.board.setTargets(targets);
     this.board.initializedRobotPositions();
-    this.board.pickNextTarget();
+    //this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
     this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    this.pathCellArray = [];
     this.currentTimer = undefined;
+    this.socket = socket;
   }
 
   selectNewTarget() {
-    // Deselect
-    this.toggleTargetHightlight();
-    this.board.pickNextTarget();
-    this.toggleTargetHightlight();
-    this.clearPath();
-    // initial robot position that can be reset to.
-    this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
-    // Reset the time.
-    this.currentTimer = undefined;
+    // get a candidate for the next target. Do not set currentTarget;
+    let nextTargetCandidate = this.board.pickNextTargetCandidate();
+    // send candidate target to server.
+    this.sendSelectedTarget(nextTargetCandidate);
   }
 
   toggleTargetHightlight() {
+    console.log('in toggle');
     let target = this.board.getCurrentTarget();
+    console.log(`in toggleTarget: ${target}`);
     let targetRow = target.row;
     let targetColumn = target.column;
     let targetCell = document.getElementById(`${targetRow}, ${targetColumn}`);
@@ -67,7 +66,6 @@ class RicochetRobots {
 
   tracePath(startCell, direction, endCell, color) {
     // array of the row/column pair that needs to be colored.
-    let cellArray = [];
     let currentRow = startCell.row;
     let endRow = endCell.row;
     let currentColumn = startCell.column;
@@ -75,36 +73,36 @@ class RicochetRobots {
     // if direction is MOVE_UP, row is decremented.
     if (direction === MOVE_UP) {
       while (currentRow >= endRow) {
-        cellArray.push({ row: currentRow, column: endColumn });
+        this.pathCellArray.push({ row: currentRow, column: endColumn });
         currentRow--;
       }
     }
     // if direction is MOVE_DOWN, row is incremented.
     else if (direction === MOVE_DOWN) {
       while (currentRow <= endRow) {
-        cellArray.push({ row: currentRow, column: endColumn });
+        this.pathCellArray.push({ row: currentRow, column: endColumn });
         currentRow++;
       }
     }
     // if direction is MOVE_LEFT, column is decremented.
     else if (direction === MOVE_LEFT) {
       while (currentColumn >= endColumn) {
-        cellArray.push({ row: endRow, column: currentColumn });
+        this.pathCellArray.push({ row: endRow, column: currentColumn });
         currentColumn--;
       }
     }
     // if direction is MOVE_RIGHT, coilumn is incremented.
     else if (direction === MOVE_RIGHT) {
       while (currentColumn <= endColumn) {
-        cellArray.push({ row: endRow, column: currentColumn });
+        this.pathCellArray.push({ row: endRow, column: currentColumn });
         currentColumn++;
       }
     }
 
     // draw traveled cells.
-    for (let i = 0; i < cellArray.length; i++) {
+    for (let i = 0; i < this.pathCellArray.length; i++) {
       let cellSpan = document.getElementById(
-        `${cellArray[i].row}, ${cellArray[i].column}`
+        `${this.pathCellArray[i].row}, ${this.pathCellArray[i].column}`
       );
       cellSpan.classList.remove('traveled-blue-cell');
       cellSpan.classList.remove('traveled-green-cell');
@@ -112,8 +110,18 @@ class RicochetRobots {
       cellSpan.classList.remove('traveled-yellow-cell');
       cellSpan.classList.add(`${pathIdMap[color]}`);
     }
+  }
 
-    // TODO: in reset function. clear cells.
+  clearTracedPath() {
+    for (let i = 0; i < this.pathCellArray.length; i++) {
+      let cellSpan = document.getElementById(
+        `${this.pathCellArray[i].row}, ${this.pathCellArray[i].column}`
+      );
+      cellSpan.classList.remove('traveled-blue-cell');
+      cellSpan.classList.remove('traveled-green-cell');
+      cellSpan.classList.remove('traveled-red-cell');
+      cellSpan.classList.remove('traveled-yellow-cell');
+    }
   }
 
   keyboardHandler(key) {
@@ -531,14 +539,49 @@ class RicochetRobots {
     }
 
     // Hightlight current target cell.
-    this.toggleTargetHightlight();
+    if (this.board.getCurrentTarget() !== undefined) {
+      this.selectNewTarget();
+    }
+  }
+
+  // Get the selected target.
+  sendSelectedTarget(targetCandidate) {
+    this.socket.emit('send_selected_target', targetCandidate);
+    return false;
+  }
+
+  // Get the robot positions.
+  sendRobotPositions() {
+    const robotPositions = this.board.getRobots();
+    this.socket.emit('send_robot_positions', robotPositions);
+    return false;
+  }
+
+  setupSocketHandlersForBoard() {
+    this.socket.on('get_selected_target', (data) => {
+      // deselect here.
+      if (this.board.getCurrentTarget() !== undefined) {
+        this.toggleTargetHightlight();
+      }
+      this.board.selectedTarget(data);
+      this.toggleTargetHightlight();
+      this.clearTracedPath();
+      this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    });
+    this.socket.on();
+  }
+
+  requestSelectedTarget() {
+    this.socket.emit('get_selected_target');
   }
 }
 
 let ricochetRobots = undefined;
 function loadApp() {
-  ricochetRobots = new RicochetRobots();
+  ricochetRobots = new RicochetRobots(socket);
+
   ricochetRobots.draw(document.getElementById('grid-canvas'));
+  ricochetRobots.setupSocketHandlersForBoard();
   document.addEventListener('keydown', (event) => {
     ricochetRobots.keyboardHandler(event.key);
   });

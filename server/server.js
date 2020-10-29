@@ -49,6 +49,9 @@ let bids = [
   // For testing. TODO: delete.
 ];
 
+let targets = new Set();
+let pickedTargets = [];
+
 let hasValidBid = false;
 let lowestBidSoFar = undefined;
 
@@ -112,6 +115,19 @@ io.on('connection', (socket) => {
       io.emit('lowest_bid_user', bidEntry.user, bidEntry.bid);
       lowestBidSoFar = Number(bid);
     }
+  });
+
+  //Emits selected target to all users.
+  socket.on('send_selected_target', (targetCandidate) => {
+    console.log(targetCandidate);
+    if (targets.has(targetCandidate)) {
+      io.emit('get_selected_target', false);
+    }
+    pickedTargets.push(targetCandidate);
+    io.emit(
+      'get_selected_target',
+      JSON.stringify(pickedTargets[pickedTargets.length - 1])
+    );
   });
 });
 // Keeps the socket active in order to use socket.id.

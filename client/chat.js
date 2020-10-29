@@ -67,9 +67,7 @@ class Chat {
     this.socket.on('send_usernames', this.restoreUserNames);
     this.socket.on('send_chat_history', this.restoreMessagesHistory);
     this.socket.on('ping', (data) => {
-      console.log('client ping');
       this.socket.emit('pong', data);
-      console.log('client ponged');
     });
   }
   requestChatHistory() {
@@ -105,5 +103,3 @@ function loadChatApp() {
 function scrollToBottom(elem) {
   elem.scrollTop = elem.scrollHeight;
 }
-
-// scrollToBottom();
