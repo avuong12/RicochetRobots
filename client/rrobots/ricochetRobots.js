@@ -15,7 +15,6 @@ class RicochetRobots {
     this.board = new RicochetGrid(16, 16);
     this.board.setWalls(walls);
     this.board.setTargets(targets);
-    this.board.initializedRobotPositions();
     //this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
     this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
@@ -31,10 +30,67 @@ class RicochetRobots {
     this.sendSelectedTarget(nextTargetCandidate);
   }
 
+  getInitialRobotsPositions() {
+    let robotsPositions = this.board.initializedRobotPositionsCandidate();
+    this.sendInitialRobotsPositions(robotsPositions);
+  }
+
+  placeRobots() {
+    let robots = this.board.getRobots();
+    for (let key in robots) {
+      let robotRowPosition = robots[key].row;
+      let robotColumnPosition = robots[key].column;
+      let robotColor = robots[key].color;
+
+      let robotSpan = document.createElement('span');
+      robotSpan.setAttribute('class', 'sr-only');
+      robotSpan.textContent = 'R';
+      robotSpan.classList.toggle('robot');
+
+      robotSpan.addEventListener('mouseup', (event) => {
+        // Deselect the previously selected robot.
+        if (this.board.selectedRobotColor !== undefined) {
+          let robotId = robotIdMap[this.board.selectedRobotColor];
+          let selectedRobotSpan = document.getElementById(robotId);
+          selectedRobotSpan.classList.toggle('selected-robot');
+        }
+
+        // Select a clicked robot.
+        event.target.classList.toggle('selected-robot');
+        if (event.target.id === 'green-robot') {
+          this.board.selectedRobotColor = GREEN_ROBOT;
+        } else if (event.target.id === 'red-robot') {
+          this.board.selectedRobotColor = RED_ROBOT;
+        } else if (event.target.id === 'blue-robot') {
+          this.board.selectedRobotColor = BLUE_ROBOT;
+        } else if (event.target.id === 'yellow-robot') {
+          this.board.selectedRobotColor = YELLOW_ROBOT;
+        }
+      });
+
+      if (robotColor === GREEN_ROBOT) {
+        robotSpan.id = 'green-robot';
+        robotSpan.classList.toggle('green-robot');
+      } else if (robotColor === RED_ROBOT) {
+        robotSpan.id = 'red-robot';
+        robotSpan.classList.toggle('red-robot');
+      } else if (robotColor === BLUE_ROBOT) {
+        robotSpan.id = 'blue-robot';
+        robotSpan.classList.toggle('blue-robot');
+      } else if (robotColor === YELLOW_ROBOT) {
+        robotSpan.id = 'yellow-robot';
+        robotSpan.classList.toggle('yellow-robot');
+      }
+
+      let cellSpan = document.getElementById(
+        `${robotRowPosition}, ${robotColumnPosition}`
+      );
+      cellSpan.appendChild(robotSpan);
+    }
+  }
+
   toggleTargetHightlight() {
-    console.log('in toggle');
     let target = this.board.getCurrentTarget();
-    console.log(`in toggleTarget: ${target}`);
     let targetRow = target.row;
     let targetColumn = target.column;
     let targetCell = document.getElementById(`${targetRow}, ${targetColumn}`);
@@ -488,60 +544,6 @@ class RicochetRobots {
       cellSpan.appendChild(targetSpan);
     }
 
-    // Draw Robots
-    let robots = this.board.getRobots();
-    for (let key in robots) {
-      let robotRowPosition = robots[key].row;
-      let robotColumnPosition = robots[key].column;
-      let robotColor = robots[key].color;
-
-      let robotSpan = document.createElement('span');
-      robotSpan.setAttribute('class', 'sr-only');
-      robotSpan.textContent = 'R';
-      robotSpan.classList.toggle('robot');
-
-      robotSpan.addEventListener('mouseup', (event) => {
-        // Deselect the previously selected robot.
-        if (this.board.selectedRobotColor !== undefined) {
-          let robotId = robotIdMap[this.board.selectedRobotColor];
-          let selectedRobotSpan = document.getElementById(robotId);
-          selectedRobotSpan.classList.toggle('selected-robot');
-        }
-
-        // Select a clicked robot.
-        event.target.classList.toggle('selected-robot');
-        if (event.target.id === 'green-robot') {
-          this.board.selectedRobotColor = GREEN_ROBOT;
-        } else if (event.target.id === 'red-robot') {
-          this.board.selectedRobotColor = RED_ROBOT;
-        } else if (event.target.id === 'blue-robot') {
-          this.board.selectedRobotColor = BLUE_ROBOT;
-        } else if (event.target.id === 'yellow-robot') {
-          this.board.selectedRobotColor = YELLOW_ROBOT;
-        }
-      });
-
-      if (robotColor === GREEN_ROBOT) {
-        robotSpan.id = 'green-robot';
-        robotSpan.classList.toggle('green-robot');
-      } else if (robotColor === RED_ROBOT) {
-        robotSpan.id = 'red-robot';
-        robotSpan.classList.toggle('red-robot');
-      } else if (robotColor === BLUE_ROBOT) {
-        robotSpan.id = 'blue-robot';
-        robotSpan.classList.toggle('blue-robot');
-      } else if (robotColor === YELLOW_ROBOT) {
-        robotSpan.id = 'yellow-robot';
-        robotSpan.classList.toggle('yellow-robot');
-      }
-
-      let cellSpan = document.getElementById(
-        `${robotRowPosition}, ${robotColumnPosition}`
-      );
-      cellSpan.appendChild(robotSpan);
-    }
-
-    // Hightlight current target cell.
     if (this.board.getCurrentTarget() !== undefined) {
       this.selectNewTarget();
     }
@@ -554,9 +556,8 @@ class RicochetRobots {
   }
 
   // Get the robot positions.
-  sendRobotPositions() {
-    const robotPositions = this.board.getRobots();
-    this.socket.emit('send_robot_positions', robotPositions);
+  sendInitialRobotsPositions(initialRobotsPositions) {
+    this.socket.emit('send_inital_robots_positions', initialRobotsPositions);
     return false;
   }
 
@@ -572,7 +573,11 @@ class RicochetRobots {
       this.clearPath();
       this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
-    this.socket.on();
+    this.socket.on('get_initial_robots_positions', (data) => {
+      this.board.initializedRobotPositions(JSON.parse(data));
+      this.placeRobots();
+      this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    });
   }
 
   requestSelectedTarget() {

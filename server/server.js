@@ -119,7 +119,6 @@ io.on('connection', (socket) => {
 
   //Emits selected target to all users.
   socket.on('send_selected_target', (targetCandidate) => {
-    console.log(targetCandidate);
     if (targets.has(targetCandidate)) {
       io.emit('get_selected_target', false);
     }
@@ -127,6 +126,15 @@ io.on('connection', (socket) => {
     io.emit(
       'get_selected_target',
       JSON.stringify(pickedTargets[pickedTargets.length - 1])
+    );
+  });
+
+  // Emits inital robots positions to all users.
+  socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
+    console.log(initialRobotsPositions);
+    io.emit(
+      'get_initial_robots_positions',
+      JSON.stringify(initialRobotsPositions)
     );
   });
 });
