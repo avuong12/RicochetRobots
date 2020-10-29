@@ -319,19 +319,8 @@ class RicochetRobots {
       let cellSpan = document.getElementById(`${row}, ${column}`);
       cellSpan.appendChild(robotSpans[color]);
     }
-
-    // remove traveled cells on the board.
-    for (let r = 0; r < this.board.getRows(); r++) {
-      // let newDiv = document.createElement('div');
-      // newDiv.classList.toggle('grid-row');
-      for (let c = 0; c < this.board.getColumns(); c++) {
-        let cellSpan = document.getElementById(`${r}, ${c}`);
-        cellSpan.classList.remove('traveled-blue-cell');
-        cellSpan.classList.remove('traveled-green-cell');
-        cellSpan.classList.remove('traveled-red-cell');
-        cellSpan.classList.remove('traveled-yellow-cell');
-      }
-    }
+    this.clearTracedPath();
+    this.clearPath();
   }
 
   oneMinuteTimer() {
@@ -406,7 +395,6 @@ class RicochetRobots {
 
   drawSolvedPath(path) {
     // Draw empty cells for the board.
-    console.log(path);
     let parentNode = document.getElementById('path-solution');
     let newDiv = document.createElement('div');
     newDiv.classList.toggle('grid-row');
@@ -419,10 +407,8 @@ class RicochetRobots {
   }
 
   drawMovingPath(path) {
-    console.log(path);
     let parentNode = document.getElementById('path-solution');
     let newDiv = document.createElement('div');
-    //newDiv.classList.toggle('grid-row');
     this.drawMove(path.robot, path.direction, newDiv);
     parentNode.appendChild(newDiv);
   }

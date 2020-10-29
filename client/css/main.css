@@ -21,6 +21,7 @@ div.game_block {
   flex: none;
   align-items: center;
   padding: 20px;
+  width: 50%;
 }
 div.submission_container {
   display: flex;
@@ -28,7 +29,7 @@ div.submission_container {
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
-  width: 300px;
+  width: 25%;
 }
 #username_block {
   flex: none;
