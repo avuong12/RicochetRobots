@@ -155,6 +155,9 @@ span.blue-robot {
 span.yellow-robot {
   background: yellow;
 }
+span.green-robot {
+  background: green;
+}
 
 span.robot {
   width: 24px;
@@ -166,6 +169,19 @@ span.robot {
   display: inline;
   margin-left: 4px;
   border: 2px solid black;
+}
+
+span.path {
+  width: 24px;
+  height: 24px;
+  border: 4px solid black;
+  display: inline-block;
+  margin-left: 4px;
+  margin-top: 4px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+  text-align: center;
 }
 
 span.selected-robot {
@@ -202,4 +218,8 @@ span.left-arrow {
 span.right-arrow {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
+}
+
+div#path-solution {
+  display: flex;
 }
