@@ -131,11 +131,15 @@ io.on('connection', (socket) => {
 
   // Emits inital robots positions to all users.
   socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
-    console.log(initialRobotsPositions);
     io.emit(
       'get_initial_robots_positions',
       JSON.stringify(initialRobotsPositions)
     );
+  });
+
+  // Emits selected robot to all users.
+  socket.on('send_selectedRobot', (selectedRobot) => {
+    io.emit('get_selected_robot', selectedRobot);
   });
 });
 // Keeps the socket active in order to use socket.id.

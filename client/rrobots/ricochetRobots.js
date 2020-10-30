@@ -35,6 +35,19 @@ class RicochetRobots {
     this.sendInitialRobotsPositions(robotsPositions);
   }
 
+  selectedRobot(selectedRobot) {
+    // Deselect the previousely selected robot.
+    if (this.board.selectedRobotColor !== undefined) {
+      let lastSelectedRobotId = robotIdMap[this.board.selectedRobotColor];
+      let lastSelectedRobotSpan = document.getElementById(lastSelectedRobotId);
+      lastSelectedRobotSpan.classList.toggle('selected-robot');
+    }
+    let robotId = robotIdMap[selectedRobot];
+    let newlySelectedRobot = document.getElementById(robotId);
+    newlySelectedRobot.classList.toggle('selected-robot');
+    this.board.selectedRobotColor = selectedRobot;
+  }
+
   placeRobots() {
     let robots = this.board.getRobots();
     for (let key in robots) {
@@ -48,23 +61,14 @@ class RicochetRobots {
       robotSpan.classList.toggle('robot');
 
       robotSpan.addEventListener('mouseup', (event) => {
-        // Deselect the previously selected robot.
-        if (this.board.selectedRobotColor !== undefined) {
-          let robotId = robotIdMap[this.board.selectedRobotColor];
-          let selectedRobotSpan = document.getElementById(robotId);
-          selectedRobotSpan.classList.toggle('selected-robot');
-        }
-
-        // Select a clicked robot.
-        event.target.classList.toggle('selected-robot');
         if (event.target.id === 'green-robot') {
-          this.board.selectedRobotColor = GREEN_ROBOT;
+          this.sendSelectedRobot(GREEN_ROBOT);
         } else if (event.target.id === 'red-robot') {
-          this.board.selectedRobotColor = RED_ROBOT;
+          this.sendSelectedRobot(RED_ROBOT);
         } else if (event.target.id === 'blue-robot') {
-          this.board.selectedRobotColor = BLUE_ROBOT;
+          this.sendSelectedRobot(BLUE_ROBOT);
         } else if (event.target.id === 'yellow-robot') {
-          this.board.selectedRobotColor = YELLOW_ROBOT;
+          this.sendSelectedRobot(YELLOW_ROBOT);
         }
       });
 
@@ -579,6 +583,12 @@ class RicochetRobots {
     return false;
   }
 
+  // Get the selected robot.
+  sendSelectedRobot(selectedRobot) {
+    this.socket.emit('send_selectedRobot', selectedRobot);
+    return false;
+  }
+
   // Get the robot moves.
   sendRobotMove() {}
 
@@ -599,6 +609,9 @@ class RicochetRobots {
       this.board.initializedRobotPositions(JSON.parse(data));
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    });
+    this.socket.on('get_selected_robot', (data) => {
+      this.selectedRobot(data);
     });
   }
 

@@ -229,10 +229,8 @@ class RicochetGrid {
   }
   // gets the target that is emitted from socket.
   selectedTarget(target) {
-    console.log(`in target before: ${target}`);
     this.currentTarget = JSON.parse(target);
     this.previousTargets.push(JSON.parse(target));
-    console.log(`in target after: ${this.currentTarget}`);
   }
 
   // getCurrentTarget function returns the currentTarget.
