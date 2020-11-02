@@ -661,6 +661,8 @@ function loadApp() {
   ricochetRobots.draw(document.getElementById('grid-canvas'));
   ricochetRobots.setupSocketHandlersForBoard();
   document.addEventListener('keydown', (event) => {
-    ricochetRobots.keyboardHandler(event.key);
+    if (event.target.nodeName === 'BODY') {
+      ricochetRobots.keyboardHandler(event.key);
+    }
   });
 }
