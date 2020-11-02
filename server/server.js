@@ -141,6 +141,14 @@ io.on('connection', (socket) => {
   socket.on('send_selectedRobot', (selectedRobot) => {
     io.emit('get_selected_robot', selectedRobot);
   });
+
+  // Emits boolean to start new game.
+  socket.on('send_new_game', () => {
+    // clear picked targets;
+    targets = new Set();
+    pickedTargets = [];
+    io.emit('get_new_game', true);
+  });
 });
 // Keeps the socket active in order to use socket.id.
 setTimeout(sendHeartbeat, 8000);

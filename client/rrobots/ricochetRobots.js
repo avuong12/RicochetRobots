@@ -22,7 +22,11 @@ class RicochetRobots {
     this.currentTimer = undefined;
     this.socket = socket;
   }
-
+  startNewGame() {
+    // Reset the board.
+    this.sendNewGame();
+    this.getInitialRobotsPositions();
+  }
   selectNewTarget() {
     // get a candidate for the next target. Do not set currentTarget;
     let nextTargetCandidate = this.board.pickNextTargetCandidate();
@@ -35,13 +39,17 @@ class RicochetRobots {
     this.sendInitialRobotsPositions(robotsPositions);
   }
 
-  selectedRobot(selectedRobot) {
-    // Deselect the previousely selected robot.
+  // Deselect the previousely selected robot.
+  deselectRobot() {
     if (this.board.selectedRobotColor !== undefined) {
       let lastSelectedRobotId = robotIdMap[this.board.selectedRobotColor];
       let lastSelectedRobotSpan = document.getElementById(lastSelectedRobotId);
       lastSelectedRobotSpan.classList.toggle('selected-robot');
     }
+    return false;
+  }
+
+  selectedRobot(selectedRobot) {
     let robotId = robotIdMap[selectedRobot];
     let newlySelectedRobot = document.getElementById(robotId);
     newlySelectedRobot.classList.toggle('selected-robot');
@@ -101,7 +109,6 @@ class RicochetRobots {
       let robotColumnPosition = previousRobots[key].column;
       let robotColor = previousRobots[key].color;
       if (robotColumnPosition !== undefined && robotRowPosition !== undefined) {
-        console.log('in remove');
         let cellSpan = document.getElementById(
           `${robotRowPosition}, ${robotColumnPosition}`
         );
@@ -234,7 +241,7 @@ class RicochetRobots {
     const endColumn = selectedRobotMoved.column;
     const endCell = { row: endRow, column: endColumn };
 
-    this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
+    //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
     this.drawMovingPath({
       robot: this.board.selectedRobotColor,
       direction: moveDirection,
@@ -570,20 +577,25 @@ class RicochetRobots {
       this.selectNewTarget();
     }
   }
+  // Request the server to initiate a new game.
+  sendNewGame() {
+    this.socket.emit('send_new_game', true);
+    return false;
+  }
 
-  // Get the selected target.
+  // Request the server to let all players know the next target.
   sendSelectedTarget(targetCandidate) {
     this.socket.emit('send_selected_target', targetCandidate);
     return false;
   }
 
-  // Get the robot positions.
+  // Request the server to let all players know the intial positions of the robots.
   sendInitialRobotsPositions(initialRobotsPositions) {
     this.socket.emit('send_inital_robots_positions', initialRobotsPositions);
     return false;
   }
 
-  // Get the selected robot.
+  // Request the server to let all playsers know the selected robot.
   sendSelectedRobot(selectedRobot) {
     this.socket.emit('send_selectedRobot', selectedRobot);
     return false;
@@ -593,24 +605,46 @@ class RicochetRobots {
   sendRobotMove() {}
 
   setupSocketHandlersForBoard() {
+    this.socket.on('get_new_game', (data) => {
+      if (data) {
+        this.clearPath();
+        this.clearTracedPath();
+        // clear target
+        if (this.board.getCurrentTarget() !== undefined) {
+          this.toggleTargetHightlight();
+          this.board.removeTarget();
+        }
+        // Deselect the robot of the previous game.
+        this.deselectRobot();
+        this.board.selectedRobotColor = undefined;
+        this.initalRobotsPositions = undefined;
+
+        // clear robots
+        let robots = this.board.getRobots();
+        //console.log(robots);
+        if (robots[GREEN_ROBOT].row !== undefined) {
+          this.removeRobots();
+        }
+      }
+    });
     this.socket.on('get_selected_target', (data) => {
+      this.clearTracedPath();
+      this.clearPath();
       // deselect here.
       if (this.board.getCurrentTarget() !== undefined) {
         this.toggleTargetHightlight();
       }
       this.board.selectedTarget(data);
       this.toggleTargetHightlight();
-      this.clearTracedPath();
-      this.clearPath();
       this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
     this.socket.on('get_initial_robots_positions', (data) => {
-      this.removeRobots();
       this.board.initializedRobotPositions(JSON.parse(data));
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
     this.socket.on('get_selected_robot', (data) => {
+      this.deselectRobot();
       this.selectedRobot(data);
     });
   }

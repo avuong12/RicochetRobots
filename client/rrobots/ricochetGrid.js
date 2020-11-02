@@ -238,6 +238,11 @@ class RicochetGrid {
     return this.currentTarget;
   }
 
+  // remove target.
+  removeTarget() {
+    this.currentTarget = undefined;
+  }
+
   // getWalls function will return the walls in a given cell.
   getWalls(row, column) {
     return this.grid[row][column].walls;
