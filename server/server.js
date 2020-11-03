@@ -45,9 +45,7 @@ let chats = [
   { user: 'sam', message: 'test' },
 ];
 
-let bids = [
-  // For testing. TODO: delete.
-];
+let bids = [];
 
 let targets = new Set();
 let pickedTargets = [];
@@ -121,12 +119,16 @@ io.on('connection', (socket) => {
   socket.on('send_selected_target', (targetCandidate) => {
     if (targets.has(targetCandidate)) {
       io.emit('get_selected_target', false);
+    } else {
+      pickedTargets.push(targetCandidate);
+      bids = [];
+      lowestBidSoFar = undefined;
+      hasValidBid = false;
+      io.emit(
+        'get_selected_target',
+        JSON.stringify(pickedTargets[pickedTargets.length - 1])
+      );
     }
-    pickedTargets.push(targetCandidate);
-    io.emit(
-      'get_selected_target',
-      JSON.stringify(pickedTargets[pickedTargets.length - 1])
-    );
   });
 
   // Emits inital robots positions to all users.
@@ -147,6 +149,7 @@ io.on('connection', (socket) => {
     // clear picked targets;
     targets = new Set();
     pickedTargets = [];
+    lowestBidSoFar = undefined;
     io.emit('get_new_game', true);
   });
 

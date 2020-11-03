@@ -21,6 +21,9 @@ class RicochetRobots {
     this.pathCellArray = [];
     this.currentTimer = undefined;
     this.socket = socket;
+    this.lowestBidSoFar = undefined;
+    this.lowestBidderSoFar = undefined;
+    this.steps = 0;
   }
   startNewGame() {
     // Reset the board.
@@ -239,6 +242,7 @@ class RicochetRobots {
         robot: this.board.selectedRobotColor,
         direction: moveDirection,
       });
+      this.steps++;
     }
 
     // For tracing the path. End cell.
@@ -616,6 +620,11 @@ class RicochetRobots {
     return false;
   }
 
+  setLowestBidUserInfo(user, bid) {
+    this.lowestBidSoFar = bid;
+    this.lowestBidderSoFar = user;
+  }
+
   setupSocketHandlersForBoard() {
     // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
@@ -642,15 +651,21 @@ class RicochetRobots {
 
     // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
-      this.clearTracedPath();
-      this.clearPath();
-      // deselect here.
-      if (this.board.getCurrentTarget() !== undefined) {
+      if (data) {
+        this.clearTracedPath();
+        this.clearPath();
+        this.lowestBidderSoFar = undefined;
+        this.lowestBidSoFar = undefined;
+        // deselect here.
+        if (this.board.getCurrentTarget() !== undefined) {
+          this.toggleTargetHightlight();
+        }
+        this.board.selectedTarget(data);
         this.toggleTargetHightlight();
+        this.initalRobotsPositions = this.deepCopyRobots(
+          this.board.getRobots()
+        );
       }
-      this.board.selectedTarget(data);
-      this.toggleTargetHightlight();
-      this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
 
     // Receives the initial robots positions from server.
@@ -676,6 +691,11 @@ class RicochetRobots {
       if (data) {
         this.resetPositions();
       }
+    });
+
+    // Recieves lowest bid and lowest bidder from server.
+    this.socket.on('lowest_bid_user', (userData, bidData) => {
+      this.setLowestBidUserInfo(userData, bidData);
     });
   }
 }
