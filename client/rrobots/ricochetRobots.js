@@ -602,9 +602,13 @@ class RicochetRobots {
   }
 
   // Get the robot moves.
-  sendRobotMove() {}
+  sendKeyDirection(keyDirection) {
+    this.socket.emit('send_key_direction', keyDirection);
+    return false;
+  }
 
   setupSocketHandlersForBoard() {
+    // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
       if (data) {
         this.clearPath();
@@ -627,6 +631,7 @@ class RicochetRobots {
         }
       }
     });
+    // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
       this.clearTracedPath();
       this.clearPath();
@@ -638,19 +643,21 @@ class RicochetRobots {
       this.toggleTargetHightlight();
       this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
+    // Receives the initial robots positions from server.
     this.socket.on('get_initial_robots_positions', (data) => {
       this.board.initializedRobotPositions(JSON.parse(data));
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
+    // Receives the selected robot from server.
     this.socket.on('get_selected_robot', (data) => {
       this.deselectRobot();
       this.selectedRobot(data);
     });
-  }
-
-  requestSelectedTarget() {
-    this.socket.emit('get_selected_target');
+    // Recieves the direction of next move form server.
+    this.socket.on('get_key_direction', (data) => {
+      this.keyboardHandler(data);
+    });
   }
 }
 
@@ -661,8 +668,9 @@ function loadApp() {
   ricochetRobots.draw(document.getElementById('grid-canvas'));
   ricochetRobots.setupSocketHandlersForBoard();
   document.addEventListener('keydown', (event) => {
+    event.preventDefault();
     if (event.target.nodeName === 'BODY') {
-      ricochetRobots.keyboardHandler(event.key);
+      ricochetRobots.sendKeyDirection(event.key);
     }
   });
 }

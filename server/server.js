@@ -149,6 +149,11 @@ io.on('connection', (socket) => {
     pickedTargets = [];
     io.emit('get_new_game', true);
   });
+
+  // Emits key direction to all users.
+  socket.on('send_key_direction', (keyDirection) => {
+    io.emit('get_key_direction', keyDirection);
+  });
 });
 // Keeps the socket active in order to use socket.id.
 setTimeout(sendHeartbeat, 8000);
