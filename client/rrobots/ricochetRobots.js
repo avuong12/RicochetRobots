@@ -220,20 +220,28 @@ class RicochetRobots {
     } else if (key === 'ArrowRight') {
       moveDirection = MOVE_RIGHT;
     }
-    // start cell.
+    // For tracing the path. Start cell.
     if (this.board.selectedRobotColor === undefined) {
       return;
     }
-
     let robots = this.board.getRobots();
     let selectedRobot = robots[this.board.selectedRobotColor];
+    const robotColor = selectedRobot.color;
     const startRow = selectedRobot.row;
     const startColumn = selectedRobot.column;
     const startCell = { row: startRow, column: startColumn };
 
-    this.moveSelectedRobot(moveDirection);
+    // Check to see if the robot can make move before drawing path.
+    const possibleMoves = this.board.movesForRobot(robotColor);
+    if (possibleMoves !== undefined && possibleMoves.includes(moveDirection)) {
+      this.moveSelectedRobot(moveDirection);
+      this.drawMovingPath({
+        robot: this.board.selectedRobotColor,
+        direction: moveDirection,
+      });
+    }
 
-    // end cell.
+    // For tracing the path. End cell.
     let robotsAfterMove = this.board.getRobots();
     let selectedRobotMoved = robotsAfterMove[this.board.selectedRobotColor];
     const selectedRobotColor = selectedRobotMoved.color;
@@ -242,10 +250,6 @@ class RicochetRobots {
     const endCell = { row: endRow, column: endColumn };
 
     //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
-    this.drawMovingPath({
-      robot: this.board.selectedRobotColor,
-      direction: moveDirection,
-    });
   }
 
   getRobotsAsString() {

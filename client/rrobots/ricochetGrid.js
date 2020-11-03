@@ -252,6 +252,9 @@ class RicochetGrid {
   movesForRobot(robotColor) {
     let possibleMoves = [];
     let robot = this.robots[robotColor];
+    if (robot === undefined) {
+      return;
+    }
     let row = robot.row;
     let column = robot.column;
     let robotWalls = this.grid[robot.row][robot.column].getWalls();
