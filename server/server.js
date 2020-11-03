@@ -154,6 +154,11 @@ io.on('connection', (socket) => {
   socket.on('send_key_direction', (keyDirection) => {
     io.emit('get_key_direction', keyDirection);
   });
+
+  // Emits boolean to reset positions to all users.
+  socket.on('send_request_to_reset_positions', (reset) => {
+    io.emit('get_reset_positions', reset);
+  });
 });
 // Keeps the socket active in order to use socket.id.
 setTimeout(sendHeartbeat, 8000);

@@ -377,6 +377,11 @@ class RicochetRobots {
     parentNode.innerHTML = '';
   }
 
+  requestResetPositions() {
+    this.socket.emit('send_request_to_reset_positions', true);
+    return false;
+  }
+
   resetPositions() {
     // For referencing robots.
     const robotSpans = {};
@@ -625,12 +630,12 @@ class RicochetRobots {
 
         // clear robots
         let robots = this.board.getRobots();
-        //console.log(robots);
         if (robots[GREEN_ROBOT].row !== undefined) {
           this.removeRobots();
         }
       }
     });
+
     // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
       this.clearTracedPath();
@@ -643,20 +648,30 @@ class RicochetRobots {
       this.toggleTargetHightlight();
       this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
+
     // Receives the initial robots positions from server.
     this.socket.on('get_initial_robots_positions', (data) => {
       this.board.initializedRobotPositions(JSON.parse(data));
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
+
     // Receives the selected robot from server.
     this.socket.on('get_selected_robot', (data) => {
       this.deselectRobot();
       this.selectedRobot(data);
     });
-    // Recieves the direction of next move form server.
+
+    // Receives the direction of next move form server.
     this.socket.on('get_key_direction', (data) => {
       this.keyboardHandler(data);
+    });
+
+    // Receives request to reset positions from server.
+    this.socket.on('get_reset_positions', (data) => {
+      if (data) {
+        this.resetPositions();
+      }
     });
   }
 }
