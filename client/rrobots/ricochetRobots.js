@@ -255,8 +255,11 @@ class RicochetRobots {
 
     // Check to see if the robot reached the target spot.
     if (this.board.reachedTarget()) {
-      console.log('reached target');
-      this.sendTargetHasBeenReached();
+      if (this.steps <= this.lowestBidderSoFar) {
+        this.sendTargetHasBeenReached(this.steps);
+      } else {
+        this.sendSecondLowestBid();
+      }
     }
 
     //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
@@ -627,10 +630,12 @@ class RicochetRobots {
   }
 
   // Send to server that the target has been reached.
-  sendTargetHasBeenReached() {
-    this.socket.emit('send_target_has_been_reached', true);
+  sendTargetHasBeenReached(steps) {
+    this.socket.emit('send_target_has_been_reached', steps);
     return false;
   }
+
+  sendSecondLowestBid() {}
 
   setLowestBidUserInfo(user, bid) {
     this.lowestBidSoFar = bid;

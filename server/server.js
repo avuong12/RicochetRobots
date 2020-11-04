@@ -46,6 +46,7 @@ let pickedTargets = [];
 
 let hasValidBid = false;
 let lowestBidSoFar = undefined;
+let lowestBidderSoFar = undefined;
 
 function sendHeartbeat() {
   setTimeout(sendHeartbeat, 8000);
@@ -93,18 +94,36 @@ io.on('connection', (socket) => {
 
   // Submitting a bid.
   socket.on('send_bid', (bid) => {
+    const numberBid = Number(bid);
     io.emit('send_bid', `${socketIdToUsername[socket.id]}: ${bid} steps`);
     const bidEntry = { user: socketIdToUsername[socket.id], bid: bid };
-    if (bids.length === 0 && hasValidBid === false) {
+    // order the bids in decreasing order, relative to the lowestBidSoFar.
+    if (lowestBidSoFar === undefined && hasValidBid === false) {
       bids.push(bidEntry);
-      lowestBidSoFar = Number(bid);
+      lowestBidSoFar = Number(bids[bids.length - 1].bid);
+      lowestBidderSoFar = bids[bids.length - 1].user;
       io.emit('start_timer', true);
-      io.emit('lowest_bid_user', bidEntry.user, bidEntry.bid);
+      io.emit('lowest_bid_user', lowestBidderSoFar, lowestBidSoFar);
       hasValidBid = true;
-    } else if (hasValidBid === true && Number(bid) < lowestBidSoFar) {
+    } else if (numberBid < lowestBidSoFar && hasValidBid === true) {
       bids.push(bidEntry);
-      io.emit('lowest_bid_user', bidEntry.user, bidEntry.bid);
-      lowestBidSoFar = Number(bid);
+      lowestBidSoFar = Number(bids[bids.length - 1].bid);
+      lowestBidderSoFar = bids[bids.length - 1].user;
+      io.emit('lowest_bid_user', lowestBidderSoFar, lowestBidSoFar);
+    } else if (numberBid >= lowestBidSoFar && hasValidBid === true) {
+      if (bid >= Number(bids[0].bid)) {
+        bids.unshift(bidEntry);
+      } else {
+        for (let i = 0; i <= bids.length - 2; i++) {
+          if (
+            numberBid < Number(bids[i].bid) &&
+            numberBid >= Number(bids[i + 1].bid)
+          ) {
+            bids.splice(i + 1, 0, bidEntry);
+            break;
+          }
+        }
+      }
     }
   });
 
@@ -157,11 +176,11 @@ io.on('connection', (socket) => {
   });
 
   // Emits the user that made the lowest bid if target was reached.
-  socket.on('send_target_has_been_reached', (reached) => {
-    if (reached) {
-      const user = socketIdToUsername[socket.id];
-      console.log(user);
-      io.emit('get_user_that_reached_target', user);
+  socket.on('send_target_has_been_reached', (steps) => {
+    if (steps <= lowestBidSoFar) {
+      io.emit('get_lowestBider', lowestBidderSoFar);
+    } else {
+      io.emit('');
     }
   });
 });
