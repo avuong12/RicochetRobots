@@ -62,10 +62,18 @@ class Chat {
   }
 
   setupSocketHandlers() {
-    this.socket.on('send_message', this.addMessage);
-    this.socket.on('set_username', this.addUserName);
-    this.socket.on('send_usernames', this.restoreUserNames);
-    this.socket.on('send_chat_history', this.restoreMessagesHistory);
+    this.socket.on('send_message', (message) => {
+      this.addMessage(message);
+    });
+    this.socket.on('set_username', (username) => {
+      this.addUserName(username);
+    });
+    this.socket.on('send_usernames', (usernames) => {
+      this.restoreUserNames(usernames);
+    });
+    this.socket.on('send_chat_history', (chats) => {
+      this.restoreMessagesHistory(chats);
+    });
     this.socket.on('ping', (data) => {
       this.socket.emit('pong', data);
     });

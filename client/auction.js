@@ -72,11 +72,13 @@ class Auction {
       userBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
       bidDiv.appendChild(userBid);
       this.lowestBidder = user;
+
       this.lowestBid = bid;
     } else {
       const newUserBid = document.getElementById('bidder');
       newUserBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
       this.lowestBidder = user;
+
       this.lowestBid = bid;
     }
   }
@@ -101,10 +103,18 @@ class Auction {
   }
 
   setupAuctionSocketHandlers() {
-    this.socket.on('send_bid', this.addBid);
-    this.socket.on('start_timer', this.startTimer);
-    this.socket.on('lowest_bid_user', this.getLowestBidUser);
-    this.socket.on('get_selected_target', this.removeBids);
+    this.socket.on('send_bid', (bid) => {
+      this.addBid(bid);
+    });
+    this.socket.on('start_timer', (bidStarted) => {
+      this.startTimer(bidStarted);
+    });
+    this.socket.on('lowest_bid_user', (user, bid) => {
+      this.getLowestBidUser(user, bid);
+    });
+    this.socket.on('get_selected_target', () => {
+      this.removeBids();
+    });
   }
 }
 let auction = undefined;

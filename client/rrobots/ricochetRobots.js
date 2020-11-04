@@ -253,6 +253,12 @@ class RicochetRobots {
     const endColumn = selectedRobotMoved.column;
     const endCell = { row: endRow, column: endColumn };
 
+    // Check to see if the robot reached the target spot.
+    if (this.board.reachedTarget()) {
+      console.log('reached target');
+      this.sendTargetHasBeenReached();
+    }
+
     //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
   }
 
@@ -620,6 +626,12 @@ class RicochetRobots {
     return false;
   }
 
+  // Send to server that the target has been reached.
+  sendTargetHasBeenReached() {
+    this.socket.emit('send_target_has_been_reached', true);
+    return false;
+  }
+
   setLowestBidUserInfo(user, bid) {
     this.lowestBidSoFar = bid;
     this.lowestBidderSoFar = user;
@@ -696,6 +708,11 @@ class RicochetRobots {
     // Recieves lowest bid and lowest bidder from server.
     this.socket.on('lowest_bid_user', (userData, bidData) => {
       this.setLowestBidUserInfo(userData, bidData);
+    });
+
+    // Recieves the user that reached the target from server.
+    this.socket.on('get_user_that_reached_target', (data) => {
+      console.log(data);
     });
   }
 }

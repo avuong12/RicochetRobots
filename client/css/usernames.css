@@ -2,7 +2,6 @@ ul#users {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  text-align: center;
   word-wrap: break-word;
 }
 #users li {

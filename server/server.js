@@ -35,15 +35,9 @@ app.use((req, res, next) => {
 });
 
 let userNames = new Set();
-// For testing. TODO. remember to delete.
-userNames.add('angela');
-userNames.add('sam');
-let socketIdToUsername = { abcdef: 'angela', efghju: 'sam' };
+let socketIdToUsername = {};
 
-let chats = [
-  { user: 'sam', message: 'hi' },
-  { user: 'sam', message: 'test' },
-];
+let chats = [];
 
 let bids = [];
 
@@ -108,7 +102,6 @@ io.on('connection', (socket) => {
       io.emit('lowest_bid_user', bidEntry.user, bidEntry.bid);
       hasValidBid = true;
     } else if (hasValidBid === true && Number(bid) < lowestBidSoFar) {
-      bids.pop();
       bids.push(bidEntry);
       io.emit('lowest_bid_user', bidEntry.user, bidEntry.bid);
       lowestBidSoFar = Number(bid);
@@ -161,6 +154,15 @@ io.on('connection', (socket) => {
   // Emits boolean to reset positions to all users.
   socket.on('send_request_to_reset_positions', (reset) => {
     io.emit('get_reset_positions', reset);
+  });
+
+  // Emits the user that made the lowest bid if target was reached.
+  socket.on('send_target_has_been_reached', (reached) => {
+    if (reached) {
+      const user = socketIdToUsername[socket.id];
+      console.log(user);
+      io.emit('get_user_that_reached_target', user);
+    }
   });
 });
 // Keeps the socket active in order to use socket.id.
