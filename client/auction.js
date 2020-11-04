@@ -3,6 +3,7 @@ class Auction {
     this.socket = socket;
     this.currentTimer = undefined;
     this.lowestBidder = undefined;
+    this.lowestBid = undefined;
   }
 
   makeBid(event) {
@@ -28,9 +29,11 @@ class Auction {
       this.currentTimer = undefined;
       return false;
     }
-
+    const bidDiv = document.getElementById('bid_results');
+    const timerDiv = document.createElement('div');
+    bidDiv.appendChild(timerDiv);
     const updateTimer = () => {
-      let timerDiv = document.getElementById('timer');
+      timerDiv.setAttribute('id', 'timer');
       if (this.currentTimer === undefined) {
         timerDiv.innerHTML = '';
         timerDiv.style.color = 'white';
@@ -62,15 +65,46 @@ class Auction {
   }
 
   getLowestBidUser(user, bid) {
-    const userBid = document.getElementById('bidder');
-    userBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
-    this.lowestBidder = user;
+    const bidDiv = document.getElementById('bid_results');
+    if (this.lowestBidder === undefined) {
+      const userBid = document.createElement('div');
+      userBid.setAttribute('id', 'bidder');
+      userBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
+      bidDiv.appendChild(userBid);
+      this.lowestBidder = user;
+      this.lowestBid = bid;
+    } else {
+      const newUserBid = document.getElementById('bidder');
+      newUserBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
+      this.lowestBidder = user;
+      this.lowestBid = bid;
+    }
+  }
+
+  removeBids() {
+    // Clear bids in auction.
+    const bids = document.getElementById('auctions');
+    bids.innerHTML = '';
+    // remove timer.
+    this.currentTimer = undefined;
+    const timerDiv = document.getElementById('timer');
+    if (timerDiv !== null) {
+      timerDiv.remove();
+    }
+    // remove prompt for user with lowest bid for previous target.
+    const bidDiv = document.getElementById('bidder');
+    if (bidDiv !== null) {
+      bidDiv.remove();
+    }
+    this.lowestBidder = undefined;
+    this.lowestBid = undefined;
   }
 
   setupAuctionSocketHandlers() {
     this.socket.on('send_bid', this.addBid);
     this.socket.on('start_timer', this.startTimer);
     this.socket.on('lowest_bid_user', this.getLowestBidUser);
+    this.socket.on('get_selected_target', this.removeBids);
   }
 }
 let auction = undefined;
