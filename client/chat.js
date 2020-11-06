@@ -61,6 +61,43 @@ class Chat {
     scrollToBottom(messages);
   }
 
+  awardTargetToUser(user, target) {
+    const userName = user.toUpperCase();
+    const targetColor = target.color;
+    const targetShape = target.shape;
+    const div = document.getElementById('users');
+    const users = div.getElementsByTagName('li');
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].innerText === userName) {
+        const targetSpan = document.createElement('span');
+        if (targetColor === RED_TARGET) {
+          targetSpan.classList.add('red-target');
+        } else if (targetColor === GREEN_TARGET) {
+          targetSpan.classList.add('green-target');
+        } else if (targetColor === BLUE_TARGET) {
+          targetSpan.classList.add('blue-target');
+        } else if (targetColor === YELLOW_TARGET) {
+          targetSpan.classList.add('yellow-target');
+        } else if (targetColor === WILD_TARGET) {
+          targetSpan.classList.add('wild-target');
+        }
+
+        if (targetShape === SQUARE_TARGET) {
+          targetSpan.classList.add('square-target');
+        } else if (targetShape === CRICLE_TARGET) {
+          targetSpan.classList.add('circle-target');
+        } else if (targetShape === TRIANGLE_TARGET) {
+          targetSpan.classList.add('triangle-target');
+        } else if (targetShape === HEXAGON_TARGET) {
+          targetSpan.classList.add('hexagon-target');
+        } else if (targetShape === VORTEX_TARGET) {
+          targetSpan.classList.add('vortex-target');
+        }
+        users[i].appendChild(targetSpan);
+      }
+    }
+  }
+
   setupSocketHandlers() {
     this.socket.on('send_message', (message) => {
       this.addMessage(message);
@@ -76,6 +113,10 @@ class Chat {
     });
     this.socket.on('ping', (data) => {
       this.socket.emit('pong', data);
+    });
+    // Recieves the user that reached the target from server.
+    this.socket.on('get_user_and_reached_target', (userData, targetData) => {
+      this.awardTargetToUser(userData, targetData);
     });
   }
   requestChatHistory() {

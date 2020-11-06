@@ -57,11 +57,18 @@ class Auction {
         window.requestAnimationFrame(updateTimer);
       } else {
         timerDiv.innerHTML = `Time is Up! Stop bidding. Reveal the Path ${this.lowestBidder.toUpperCase()}.`;
+        // send to the server, the winner of the bid.
+        this.sendWinnerOfAuction(this.lowestBidder);
         timerDiv.style.backgroundColor = 'yellow';
         this.currentTimer = undefined;
       }
     };
     window.requestAnimationFrame(updateTimer);
+  }
+
+  sendWinnerOfAuction(lowestBidder) {
+    console.log('sending winner:', lowestBidder);
+    this.socket.emit('send_winner_of_auction', lowestBidder);
   }
 
   getLowestBidUser(user, bid) {

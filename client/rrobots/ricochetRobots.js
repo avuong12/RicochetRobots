@@ -23,6 +23,8 @@ class RicochetRobots {
     this.socket = socket;
     this.lowestBidSoFar = undefined;
     this.lowestBidderSoFar = undefined;
+    this.winnerOfAuction = undefined;
+    this.allowToMove = false;
     this.steps = 0;
   }
   startNewGame() {
@@ -59,18 +61,16 @@ class RicochetRobots {
     this.board.selectedRobotColor = selectedRobot;
   }
 
-  placeRobots() {
+  // Only allows the winner of the auction to select robots.
+  selectRobot() {
+    if (!this.allowToMove) {
+      return;
+    }
     let robots = this.board.getRobots();
     for (let key in robots) {
-      let robotRowPosition = robots[key].row;
-      let robotColumnPosition = robots[key].column;
-      let robotColor = robots[key].color;
-
-      let robotSpan = document.createElement('span');
-      robotSpan.setAttribute('class', 'sr-only');
-      robotSpan.textContent = 'R';
-      robotSpan.classList.toggle('robot');
-
+      let robotSpan = document.getElementById(
+        `${robots[key].row}, ${robots[key].column}`
+      );
       robotSpan.addEventListener('mouseup', (event) => {
         if (event.target.id === 'green-robot') {
           this.sendSelectedRobot(GREEN_ROBOT);
@@ -82,6 +82,20 @@ class RicochetRobots {
           this.sendSelectedRobot(YELLOW_ROBOT);
         }
       });
+    }
+  }
+
+  placeRobots() {
+    let robots = this.board.getRobots();
+    for (let key in robots) {
+      let robotRowPosition = robots[key].row;
+      let robotColumnPosition = robots[key].column;
+      let robotColor = robots[key].color;
+
+      let robotSpan = document.createElement('span');
+      robotSpan.setAttribute('class', 'sr-only');
+      robotSpan.textContent = 'R';
+      robotSpan.classList.toggle('robot');
 
       if (robotColor === GREEN_ROBOT) {
         robotSpan.id = 'green-robot';
@@ -254,11 +268,12 @@ class RicochetRobots {
     const endCell = { row: endRow, column: endColumn };
 
     // Check to see if the robot reached the target spot.
-    if (this.board.reachedTarget()) {
-      if (this.steps <= this.lowestBidderSoFar) {
-        this.sendTargetHasBeenReached(this.steps);
+    if (this.allowToMove && this.board.reachedTarget()) {
+      console.log('only I reached the target');
+      if (this.steps <= this.lowestBidSoFar) {
+        this.sendTargetHasBeenReached(this.steps, this.board.currentTarget);
       } else {
-        this.sendSecondLowestBid();
+        this.sendNextLowestBid();
       }
     }
 
@@ -390,6 +405,7 @@ class RicochetRobots {
   }
 
   clearPath() {
+    this.steps = 0;
     let parentNode = document.getElementById('path-solution');
     parentNode.innerHTML = '';
   }
@@ -428,38 +444,6 @@ class RicochetRobots {
     }
     this.clearTracedPath();
     this.clearPath();
-  }
-
-  oneMinuteTimer() {
-    const updateTimer = () => {
-      let timerDiv = document.getElementById('timer');
-
-      if (this.currentTimer === undefined) {
-        timerDiv.innerHTML = '';
-        return;
-      }
-      // Subsequent time after the timer was pressed.
-      const currentTime = Math.floor(Date.now() / 1000);
-      const secondsRemaining = 60 - (currentTime - this.currentTimer);
-      if (secondsRemaining === 60) {
-        timerDiv.innerHTML = '1:00 min';
-        //
-        window.requestAnimationFrame(updateTimer);
-      } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
-        timerDiv.innerHTML = `0:${secondsRemaining} sec`;
-        window.requestAnimationFrame(updateTimer);
-      } else if (secondsRemaining < 10 && secondsRemaining > 0) {
-        timerDiv.innerHTML = `0:0${secondsRemaining} sec`;
-        window.requestAnimationFrame(updateTimer);
-      } else {
-        timerDiv.innerHTML = '';
-        alert('Time is Up! Bidder, Reveal the Path.');
-      }
-    };
-    // Tracks the time in which the timer was pressed.
-    this.currentTimer = Math.floor(Date.now() / 1000);
-    // oneMinuteTimer is return. RequestAnimation is called once.
-    window.requestAnimationFrame(updateTimer);
   }
 
   drawMove(robotColor, direction, ele) {
@@ -625,17 +609,20 @@ class RicochetRobots {
 
   // Get the robot moves.
   sendKeyDirection(keyDirection) {
+    if (!this.allowToMove) {
+      return;
+    }
     this.socket.emit('send_key_direction', keyDirection);
     return false;
   }
 
   // Send to server that the target has been reached.
-  sendTargetHasBeenReached(steps) {
-    this.socket.emit('send_target_has_been_reached', steps);
+  sendTargetHasBeenReached(steps, target) {
+    this.socket.emit('send_target_has_been_reached', steps, target);
     return false;
   }
 
-  sendSecondLowestBid() {}
+  sendNextLowestBid() {}
 
   setLowestBidUserInfo(user, bid) {
     this.lowestBidSoFar = bid;
@@ -646,6 +633,10 @@ class RicochetRobots {
     // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
       if (data) {
+        // clear the state of the board.
+        this.allowToMove = false;
+        this.lowestBidSoFar = undefined;
+        this.lowestBidderSoFar = undefined;
         this.clearPath();
         this.clearTracedPath();
         // clear target
@@ -671,8 +662,10 @@ class RicochetRobots {
       if (data) {
         this.clearTracedPath();
         this.clearPath();
-        this.lowestBidderSoFar = undefined;
+        // clear the state of the board.
+        this.allowToMove = false;
         this.lowestBidSoFar = undefined;
+        this.lowestBidderSoFar = undefined;
         // deselect here.
         if (this.board.getCurrentTarget() !== undefined) {
           this.toggleTargetHightlight();
@@ -703,6 +696,15 @@ class RicochetRobots {
       this.keyboardHandler(data);
     });
 
+    this.socket.on('get_user_to_reveal_path', (data) => {
+      if (data) {
+        console.log('only I can reveal the path');
+        this.winnerOfAuction = data;
+        this.allowToMove = true;
+        this.selectRobot();
+      }
+    });
+
     // Receives request to reset positions from server.
     this.socket.on('get_reset_positions', (data) => {
       if (data) {
@@ -713,11 +715,6 @@ class RicochetRobots {
     // Recieves lowest bid and lowest bidder from server.
     this.socket.on('lowest_bid_user', (userData, bidData) => {
       this.setLowestBidUserInfo(userData, bidData);
-    });
-
-    // Recieves the user that reached the target from server.
-    this.socket.on('get_user_that_reached_target', (data) => {
-      console.log(data);
     });
   }
 }

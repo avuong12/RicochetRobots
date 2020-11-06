@@ -36,6 +36,7 @@ app.use((req, res, next) => {
 
 let userNames = new Set();
 let socketIdToUsername = {};
+let userNameToSocketId = {};
 
 let chats = [];
 
@@ -47,6 +48,9 @@ let pickedTargets = [];
 let hasValidBid = false;
 let lowestBidSoFar = undefined;
 let lowestBidderSoFar = undefined;
+let winnerOfAuction = undefined;
+
+let claimedTargets = {};
 
 function sendHeartbeat() {
   setTimeout(sendHeartbeat, 8000);
@@ -64,6 +68,8 @@ io.on('connection', (socket) => {
     if (!userNames.has(name)) {
       userNames.add(name);
       socketIdToUsername[socket.id] = name;
+      userNameToSocketId[name] = socket.id;
+      console.log(userNameToSocketId);
       io.emit('set_username', name);
     } else {
       io.to(socket.id).emit('set_username', false);
@@ -135,6 +141,8 @@ io.on('connection', (socket) => {
       pickedTargets.push(targetCandidate);
       bids = [];
       lowestBidSoFar = undefined;
+      lowestBidderSoFar = undefined;
+      winnerOfAuction = undefined;
       hasValidBid = false;
       io.emit(
         'get_selected_target',
@@ -162,6 +170,9 @@ io.on('connection', (socket) => {
     targets = new Set();
     pickedTargets = [];
     lowestBidSoFar = undefined;
+    lowestBidderSoFar = undefined;
+    claimedTargets = {};
+    winnerOfAuction = undefined;
     io.emit('get_new_game', true);
   });
 
@@ -176,11 +187,24 @@ io.on('connection', (socket) => {
   });
 
   // Emits the user that made the lowest bid if target was reached.
-  socket.on('send_target_has_been_reached', (steps) => {
+  socket.on('send_target_has_been_reached', (steps, target) => {
     if (steps <= lowestBidSoFar) {
-      io.emit('get_lowestBider', lowestBidderSoFar);
+      claimedTargets[lowestBidderSoFar] = [];
+      claimedTargets[lowestBidderSoFar].push(target);
+      io.emit('get_user_and_reached_target', lowestBidderSoFar, target);
     } else {
-      io.emit('');
+      return false;
+    }
+  });
+
+  // Emits the user that won the auction.
+  socket.on('send_winner_of_auction', (lowestBidder) => {
+    if (lowestBidderSoFar === lowestBidder) {
+      winnerOfAuction = lowestBidder;
+      io.to(userNameToSocketId[winnerOfAuction]).emit(
+        'get_user_to_reveal_path',
+        winnerOfAuction
+      );
     }
   });
 });
