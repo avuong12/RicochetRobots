@@ -6,6 +6,7 @@ ul#users {
 }
 #users li {
   padding: 5px 10px;
+  display: flex;
 }
 #users li:nth-child(odd) {
   background: #eee;
@@ -29,4 +30,11 @@ form#username button {
   background: rgb(130, 224, 255);
   border: none;
   padding: 10px;
+}
+div.scores {
+  display: flex;
+  width: min-content;
+}
+span.won-target {
+  position: relative !important;
 }

@@ -662,10 +662,6 @@ class RicochetRobots {
       if (data) {
         this.clearTracedPath();
         this.clearPath();
-        // clear the state of the board.
-        this.allowToMove = false;
-        this.lowestBidSoFar = undefined;
-        this.lowestBidderSoFar = undefined;
         // deselect here.
         if (this.board.getCurrentTarget() !== undefined) {
           this.toggleTargetHightlight();
@@ -715,6 +711,14 @@ class RicochetRobots {
     // Recieves lowest bid and lowest bidder from server.
     this.socket.on('lowest_bid_user', (userData, bidData) => {
       this.setLowestBidUserInfo(userData, bidData);
+    });
+
+    // Recieves the user that reached the target from server.
+    this.socket.on('get_user_and_reached_target', (userData, targetData) => {
+      // clear the state of the board.
+      this.allowToMove = false;
+      this.lowestBidSoFar = undefined;
+      this.lowestBidderSoFar = undefined;
     });
   }
 }
