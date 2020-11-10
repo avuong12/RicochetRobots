@@ -125,6 +125,7 @@ class RicochetRobots {
         );
         let robotSpan = document.getElementById(`${robotIdMap[robotColor]}`);
         cellSpan.removeChild(robotSpan);
+        this.board.setValue(robotRowPosition, robotColumnPosition, EMPTY_CELL);
       }
     }
   }
@@ -654,6 +655,13 @@ class RicochetRobots {
       }
     });
 
+    // Receives the initial robots positions from server.
+    this.socket.on('get_initial_robots_positions', (data) => {
+      this.board.initializedRobotPositions(JSON.parse(data));
+      this.placeRobots();
+      this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    });
+
     // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
       if (data) {
@@ -674,13 +682,6 @@ class RicochetRobots {
           this.board.getRobots()
         );
       }
-    });
-
-    // Receives the initial robots positions from server.
-    this.socket.on('get_initial_robots_positions', (data) => {
-      this.board.initializedRobotPositions(JSON.parse(data));
-      this.placeRobots();
-      this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });
 
     // Receives the selected robot from server.
