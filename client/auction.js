@@ -67,7 +67,6 @@ class Auction {
   }
 
   sendWinnerOfAuction(lowestBidder) {
-    console.log('sending winner:', lowestBidder);
     this.socket.emit('send_winner_of_auction', lowestBidder);
   }
 

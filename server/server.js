@@ -186,25 +186,26 @@ io.on('connection', (socket) => {
     io.emit('get_reset_positions', reset);
   });
 
-  // Emits the user that made the lowest bid if target was reached.
-  socket.on('send_target_has_been_reached', (steps, target) => {
-    if (steps <= lowestBidSoFar) {
-      claimedTargets[lowestBidderSoFar] = [];
-      claimedTargets[lowestBidderSoFar].push(target);
-      io.emit('get_user_and_reached_target', lowestBidderSoFar, target);
-    } else {
-      return false;
-    }
-  });
-
   // Emits the user that won the auction.
   socket.on('send_winner_of_auction', (lowestBidder) => {
     if (lowestBidderSoFar === lowestBidder) {
       winnerOfAuction = lowestBidder;
+      io.emit('get_winner_of_auction', winnerOfAuction);
       io.to(userNameToSocketId[winnerOfAuction]).emit(
         'get_user_to_reveal_path',
         winnerOfAuction
       );
+    }
+  });
+
+  // Emits the user that made the lowest bid if target was reached.
+  socket.on('send_target_has_been_reached', (steps, target, winner) => {
+    if (steps <= lowestBidSoFar && winner === winnerOfAuction) {
+      claimedTargets[lowestBidderSoFar] = [];
+      claimedTargets[lowestBidderSoFar].push(target);
+      io.emit('get_user_and_reached_target', winnerOfAuction, target);
+    } else {
+      return false;
     }
   });
 });

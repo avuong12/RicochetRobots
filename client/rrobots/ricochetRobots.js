@@ -66,23 +66,17 @@ class RicochetRobots {
     if (!this.allowToMove) {
       return;
     }
-    let robots = this.board.getRobots();
-    for (let key in robots) {
-      let robotSpan = document.getElementById(
-        `${robots[key].row}, ${robots[key].column}`
-      );
-      robotSpan.addEventListener('mouseup', (event) => {
-        if (event.target.id === 'green-robot') {
-          this.sendSelectedRobot(GREEN_ROBOT);
-        } else if (event.target.id === 'red-robot') {
-          this.sendSelectedRobot(RED_ROBOT);
-        } else if (event.target.id === 'blue-robot') {
-          this.sendSelectedRobot(BLUE_ROBOT);
-        } else if (event.target.id === 'yellow-robot') {
-          this.sendSelectedRobot(YELLOW_ROBOT);
-        }
-      });
-    }
+    document.addEventListener('mouseup', (event) => {
+      if (event.target.id === 'green-robot' && this.allowToMove) {
+        this.sendSelectedRobot(GREEN_ROBOT);
+      } else if (event.target.id === 'red-robot' && this.allowToMove) {
+        this.sendSelectedRobot(RED_ROBOT);
+      } else if (event.target.id === 'blue-robot' && this.allowToMove) {
+        this.sendSelectedRobot(BLUE_ROBOT);
+      } else if (event.target.id === 'yellow-robot' && this.allowToMove) {
+        this.sendSelectedRobot(YELLOW_ROBOT);
+      }
+    });
   }
 
   placeRobots() {
@@ -269,9 +263,12 @@ class RicochetRobots {
 
     // Check to see if the robot reached the target spot.
     if (this.allowToMove && this.board.reachedTarget()) {
-      console.log('only I reached the target');
       if (this.steps <= this.lowestBidSoFar) {
-        this.sendTargetHasBeenReached(this.steps, this.board.currentTarget);
+        this.sendTargetHasBeenReached(
+          this.steps,
+          this.board.currentTarget,
+          this.winnerOfAuction
+        );
       } else {
         this.sendNextLowestBid();
       }
@@ -617,8 +614,8 @@ class RicochetRobots {
   }
 
   // Send to server that the target has been reached.
-  sendTargetHasBeenReached(steps, target) {
-    this.socket.emit('send_target_has_been_reached', steps, target);
+  sendTargetHasBeenReached(steps, target, winner) {
+    this.socket.emit('send_target_has_been_reached', steps, target, winner);
     return false;
   }
 
@@ -662,6 +659,11 @@ class RicochetRobots {
       if (data) {
         this.clearTracedPath();
         this.clearPath();
+        // clear the state of the board.
+        this.allowToMove = false;
+        this.lowestBidSoFar = undefined;
+        this.lowestBidderSoFar = undefined;
+        this.winnerOfAuction = undefined;
         // deselect here.
         if (this.board.getCurrentTarget() !== undefined) {
           this.toggleTargetHightlight();
@@ -692,15 +694,6 @@ class RicochetRobots {
       this.keyboardHandler(data);
     });
 
-    this.socket.on('get_user_to_reveal_path', (data) => {
-      if (data) {
-        console.log('only I can reveal the path');
-        this.winnerOfAuction = data;
-        this.allowToMove = true;
-        this.selectRobot();
-      }
-    });
-
     // Receives request to reset positions from server.
     this.socket.on('get_reset_positions', (data) => {
       if (data) {
@@ -708,17 +701,33 @@ class RicochetRobots {
       }
     });
 
-    // Recieves lowest bid and lowest bidder from server.
+    // Receives lowest bid and lowest bidder from server.
     this.socket.on('lowest_bid_user', (userData, bidData) => {
       this.setLowestBidUserInfo(userData, bidData);
     });
 
-    // Recieves the user that reached the target from server.
+    // Receives the winner of the auction from server.
+    this.socket.on('get_winner_of_auction', (winner) => {
+      this.winnerOfAuction = winner;
+    });
+
+    this.socket.on('get_user_to_reveal_path', (data) => {
+      if (data) {
+        if (this.winnerOfAuction === data) {
+          this.winnerOfAuction = data;
+          this.allowToMove = true;
+          this.selectRobot();
+        }
+      }
+    });
+
+    // Receives the user that reached the target from server.
     this.socket.on('get_user_and_reached_target', (userData, targetData) => {
       // clear the state of the board.
-      this.allowToMove = false;
-      this.lowestBidSoFar = undefined;
-      this.lowestBidderSoFar = undefined;
+      // this.allowToMove = false;
+      // this.lowestBidSoFar = undefined;
+      // this.lowestBidderSoFar = undefined;
+      // this.winnerOfAuction = undefined;
     });
   }
 }
