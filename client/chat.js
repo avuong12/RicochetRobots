@@ -9,6 +9,10 @@ class Chat {
       const usernames = document.getElementById('users');
       const newUsername = document.createElement('li');
       newUsername.innerHTML = allNames[i].toUpperCase();
+      const scores = document.createElement('div');
+      scores.setAttribute('class', 'scores');
+      scores.id = `${allNames[i]}'s targets`;
+      newUsername.appendChild(scores);
       usernames.appendChild(newUsername);
     }
   }

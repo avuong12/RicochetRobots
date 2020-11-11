@@ -208,6 +208,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     const userToRemove = socketIdToUsername[socket.id];
     userNames.delete(userToRemove);
+    delete socketIdToUsername[socket.id];
+    delete userNameToSocketId[userToRemove];
     io.emit('remove_user', userToRemove);
     console.log(`${socket.id} disconnected`);
   });
