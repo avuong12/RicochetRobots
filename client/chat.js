@@ -12,7 +12,7 @@ class Chat {
       newUsername.innerHTML = allNames[i].toUpperCase();
       const scores = document.createElement('div');
       scores.setAttribute('class', 'scores');
-      scores.id = `${allNames[i]}'s targets`;
+      scores.id = `${allNames[i].toUpperCase()}-targets`;
       newUsername.appendChild(scores);
       usernames.appendChild(newUsername);
     }
@@ -37,7 +37,7 @@ class Chat {
     newUsername.innerHTML = name.toUpperCase();
     const scores = document.createElement('div');
     scores.setAttribute('class', 'scores');
-    scores.id = `${name}'s targets`;
+    scores.id = `${name.toUpperCase()}-targets`;
     newUsername.appendChild(scores);
     usernames.appendChild(newUsername);
   }
@@ -89,7 +89,7 @@ class Chat {
   awardTargetToUser(user, target) {
     const targetColor = target.color;
     const targetShape = target.shape;
-    const targetDiv = document.getElementById(`${user}'s targets`);
+    const targetDiv = document.getElementById(`${user.toUpperCase()}-targets`);
     const targetSpan = document.createElement('span');
     targetSpan.setAttribute('class', 'won-target');
     if (targetColor === RED_TARGET) {
@@ -150,7 +150,25 @@ class Chat {
 
     // Recieves the user that has disconnected from server.
     this.socket.on('remove_user', (name) => {
-      this.deleteUserName(name);
+      if (name) {
+        this.deleteUserName(name);
+      }
+    });
+
+    // Recieves an emit to start new game from server.
+    this.socket.on('get_new_game', (data) => {
+      if (data) {
+        // remove targets in scoreboard.
+        let users = document.getElementById('users');
+        let allUsers = users.children;
+        for (let i = 0; i < allUsers.length; i++) {
+          let name = allUsers[i].innerText.toUpperCase();
+          let targetsNode = document.getElementById(`${name}-targets`);
+          while (targetsNode.firstChild) {
+            targetsNode.removeChild(targetsNode.firstChild);
+          }
+        }
+      }
     });
   }
   requestChatHistory() {

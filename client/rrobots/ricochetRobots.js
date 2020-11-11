@@ -278,6 +278,12 @@ class RicochetRobots {
     //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
   }
 
+  storeTargets(target) {
+    const targetColor = target.color;
+    const targetShape = target.shape;
+    this.board.wonTargets.add(`${targetColor}-${targetShape}`);
+  }
+
   getRobotsAsString() {
     return JSON.stringify(this.board.getRobots());
   }
@@ -630,6 +636,7 @@ class RicochetRobots {
   setupSocketHandlersForBoard() {
     // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
+      // TODO: make separate function to start new game.
       if (data) {
         // clear the state of the board.
         this.allowToMove = false;
@@ -642,6 +649,7 @@ class RicochetRobots {
           this.toggleTargetHightlight();
           this.board.removeTarget();
         }
+
         // Deselect the robot of the previous game.
         this.deselectRobot();
         this.board.selectedRobotColor = undefined;
@@ -652,6 +660,10 @@ class RicochetRobots {
         if (robots[GREEN_ROBOT].row !== undefined) {
           this.removeRobots();
         }
+
+        // clear won targets
+        this.board.wonTargets.clear();
+        // TODO: remove targets in scoreboard.
       }
     });
 
@@ -664,6 +676,7 @@ class RicochetRobots {
 
     // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
+      // TODO: make separate function to get next target.
       if (data) {
         this.clearTracedPath();
         this.clearPath();
@@ -724,11 +737,7 @@ class RicochetRobots {
 
     // Receives the user that reached the target from server.
     this.socket.on('get_user_and_reached_target', (userData, targetData) => {
-      // clear the state of the board.
-      // this.allowToMove = false;
-      // this.lowestBidSoFar = undefined;
-      // this.lowestBidderSoFar = undefined;
-      // this.winnerOfAuction = undefined;
+      this.storeTargets(targetData);
     });
   }
 }

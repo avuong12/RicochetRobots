@@ -202,8 +202,13 @@ io.on('connection', (socket) => {
   // Emits the user that made the lowest bid if target was reached.
   socket.on('send_target_has_been_reached', (steps, target, winner) => {
     if (steps <= lowestBidSoFar && winner === winnerOfAuction) {
-      claimedTargets[lowestBidderSoFar] = [];
-      claimedTargets[lowestBidderSoFar].push(target);
+      console.log(claimedTargets[lowestBidderSoFar]);
+      if (claimedTargets[lowestBidderSoFar] === undefined) {
+        claimedTargets[lowestBidderSoFar] = [target];
+      } else {
+        claimedTargets[lowestBidderSoFar].push(target);
+      }
+      console.log(claimedTargets);
       io.emit('get_user_and_reached_target', winnerOfAuction, target);
     } else {
       return false;

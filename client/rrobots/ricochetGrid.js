@@ -95,7 +95,7 @@ class RicochetGrid {
     this.targets = [];
 
     // A list of perviousTargets
-    this.previousTargets = [];
+    this.wonTargets = new Set();
 
     // The current Target.
     this.currentTarget = undefined;
@@ -209,28 +209,22 @@ class RicochetGrid {
   pickNextTargetCandidate() {
     let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
     let nextTargetCandidate = this.targets[randomTargetIdx];
-    while (this.previousTargets.includes(nextTargetCandidate)) {
+    let nextTargetCandidateColor = nextTargetCandidate.color;
+    let nextTargetCandidateShape = nextTargetCandidate.shape;
+    while (
+      this.wonTargets.has(
+        `${nextTargetCandidateColor}-${nextTargetCandidateShape}`
+      )
+    ) {
       randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
       nextTargetCandidate = this.targets[randomTargetIdx];
     }
     return nextTargetCandidate;
   }
 
-  // pickNextTarget function will return the next target.
-  pickNextTarget() {
-    let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
-    let currentTarget = this.targets[randomTargetIdx];
-    while (this.previousTargets.includes(currentTarget)) {
-      randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
-      currentTarget = this.targets[randomTargetIdx];
-    }
-    this.currentTarget = currentTarget;
-    this.previousTargets.push(currentTarget);
-  }
   // gets the target that is emitted from socket.
   selectedTarget(target) {
     this.currentTarget = JSON.parse(target);
-    this.previousTargets.push(JSON.parse(target));
   }
 
   // getCurrentTarget function returns the currentTarget.
