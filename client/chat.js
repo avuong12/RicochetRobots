@@ -8,6 +8,7 @@ class Chat {
     for (let i = 0; i < allNames.length; i++) {
       const usernames = document.getElementById('users');
       const newUsername = document.createElement('li');
+      newUsername.id = `${allNames[i]}-block`;
       newUsername.innerHTML = allNames[i].toUpperCase();
       const scores = document.createElement('div');
       scores.setAttribute('class', 'scores');
@@ -32,12 +33,18 @@ class Chat {
     }
     const usernames = document.getElementById('users');
     const newUsername = document.createElement('li');
+    newUsername.id = `${name}-block`;
     newUsername.innerHTML = name.toUpperCase();
     const scores = document.createElement('div');
     scores.setAttribute('class', 'scores');
     scores.id = `${name}'s targets`;
     newUsername.appendChild(scores);
     usernames.appendChild(newUsername);
+  }
+
+  highlightOwnUsername(name, color) {
+    const user = document.getElementById(`${name}-block`);
+    user.style.backgroundColor = color;
   }
 
   deleteUserName(name) {
@@ -112,21 +119,30 @@ class Chat {
   }
 
   setupSocketHandlers() {
-    this.socket.on('send_message', (message) => {
-      this.addMessage(message);
-    });
-    this.socket.on('set_username', (username) => {
-      this.addUserName(username);
-    });
-    this.socket.on('send_usernames', (usernames) => {
-      this.restoreUserNames(usernames);
-    });
-    this.socket.on('send_chat_history', (chats) => {
-      this.restoreMessagesHistory(chats);
-    });
     this.socket.on('ping', (data) => {
       this.socket.emit('pong', data);
     });
+
+    this.socket.on('send_message', (message) => {
+      this.addMessage(message);
+    });
+
+    this.socket.on('set_username', (username) => {
+      this.addUserName(username);
+    });
+
+    this.socket.on('highlight_own_username', (username, color) => {
+      this.highlightOwnUsername(username, color);
+    });
+
+    this.socket.on('send_usernames', (usernames) => {
+      this.restoreUserNames(usernames);
+    });
+
+    this.socket.on('send_chat_history', (chats) => {
+      this.restoreMessagesHistory(chats);
+    });
+
     // Recieves the user that reached the target from server.
     this.socket.on('get_user_and_reached_target', (userData, targetData) => {
       this.awardTargetToUser(userData, targetData);

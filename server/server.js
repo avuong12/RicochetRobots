@@ -71,6 +71,11 @@ io.on('connection', (socket) => {
       userNameToSocketId[name] = socket.id;
       console.log(userNameToSocketId);
       io.emit('set_username', name);
+      io.to(socket.id).emit(
+        'highlight_own_username',
+        name,
+        'lightgoldenrodyellow'
+      );
     } else {
       io.to(socket.id).emit('set_username', false);
     }
