@@ -36,6 +36,16 @@ class Chat {
     usernames.appendChild(newUsername);
   }
 
+  deleteUserName(name) {
+    const usernames = document.getElementById('users');
+    const names = usernames.children;
+    for (let i = 0; i < names.length; i++) {
+      if (names[i].innerText === name.toUpperCase()) {
+        usernames.removeChild(names[i]);
+      }
+    }
+  }
+
   restoreMessagesHistory(chats) {
     const chatHistory = JSON.parse(chats);
     for (let i = 0; i < chatHistory.length; i++) {
@@ -116,6 +126,11 @@ class Chat {
     // Recieves the user that reached the target from server.
     this.socket.on('get_user_and_reached_target', (userData, targetData) => {
       this.awardTargetToUser(userData, targetData);
+    });
+
+    // Recieves the user that has disconnected from server.
+    this.socket.on('remove_user', (name) => {
+      this.deleteUserName(name);
     });
   }
   requestChatHistory() {

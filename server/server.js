@@ -83,10 +83,6 @@ io.on('connection', (socket) => {
     io.emit('send_message', `${socketIdToUsername[socket.id]}: ${msg}`);
   });
 
-  socket.on('disconnect', () => {
-    console.log(`${socket.id} disconnected`);
-  });
-
   // Emits all users connected to socket only to new client when requested.
   socket.on('get_usernames', () => {
     const names = Object.values(socketIdToUsername);
@@ -207,6 +203,13 @@ io.on('connection', (socket) => {
     } else {
       return false;
     }
+  });
+
+  socket.on('disconnect', () => {
+    const userToRemove = socketIdToUsername[socket.id];
+    userNames.delete(userToRemove);
+    io.emit('remove_user', userToRemove);
+    console.log(`${socket.id} disconnected`);
   });
 });
 // Keeps the socket active in order to use socket.id.
