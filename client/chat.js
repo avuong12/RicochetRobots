@@ -118,6 +118,23 @@ class Chat {
     targetDiv.appendChild(targetSpan);
   }
 
+  restoreAllTargets(allTargetsWon) {
+    const targets = JSON.parse(allTargetsWon);
+    for (let users in targets) {
+      for (let i = 0; i < targets[users].length; i++) {
+        this.awardTargetToUser(users, targets[users][i]);
+      }
+    }
+  }
+
+  restoreTargetsForIncomingUser(user, targetsWon) {
+    console.log('restoring for incoming user');
+    const targets = JSON.parse(targetsWon);
+    for (let i = 0; i < targets.length; i++) {
+      this.awardTargetToUser(user, targets[i]);
+    }
+  }
+
   setupSocketHandlers() {
     this.socket.on('ping', (data) => {
       this.socket.emit('pong', data);
@@ -146,6 +163,14 @@ class Chat {
     // Recieves the user that reached the target from server.
     this.socket.on('get_user_and_reached_target', (userData, targetData) => {
       this.awardTargetToUser(userData, targetData);
+    });
+
+    this.socket.on('send_all_targets_won', (targetsWon) => {
+      this.restoreAllTargets(targetsWon);
+    });
+
+    this.socket.on('sned_targets_won', (user, targetsWon) => {
+      this.restoreTargetsForIncomingUser(user, targetsWon);
     });
 
     // Recieves the user that has disconnected from server.

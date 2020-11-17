@@ -65,19 +65,35 @@ io.on('connection', (socket) => {
   });
   // Setting a new user.
   socket.on('set_username', (name) => {
-    if (!userNames.has(name)) {
-      userNames.add(name);
-      socketIdToUsername[socket.id] = name;
-      userNameToSocketId[name] = socket.id;
+    const newName = name.toLowerCase();
+    if (!userNames.has(newName)) {
+      userNames.add(newName);
+      socketIdToUsername[socket.id] = newName;
+      userNameToSocketId[newName] = socket.id;
       console.log(userNameToSocketId);
-      io.emit('set_username', name);
+      io.emit('set_username', newName);
       io.to(socket.id).emit(
         'highlight_own_username',
-        name,
+        newName,
         'lightgoldenrodyellow'
       );
     } else {
       io.to(socket.id).emit('set_username', false);
+    }
+    // restore all targets won by all users to new user.
+    io.to(socket.id).emit(
+      'send_all_targets_won',
+      JSON.stringify(claimedTargets)
+    );
+    // restore the targets previously won by the user rejoining.
+    if (claimedTargets.hasOwnProperty(newName)) {
+      const targetsPreviouslyWon = claimedTargets[newName];
+      console.log('sending user target');
+      socket.broadcast.emit(
+        'send_targets_won',
+        newName,
+        JSON.stringify(targetsPreviouslyWon)
+      );
     }
   });
 
