@@ -634,6 +634,18 @@ class RicochetRobots {
   }
 
   setupSocketHandlersForBoard() {
+    this.socket.on('set_up_game', (data) => {
+      const game = JSON.parse(data);
+      if (game.robots !== undefined) {
+        this.board.robots = game.robots;
+        this.placeRobots();
+      }
+      if (game.currentTarget !== undefined) {
+        this.board.currentTarget = game.currentTarget;
+        this.toggleTargetHightlight();
+      }
+    });
+
     // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
       // TODO: make separate function to start new game.

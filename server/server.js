@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const app = express();
+const Game = require('./gameToClient');
 
 app.use(
   session({
@@ -34,12 +35,6 @@ app.use((req, res, next) => {
   next(); // needed to continue through express middleware
 });
 
-let userNames = new Set();
-let socketIdToUsername = {};
-let userNameToSocketId = {};
-
-let chats = [];
-
 let bids = [];
 
 let targets = new Set();
@@ -52,6 +47,8 @@ let winnerOfAuction = undefined;
 
 let claimedTargets = {};
 
+let game = new Game();
+
 function sendHeartbeat() {
   setTimeout(sendHeartbeat, 8000);
   io.emit('ping', { beat: 1 });
@@ -59,6 +56,7 @@ function sendHeartbeat() {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected`);
+  io.to(socket.id).emit('set_up_game', JSON.stringify(game));
 
   socket.on('pong', (data) => {
     console.log('Pong received from client');
@@ -66,11 +64,11 @@ io.on('connection', (socket) => {
   // Setting a new user.
   socket.on('set_username', (name) => {
     const newName = name.toLowerCase();
-    if (!userNames.has(newName)) {
-      userNames.add(newName);
-      socketIdToUsername[socket.id] = newName;
-      userNameToSocketId[newName] = socket.id;
-      console.log(userNameToSocketId);
+    if (!game.usernames.has(newName)) {
+      game.usernames.add(newName);
+      game.socketIdToUsername[socket.id] = newName;
+      game.usernameToSocketId[newName] = socket.id;
+      console.log(game.usernameToSocketId);
       io.emit('set_username', newName);
       io.to(socket.id).emit(
         'highlight_own_username',
@@ -83,11 +81,11 @@ io.on('connection', (socket) => {
     // restore all targets won by all users to new user.
     io.to(socket.id).emit(
       'send_all_targets_won',
-      JSON.stringify(claimedTargets)
+      JSON.stringify(game.claimedTargets)
     );
     // restore the targets previously won by the user rejoining.
     if (claimedTargets.hasOwnProperty(newName)) {
-      const targetsPreviouslyWon = claimedTargets[newName];
+      const targetsPreviouslyWon = game.claimedTargets[newName];
       console.log('sending user target');
       socket.broadcast.emit(
         'send_targets_won',
@@ -99,27 +97,30 @@ io.on('connection', (socket) => {
 
   // Sending a new message.
   socket.on('send_message', (msg) => {
-    const chatEntry = { user: socketIdToUsername[socket.id], message: msg };
-    chats.push(chatEntry);
-    io.emit('send_message', `${socketIdToUsername[socket.id]}: ${msg}`);
+    const chatEntry = {
+      user: game.socketIdToUsername[socket.id],
+      message: msg,
+    };
+    game.chats.push(chatEntry);
+    io.emit('send_message', `${game.socketIdToUsername[socket.id]}: ${msg}`);
   });
 
   // Emits all users connected to socket only to new client when requested.
   socket.on('get_usernames', () => {
-    const names = Object.values(socketIdToUsername);
+    const names = Object.values(game.socketIdToUsername);
     io.to(socket.id).emit('send_usernames', JSON.stringify(names));
   });
 
   // Emits chat history only to new client when requested.
   socket.on('get_chat_history', () => {
-    io.to(socket.id).emit('send_chat_history', JSON.stringify(chats));
+    io.to(socket.id).emit('send_chat_history', JSON.stringify(game.chats));
   });
 
   // Submitting a bid.
   socket.on('send_bid', (bid) => {
     const numberBid = Number(bid);
-    io.emit('send_bid', `${socketIdToUsername[socket.id]}: ${bid} steps`);
-    const bidEntry = { user: socketIdToUsername[socket.id], bid: bid };
+    io.emit('send_bid', `${game.socketIdToUsername[socket.id]}: ${bid} steps`);
+    const bidEntry = { user: game.socketIdToUsername[socket.id], bid: bid };
     // order the bids in decreasing order, relative to the lowestBidSoFar.
     if (lowestBidSoFar === undefined && hasValidBid === false) {
       bids.push(bidEntry);
@@ -208,7 +209,7 @@ io.on('connection', (socket) => {
     if (lowestBidderSoFar === lowestBidder) {
       winnerOfAuction = lowestBidder;
       io.emit('get_winner_of_auction', winnerOfAuction);
-      io.to(userNameToSocketId[winnerOfAuction]).emit(
+      io.to(game.usernameToSocketId[winnerOfAuction]).emit(
         'get_user_to_reveal_path',
         winnerOfAuction
       );
@@ -232,10 +233,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    const userToRemove = socketIdToUsername[socket.id];
-    userNames.delete(userToRemove);
-    delete socketIdToUsername[socket.id];
-    delete userNameToSocketId[userToRemove];
+    const userToRemove = game.socketIdToUsername[socket.id];
+    game.usernames.delete(userToRemove);
+    delete game.socketIdToUsername[socket.id];
+    delete game.usernameToSocketId[userToRemove];
     io.emit('remove_user', userToRemove);
     console.log(`${socket.id} disconnected`);
   });

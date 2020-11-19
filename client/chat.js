@@ -169,7 +169,7 @@ class Chat {
       this.restoreAllTargets(targetsWon);
     });
 
-    this.socket.on('sned_targets_won', (user, targetsWon) => {
+    this.socket.on('send_targets_won', (user, targetsWon) => {
       this.restoreTargetsForIncomingUser(user, targetsWon);
     });
 
