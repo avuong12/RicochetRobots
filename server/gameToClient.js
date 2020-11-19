@@ -17,6 +17,18 @@ class Game {
     this.usernameToSocketId = {};
     this.chats = [];
   }
+
+  setNewGame() {
+    this.targets = new Set();
+    this.pickedTargets = [];
+    this.lowestBidSoFar = undefined;
+    this.lowestBidderSoFar = undefined;
+    this.claimedTargets = {};
+  }
+
+  setInitialRobotPositions(robotPositions) {
+    this.robots = robotPositions;
+  }
 }
 
 module.exports = Game;

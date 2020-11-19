@@ -633,12 +633,43 @@ class RicochetRobots {
     this.lowestBidderSoFar = user;
   }
 
+  resetGame(game) {
+    // clear the state of the board.
+    this.allowToMove = false;
+    this.lowestBidSoFar = game.lowestBidSoFar;
+    this.lowestBidderSoFar = game.lowestBidderSoFar;
+    this.clearPath();
+    this.clearTracedPath();
+    // clear target
+    if (this.board.getCurrentTarget() !== undefined) {
+      this.toggleTargetHightlight();
+      this.board.removeTarget();
+    }
+
+    // Deselect the robot of the previous game.
+    this.deselectRobot();
+    this.board.selectedRobotColor = game.selectedRobotColor;
+    this.initalRobotsPositions = undefined;
+
+    // clear robots
+    let robots = this.board.getRobots();
+    if (robots[GREEN_ROBOT].row !== undefined) {
+      this.removeRobots();
+    }
+
+    // clear won targets
+    this.board.wonTargets.clear();
+  }
+
   setupSocketHandlersForBoard() {
     this.socket.on('set_up_game', (data) => {
       const game = JSON.parse(data);
       if (game.robots !== undefined) {
-        this.board.robots = game.robots;
+        this.board.initializedRobotPositions(game.robots);
         this.placeRobots();
+        this.initialRobotsPositions = this.deepCopyRobots(
+          this.board.getRobots()
+        );
       }
       if (game.currentTarget !== undefined) {
         this.board.currentTarget = game.currentTarget;
@@ -648,40 +679,16 @@ class RicochetRobots {
 
     // Receives initation from server to start a new game.
     this.socket.on('get_new_game', (data) => {
-      // TODO: make separate function to start new game.
+      const game = JSON.parse(data);
       if (data) {
-        // clear the state of the board.
-        this.allowToMove = false;
-        this.lowestBidSoFar = undefined;
-        this.lowestBidderSoFar = undefined;
-        this.clearPath();
-        this.clearTracedPath();
-        // clear target
-        if (this.board.getCurrentTarget() !== undefined) {
-          this.toggleTargetHightlight();
-          this.board.removeTarget();
-        }
-
-        // Deselect the robot of the previous game.
-        this.deselectRobot();
-        this.board.selectedRobotColor = undefined;
-        this.initalRobotsPositions = undefined;
-
-        // clear robots
-        let robots = this.board.getRobots();
-        if (robots[GREEN_ROBOT].row !== undefined) {
-          this.removeRobots();
-        }
-
-        // clear won targets
-        this.board.wonTargets.clear();
-        // TODO: remove targets in scoreboard.
+        this.resetGame(game);
       }
     });
 
     // Receives the initial robots positions from server.
     this.socket.on('get_initial_robots_positions', (data) => {
-      this.board.initializedRobotPositions(JSON.parse(data));
+      const game = JSON.parse(data);
+      this.board.initializedRobotPositions(game.robots);
       this.placeRobots();
       this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     });

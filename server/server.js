@@ -56,7 +56,6 @@ function sendHeartbeat() {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected`);
-  io.to(socket.id).emit('set_up_game', JSON.stringify(game));
 
   socket.on('pong', (data) => {
     console.log('Pong received from client');
@@ -75,6 +74,7 @@ io.on('connection', (socket) => {
         newName,
         'lightgoldenrodyellow'
       );
+      io.to(socket.id).emit('set_up_game', JSON.stringify(game));
     } else {
       io.to(socket.id).emit('set_username', false);
     }
@@ -171,10 +171,8 @@ io.on('connection', (socket) => {
 
   // Emits inital robots positions to all users.
   socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
-    io.emit(
-      'get_initial_robots_positions',
-      JSON.stringify(initialRobotsPositions)
-    );
+    game.setInitialRobotPositions(initialRobotsPositions);
+    io.emit('get_initial_robots_positions', JSON.stringify(game));
   });
 
   // Emits selected robot to all users.
@@ -183,15 +181,12 @@ io.on('connection', (socket) => {
   });
 
   // Emits boolean to start new game.
-  socket.on('send_new_game', () => {
-    // clear picked targets;
-    targets = new Set();
-    pickedTargets = [];
-    lowestBidSoFar = undefined;
-    lowestBidderSoFar = undefined;
-    claimedTargets = {};
-    winnerOfAuction = undefined;
-    io.emit('get_new_game', true);
+  socket.on('send_new_game', (set) => {
+    if (!set) {
+      return;
+    }
+    game.setNewGame();
+    io.emit('get_new_game', JSON.stringify(game));
   });
 
   // Emits key direction to all users.
