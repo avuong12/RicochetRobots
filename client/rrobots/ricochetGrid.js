@@ -224,7 +224,7 @@ class RicochetGrid {
 
   // gets the target that is emitted from socket.
   selectedTarget(target) {
-    this.currentTarget = JSON.parse(target);
+    this.currentTarget = target;
   }
 
   // getCurrentTarget function returns the currentTarget.

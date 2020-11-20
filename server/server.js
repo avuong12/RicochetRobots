@@ -153,20 +153,11 @@ io.on('connection', (socket) => {
 
   //Emits selected target to all users.
   socket.on('send_selected_target', (targetCandidate) => {
-    if (targets.has(targetCandidate)) {
+    if (!game.setCurrentTarget(targetCandidate)) {
       io.emit('get_selected_target', false);
-    } else {
-      pickedTargets.push(targetCandidate);
-      bids = [];
-      lowestBidSoFar = undefined;
-      lowestBidderSoFar = undefined;
-      winnerOfAuction = undefined;
-      hasValidBid = false;
-      io.emit(
-        'get_selected_target',
-        JSON.stringify(pickedTargets[pickedTargets.length - 1])
-      );
+      return false;
     }
+    io.emit('get_selected_target', JSON.stringify(game));
   });
 
   // Emits inital robots positions to all users.

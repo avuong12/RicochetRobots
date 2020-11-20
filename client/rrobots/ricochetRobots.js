@@ -633,19 +633,28 @@ class RicochetRobots {
     this.lowestBidderSoFar = user;
   }
 
-  resetGame(game) {
-    // clear the state of the board.
+  // clear the state of the board.
+  resetSateOfAuction(game) {
     this.allowToMove = false;
     this.lowestBidSoFar = game.lowestBidSoFar;
     this.lowestBidderSoFar = game.lowestBidderSoFar;
+    this.winnerOfAuction = game.winnerOfAuction;
+  }
+
+  // clear target
+  deselectTarget() {
+    if (this.board.getCurrentTarget() === undefined) {
+      return;
+    }
+    this.toggleTargetHightlight();
+    this.board.removeTarget();
+  }
+
+  resetGame(game) {
+    this.resetSateOfAuction(game);
     this.clearPath();
     this.clearTracedPath();
-    // clear target
-    if (this.board.getCurrentTarget() !== undefined) {
-      this.toggleTargetHightlight();
-      this.board.removeTarget();
-    }
-
+    this.deselectTarget();
     // Deselect the robot of the previous game.
     this.deselectRobot();
     this.board.selectedRobotColor = game.selectedRobotColor;
@@ -695,20 +704,17 @@ class RicochetRobots {
 
     // Receives next target from server.
     this.socket.on('get_selected_target', (data) => {
-      // TODO: make separate function to get next target.
+      if (!data) {
+        // get another target candidate.
+        this.selectNewTarget();
+      }
       if (data) {
+        const game = JSON.parse(data);
+        this.resetSateOfAuction(game);
         this.clearTracedPath();
         this.clearPath();
-        // clear the state of the board.
-        this.allowToMove = false;
-        this.lowestBidSoFar = undefined;
-        this.lowestBidderSoFar = undefined;
-        this.winnerOfAuction = undefined;
-        // deselect here.
-        if (this.board.getCurrentTarget() !== undefined) {
-          this.toggleTargetHightlight();
-        }
-        this.board.selectedTarget(data);
+        this.deselectTarget();
+        this.board.selectedTarget(game.currentTarget);
         this.toggleTargetHightlight();
         this.initalRobotsPositions = this.deepCopyRobots(
           this.board.getRobots()
