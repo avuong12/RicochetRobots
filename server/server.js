@@ -35,14 +35,9 @@ app.use((req, res, next) => {
   next(); // needed to continue through express middleware
 });
 
-let bids = [];
-
 let targets = new Set();
 let pickedTargets = [];
 
-let hasValidBid = false;
-let lowestBidSoFar = undefined;
-let lowestBidderSoFar = undefined;
 let winnerOfAuction = undefined;
 
 let claimedTargets = {};
@@ -63,17 +58,14 @@ io.on('connection', (socket) => {
   // Setting a new user.
   socket.on('set_username', (name) => {
     const newName = name.toLowerCase();
-    if (!game.usernames.has(newName)) {
-      game.usernames.add(newName);
-      game.socketIdToUsername[socket.id] = newName;
-      game.usernameToSocketId[newName] = socket.id;
-      console.log(game.usernameToSocketId);
+    if (game.addUser(socket.id, newName) !== false) {
       io.emit('set_username', newName);
       io.to(socket.id).emit(
         'highlight_own_username',
         newName,
         'lightgoldenrodyellow'
       );
+      console.log('users:', game.socketIdToUsername);
       io.to(socket.id).emit('set_up_game', JSON.stringify(game));
     } else {
       io.to(socket.id).emit('set_username', false);
@@ -119,35 +111,14 @@ io.on('connection', (socket) => {
   // Submitting a bid.
   socket.on('send_bid', (bid) => {
     const numberBid = Number(bid);
-    io.emit('send_bid', `${game.socketIdToUsername[socket.id]}: ${bid} steps`);
-    const bidEntry = { user: game.socketIdToUsername[socket.id], bid: bid };
-    // order the bids in decreasing order, relative to the lowestBidSoFar.
-    if (lowestBidSoFar === undefined && hasValidBid === false) {
-      bids.push(bidEntry);
-      lowestBidSoFar = Number(bids[bids.length - 1].bid);
-      lowestBidderSoFar = bids[bids.length - 1].user;
+    const submission = game.submitBid(socket.id, numberBid);
+    io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
+    const bidData = game.bidResults(socket.id, numberBid);
+    if (bidData.initiateTimer) {
       io.emit('start_timer', true);
-      io.emit('lowest_bid_user', lowestBidderSoFar, lowestBidSoFar);
-      hasValidBid = true;
-    } else if (numberBid < lowestBidSoFar && hasValidBid === true) {
-      bids.push(bidEntry);
-      lowestBidSoFar = Number(bids[bids.length - 1].bid);
-      lowestBidderSoFar = bids[bids.length - 1].user;
-      io.emit('lowest_bid_user', lowestBidderSoFar, lowestBidSoFar);
-    } else if (numberBid >= lowestBidSoFar && hasValidBid === true) {
-      if (bid >= Number(bids[0].bid)) {
-        bids.unshift(bidEntry);
-      } else {
-        for (let i = 0; i <= bids.length - 2; i++) {
-          if (
-            numberBid < Number(bids[i].bid) &&
-            numberBid >= Number(bids[i + 1].bid)
-          ) {
-            bids.splice(i + 1, 0, bidEntry);
-            break;
-          }
-        }
-      }
+      io.emit('lowest_bid_user', bidData.lowestBidder, bid.lowestBid);
+    } else {
+      io.emit('lowest_bid_user', bidData.lowestBidder, bid.lowestBid);
     }
   });
 
