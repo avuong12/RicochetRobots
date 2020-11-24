@@ -101,6 +101,14 @@ class Game {
       lowestBid: this.lowestBidSoFar,
     };
   }
+
+  removeUser(socketId) {
+    const userToRemove = this.socketIdToUsername[socketId];
+    this.usernames.delete(userToRemove);
+    delete this.socketIdToUsername[socketId];
+    delete this.usernameToSocketId[userToRemove];
+    return userToRemove;
+  }
 }
 
 module.exports = Game;

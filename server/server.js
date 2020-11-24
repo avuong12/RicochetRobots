@@ -190,10 +190,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    const userToRemove = game.socketIdToUsername[socket.id];
-    game.usernames.delete(userToRemove);
-    delete game.socketIdToUsername[socket.id];
-    delete game.usernameToSocketId[userToRemove];
+    const userToRemove = game.removeUser(socket.id);
     io.emit('remove_user', userToRemove);
     console.log(`${socket.id} disconnected`);
   });
