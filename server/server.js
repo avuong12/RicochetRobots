@@ -87,39 +87,16 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Sending a new message.
-  socket.on('send_message', (msg) => {
-    const chatEntry = {
-      user: game.socketIdToUsername[socket.id],
-      message: msg,
-    };
-    game.chats.push(chatEntry);
-    io.emit('send_message', `${game.socketIdToUsername[socket.id]}: ${msg}`);
-  });
-
   // Emits all users connected to socket only to new client when requested.
   socket.on('get_usernames', () => {
     const names = Object.values(game.socketIdToUsername);
     io.to(socket.id).emit('send_usernames', JSON.stringify(names));
   });
 
-  // Emits chat history only to new client when requested.
-  socket.on('get_chat_history', () => {
-    io.to(socket.id).emit('send_chat_history', JSON.stringify(game.chats));
-  });
-
-  // Submitting a bid.
-  socket.on('send_bid', (bid) => {
-    const numberBid = Number(bid);
-    const submission = game.submitBid(socket.id, numberBid);
-    io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
-    const bidData = game.bidResults(socket.id, numberBid);
-    if (bidData.initiateTimer) {
-      io.emit('start_timer', true);
-      io.emit('lowest_bid_user', bidData.lowestBidder, bid.lowestBid);
-    } else {
-      io.emit('lowest_bid_user', bidData.lowestBidder, bid.lowestBid);
-    }
+  // Emits inital robots positions to all users.
+  socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
+    game.setInitialRobotPositions(initialRobotsPositions);
+    io.emit('get_initial_robots_positions', JSON.stringify(game));
   });
 
   //Emits selected target to all users.
@@ -131,10 +108,30 @@ io.on('connection', (socket) => {
     io.emit('get_selected_target', JSON.stringify(game));
   });
 
-  // Emits inital robots positions to all users.
-  socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
-    game.setInitialRobotPositions(initialRobotsPositions);
-    io.emit('get_initial_robots_positions', JSON.stringify(game));
+  // Submitting a bid.
+  socket.on('send_bid', (bid) => {
+    const numberBid = Number(bid);
+    const submission = game.submitBid(socket.id, numberBid);
+    io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
+    const bidData = game.bidResults(socket.id, numberBid);
+    if (bidData.initiateTimer) {
+      io.emit('start_timer', true);
+      io.emit('lowest_bid_user', bidData.lowestBidder, bidData.lowestBid);
+    } else {
+      io.emit('lowest_bid_user', bidData.lowestBidder, bidData.lowestBid);
+    }
+  });
+
+  // Emits the user that won the auction.
+  socket.on('send_winner_of_auction', (lowestBidder) => {
+    if (game.lowestBidderSoFar === lowestBidder) {
+      winnerOfAuction = lowestBidder;
+      io.emit('get_winner_of_auction', winnerOfAuction);
+      io.to(game.usernameToSocketId[winnerOfAuction]).emit(
+        'get_user_to_reveal_path',
+        winnerOfAuction
+      );
+    }
   });
 
   // Emits selected robot to all users.
@@ -161,18 +158,6 @@ io.on('connection', (socket) => {
     io.emit('get_reset_positions', reset);
   });
 
-  // Emits the user that won the auction.
-  socket.on('send_winner_of_auction', (lowestBidder) => {
-    if (lowestBidderSoFar === lowestBidder) {
-      winnerOfAuction = lowestBidder;
-      io.emit('get_winner_of_auction', winnerOfAuction);
-      io.to(game.usernameToSocketId[winnerOfAuction]).emit(
-        'get_user_to_reveal_path',
-        winnerOfAuction
-      );
-    }
-  });
-
   // Emits the user that made the lowest bid if target was reached.
   socket.on('send_target_has_been_reached', (steps, target, winner) => {
     if (steps <= lowestBidSoFar && winner === winnerOfAuction) {
@@ -187,6 +172,21 @@ io.on('connection', (socket) => {
     } else {
       return false;
     }
+  });
+
+  // Emits chat history only to new client when requested.
+  socket.on('get_chat_history', () => {
+    io.to(socket.id).emit('send_chat_history', JSON.stringify(game.chats));
+  });
+
+  // Sending a new message.
+  socket.on('send_message', (msg) => {
+    const chatEntry = {
+      user: game.socketIdToUsername[socket.id],
+      message: msg,
+    };
+    game.chats.push(chatEntry);
+    io.emit('send_message', `${game.socketIdToUsername[socket.id]}: ${msg}`);
   });
 
   socket.on('disconnect', () => {

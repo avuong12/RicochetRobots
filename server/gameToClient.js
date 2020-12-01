@@ -79,26 +79,13 @@ class Game {
         lowestBid: this.lowestBidSoFar,
       };
     }
-    if (bid < this.lowestBidSoFar && this.hasValidBid === true) {
-      this.bids.push(bidEntry);
-      this.lowestBidSoFar = this.bids[this.bids.length - 1].bid;
-      this.lowestBidderSoFar = this.bids[this.bids.length - 1].user;
-    } else if (bid >= this.lowestBidSoFar && this.hasValidBid === true) {
-      if (bid >= this.bids[0].bid) {
-        this.bids.unshift(bidEntry);
-      } else {
-        for (let i = 0; i <= this.bids.length - 2; i++) {
-          if (bid < this.bids[i].bid && bid >= this.bids[i + 1].bid) {
-            this.bids.splice(i + 1, 0, bidEntry);
-            break;
-          }
-        }
-      }
+    if (this.hasValidBid === true) {
+      this.bids = this.insertionSort(this.bids, bidEntry);
     }
     return {
       initiateTimer: false,
-      lowestBidder: this.lowestBidderSoFar,
-      lowestBid: this.lowestBidSoFar,
+      lowestBidder: this.bids[this.bids.length - 1].user,
+      lowestBid: this.bids[this.bids.length - 1].bid,
     };
   }
 
@@ -109,6 +96,49 @@ class Game {
     delete this.usernameToSocketId[userToRemove];
     return userToRemove;
   }
+
+  insertionSort(bids, input) {
+    // Place the bid in order with claimedTargets inconsideration.
+    let numberOfTargets = 0;
+    if (this.claimedTargets[input.user] !== undefined) {
+      numberOfTargets = this.claimedTargets[input.user].length;
+    }
+    for (let i = bids.length - 1; i >= 0; i--) {
+      if (input.bid < bids[i].bid) {
+        bids.push(0);
+        // input gets placed ahead of nums[i] and all nums move back by one.
+        moveDown(bids, i);
+        bids[i + 1] = input;
+        break;
+      }
+      if (i === 0) {
+        bids.push(0);
+        moveDown(bids, i);
+        bids[i] = input;
+      }
+      if (input.bid === bids[i].bid) {
+        let k = i;
+        while (input.bid === bids[k].bid) {
+          const numberOfOppTargets = this.claimedTargets[bids[k].user].length;
+          if (numberOfOppTargets > numberOfTargets) {
+            bids.push(0);
+            moveDown(bids, k);
+            bids[k + 1] = input;
+            break;
+          }
+          k--;
+        }
+      }
+    }
+    return bids;
+  }
 }
 
 module.exports = Game;
+
+function moveDown(bids, pointer) {
+  for (let j = bids.length - 2; j >= pointer; j--) {
+    let last = bids[j];
+    bids[j + 1] = last;
+  }
+}
