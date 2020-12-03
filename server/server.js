@@ -110,7 +110,6 @@ io.on('connection', (socket) => {
     const submission = game.submitBid(socket.id, numberBid);
     io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
     if (game.logBids(socket.id, numberBid)) {
-      io.to(socket.id).emit('initiate_auction', true);
       io.emit('start_timer', true);
     } else {
       return;
@@ -123,8 +122,7 @@ io.on('connection', (socket) => {
     const winningAuction = game.getAuctionWinner();
     const auctionWinner = winningAuction.winner;
     const auctionBid = winningAuction.bid;
-    // TODO: fix. sending mutliple instances for winningauction. Check that third user bids are being registered.
-    io.emit('send_winner_of_auction', auctionWinner, auctionBid);
+    io.to(socket.id).emit('send_winner_of_auction', auctionWinner, auctionBid);
     io.to(game.usernameToSocketId[auctionWinner]).emit(
       'get_user_to_reveal_path',
       auctionWinner
@@ -132,7 +130,8 @@ io.on('connection', (socket) => {
   });
 
   // Emits selected robot to all users.
-  socket.on('send_selectedRobot', (selectedRobot) => {
+  socket.on('send_selectedRobot', (robot) => {
+    const selectedRobot = game.setSelectedRobot(robot);
     io.emit('get_selected_robot', selectedRobot);
   });
 

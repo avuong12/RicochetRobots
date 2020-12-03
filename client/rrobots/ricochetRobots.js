@@ -21,8 +21,6 @@ class RicochetRobots {
     this.pathCellArray = [];
     this.currentTimer = undefined;
     this.socket = socket;
-    this.lowestBidSoFar = undefined;
-    this.lowestBidderSoFar = undefined;
     this.winnerOfAuction = undefined;
     this.allowToMove = false;
     this.steps = 0;
@@ -636,8 +634,6 @@ class RicochetRobots {
   // clear the state of the board.
   resetSateOfAuction(game) {
     this.allowToMove = false;
-    this.lowestBidSoFar = game.lowestBidSoFar;
-    this.lowestBidderSoFar = game.lowestBidderSoFar;
     this.winnerOfAuction = game.winnerOfAuction;
   }
 

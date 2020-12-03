@@ -113,6 +113,11 @@ class Game {
     return { winner: this.winnerOfAuction, bid: this.winningBid };
   }
 
+  setSelectedRobot(robot) {
+    this.selectedRobotColor = robot;
+    return this.selectedRobotColor;
+  }
+
   verifyTargetWinner(steps, target, name) {
     if (steps > this.lowestBidSoFar || name !== this.winnerOfAuction) {
       // assign winnerOfAuction to next bidder in bids.
@@ -127,47 +132,6 @@ class Game {
       }
     }
     return this.winnerOfAuction;
-  }
-
-  insertionSort(bids, input) {
-    // Place the bid in order with claimedTargets inconsideration.
-    let numberOfTargets = 0;
-    if (this.claimedTargets[input.user] !== undefined) {
-      numberOfTargets = this.claimedTargets[input.user].length;
-    }
-    for (let i = bids.length - 1; i >= 0; i--) {
-      if (input.bid < bids[i].bid) {
-        bids.push(0);
-        // input gets placed ahead of nums[i] and all nums move back by one.
-        moveDown(bids, i);
-        bids[i + 1] = input;
-        break;
-      }
-      if (i === 0) {
-        bids.push(0);
-        moveDown(bids, i);
-        bids[i] = input;
-      }
-      if (input.bid === bids[i].bid) {
-        let k = i;
-        while (input.bid === bids[k].bid) {
-          let numberOfOppTargets = 0;
-          if (this.claimedTargets[bids[k]] !== undefined) {
-            numberOfOppTargets = this.claimedTargets[bids[k].user].length;
-          }
-          if (numberOfOppTargets > numberOfTargets) {
-            bids.push(0);
-            moveDown(bids, k);
-            bids[k + 1] = input;
-            break;
-          } else if (number) k--;
-          if (bids[k] === undefined) {
-            break;
-          }
-        }
-      }
-    }
-    return bids;
   }
 
   removeUser(socketId) {

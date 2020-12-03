@@ -4,7 +4,6 @@ class Auction {
     this.currentTimer = undefined;
     this.winningBidder = undefined;
     this.winningBid = undefined;
-    this.firstBidder = false;
   }
 
   makeBid(event) {
@@ -31,6 +30,9 @@ class Auction {
       return false;
     }
     const bidDiv = document.getElementById('bid_results');
+    const startTimerDiv = document.createElement('div');
+    startTimerDiv.innerText = 'TIMER STARTED!';
+    bidDiv.appendChild(startTimerDiv);
     const timerDiv = document.createElement('div');
     bidDiv.appendChild(timerDiv);
     const updateTimer = () => {
@@ -44,10 +46,8 @@ class Auction {
       const currentTime = Math.floor(Date.now() / 1000);
       const secondsRemaining = 60 - (currentTime - this.currentTimer);
       if (secondsRemaining === 60) {
-        timerDiv.innerHTML =
-          '1 MINUTE TIMER STARTED! Time Remaining to Place Bid: 1:00 min';
+        timerDiv.innerHTML = 'Time Remaining to Place Bid: 1:00 min';
         timerDiv.style.backgroundColor = 'yellow';
-        //
         window.requestAnimationFrame(updateTimer);
       } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
         timerDiv.innerHTML = `Time Remaining to Place Bid: 0:${secondsRemaining} sec`;
@@ -58,19 +58,13 @@ class Auction {
         timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else {
-        timerDiv.innerHTML = 'Time is Up! Stop bidding.';
-        if (this.firstBidder) {
-          this.getWinnerOfAuction();
-        }
-        timerDiv.style.backgroundColor = 'yellow';
+        startTimerDiv.innerHTML = 'Time is Up! Stop bidding.';
+        this.getWinnerOfAuction();
+        bidDiv.removeChild(timerDiv);
         this.currentTimer = undefined;
       }
     };
     window.requestAnimationFrame(updateTimer);
-  }
-
-  setInitiateAuction(initiate) {
-    this.firstBidder = initiate;
   }
 
   announceWinner(name, steps) {
@@ -90,14 +84,9 @@ class Auction {
     bids.innerHTML = '';
     // remove timer.
     this.currentTimer = undefined;
-    const timerDiv = document.getElementById('timer');
-    if (timerDiv !== null) {
-      timerDiv.remove();
-    }
-    // remove prompt for user with lowest bid for previous target.
-    const bidDiv = document.getElementById('bidder');
-    if (bidDiv !== null) {
-      bidDiv.remove();
+    const bidResults = document.getElementById('bid_results');
+    while (bidResults.firstChild) {
+      bidResults.removeChild(bidResults.firstChild);
     }
     this.winningBidder = undefined;
     this.winningBid = undefined;
@@ -109,12 +98,7 @@ class Auction {
       this.addBid(bid);
     });
     this.socket.on('start_timer', (bidStarted) => {
-      console.log('start timer:', bidStarted);
       this.startTimer(bidStarted);
-    });
-    this.socket.on('initiate_auction', (initiate) => {
-      console.log('initiate:', initiate);
-      this.setInitiateAuction(initiate);
     });
     this.socket.on('send_winner_of_auction', (user, bid) => {
       this.announceWinner(user, bid);
