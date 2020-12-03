@@ -2,8 +2,9 @@ class Auction {
   constructor(socket) {
     this.socket = socket;
     this.currentTimer = undefined;
-    this.lowestBidder = undefined;
-    this.lowestBid = undefined;
+    this.winningBidder = undefined;
+    this.winningBid = undefined;
+    this.firstBidder = false;
   }
 
   makeBid(event) {
@@ -43,7 +44,8 @@ class Auction {
       const currentTime = Math.floor(Date.now() / 1000);
       const secondsRemaining = 60 - (currentTime - this.currentTimer);
       if (secondsRemaining === 60) {
-        timerDiv.innerHTML = 'Time Remaining to Place Bid: 1:00 min';
+        timerDiv.innerHTML =
+          '1 MINUTE TIMER STARTED! Time Remaining to Place Bid: 1:00 min';
         timerDiv.style.backgroundColor = 'yellow';
         //
         window.requestAnimationFrame(updateTimer);
@@ -56,9 +58,10 @@ class Auction {
         timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else {
-        timerDiv.innerHTML = `Time is Up! Stop bidding. Reveal the Path ${this.lowestBidder.toUpperCase()}.`;
-        // send to the server, the winner of the bid.
-        this.sendWinnerOfAuction(this.lowestBidder);
+        timerDiv.innerHTML = 'Time is Up! Stop bidding.';
+        if (this.firstBidder) {
+          this.getWinnerOfAuction();
+        }
         timerDiv.style.backgroundColor = 'yellow';
         this.currentTimer = undefined;
       }
@@ -66,27 +69,19 @@ class Auction {
     window.requestAnimationFrame(updateTimer);
   }
 
-  sendWinnerOfAuction(lowestBidder) {
-    this.socket.emit('send_winner_of_auction', lowestBidder);
+  setInitiateAuction(initiate) {
+    this.firstBidder = initiate;
   }
 
-  getLowestBidUser(user, bid) {
-    const bidDiv = document.getElementById('bid_results');
-    if (this.lowestBidder === undefined) {
-      const userBid = document.createElement('div');
-      userBid.setAttribute('id', 'bidder');
-      userBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
-      bidDiv.appendChild(userBid);
-      this.lowestBidder = user;
+  announceWinner(name, steps) {
+    const auctionDiv = document.getElementById('bid_results');
+    const auctionWinnerDiv = document.createElement('div');
+    auctionWinnerDiv.innerText = `Auction Winner: ${name.toUpperCase()}. Reveal Path in ${steps} Steps.`;
+    auctionDiv.appendChild(auctionWinnerDiv);
+  }
 
-      this.lowestBid = bid;
-    } else {
-      const newUserBid = document.getElementById('bidder');
-      newUserBid.innerHTML = `Number of steps to beat: ${bid}. Made by ${user.toUpperCase()}.`;
-      this.lowestBidder = user;
-
-      this.lowestBid = bid;
-    }
+  getWinnerOfAuction() {
+    this.socket.emit('get_winner_of_auction');
   }
 
   removeBids() {
@@ -104,8 +99,9 @@ class Auction {
     if (bidDiv !== null) {
       bidDiv.remove();
     }
-    this.lowestBidder = undefined;
-    this.lowestBid = undefined;
+    this.winningBidder = undefined;
+    this.winningBid = undefined;
+    this.firstBidder = false;
   }
 
   setupAuctionSocketHandlers() {
@@ -113,10 +109,15 @@ class Auction {
       this.addBid(bid);
     });
     this.socket.on('start_timer', (bidStarted) => {
+      console.log('start timer:', bidStarted);
       this.startTimer(bidStarted);
     });
-    this.socket.on('lowest_bid_user', (user, bid) => {
-      this.getLowestBidUser(user, bid);
+    this.socket.on('initiate_auction', (initiate) => {
+      console.log('initiate:', initiate);
+      this.setInitiateAuction(initiate);
+    });
+    this.socket.on('send_winner_of_auction', (user, bid) => {
+      this.announceWinner(user, bid);
     });
     this.socket.on('get_selected_target', () => {
       this.removeBids();

@@ -38,10 +38,6 @@ app.use((req, res, next) => {
 let targets = new Set();
 let pickedTargets = [];
 
-let winnerOfAuction = undefined;
-
-let claimedTargets = {};
-
 let game = new Game();
 
 function sendHeartbeat() {
@@ -76,7 +72,7 @@ io.on('connection', (socket) => {
       JSON.stringify(game.claimedTargets)
     );
     // restore the targets previously won by the user rejoining.
-    if (claimedTargets.hasOwnProperty(newName)) {
+    if (game.claimedTargets.hasOwnProperty(newName)) {
       const targetsPreviouslyWon = game.claimedTargets[newName];
       console.log('sending user target');
       socket.broadcast.emit(
@@ -113,25 +109,26 @@ io.on('connection', (socket) => {
     const numberBid = Number(bid);
     const submission = game.submitBid(socket.id, numberBid);
     io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
-    const bidData = game.bidResults(socket.id, numberBid);
-    if (bidData.initiateTimer) {
+    if (game.logBids(socket.id, numberBid)) {
+      io.to(socket.id).emit('initiate_auction', true);
       io.emit('start_timer', true);
-      io.emit('lowest_bid_user', bidData.lowestBidder, bidData.lowestBid);
     } else {
-      io.emit('lowest_bid_user', bidData.lowestBidder, bidData.lowestBid);
+      return;
     }
   });
 
   // Emits the user that won the auction.
-  socket.on('send_winner_of_auction', (lowestBidder) => {
-    if (game.lowestBidderSoFar === lowestBidder) {
-      winnerOfAuction = lowestBidder;
-      io.emit('get_winner_of_auction', winnerOfAuction);
-      io.to(game.usernameToSocketId[winnerOfAuction]).emit(
-        'get_user_to_reveal_path',
-        winnerOfAuction
-      );
-    }
+  socket.on('get_winner_of_auction', () => {
+    game.sortBids();
+    const winningAuction = game.getAuctionWinner();
+    const auctionWinner = winningAuction.winner;
+    const auctionBid = winningAuction.bid;
+    // TODO: fix. sending mutliple instances for winningauction. Check that third user bids are being registered.
+    io.emit('send_winner_of_auction', auctionWinner, auctionBid);
+    io.to(game.usernameToSocketId[auctionWinner]).emit(
+      'get_user_to_reveal_path',
+      auctionWinner
+    );
   });
 
   // Emits selected robot to all users.
@@ -160,18 +157,8 @@ io.on('connection', (socket) => {
 
   // Emits the user that made the lowest bid if target was reached.
   socket.on('send_target_has_been_reached', (steps, target, winner) => {
-    if (steps <= lowestBidSoFar && winner === winnerOfAuction) {
-      console.log(claimedTargets[lowestBidderSoFar]);
-      if (claimedTargets[lowestBidderSoFar] === undefined) {
-        claimedTargets[lowestBidderSoFar] = [target];
-      } else {
-        claimedTargets[lowestBidderSoFar].push(target);
-      }
-      console.log(claimedTargets);
-      io.emit('get_user_and_reached_target', winnerOfAuction, target);
-    } else {
-      return false;
-    }
+    const roundWinner = game.verifyTargetWinner(steps, target, winner);
+    io.emit('get_user_and_reached_target', roundWinner, target);
   });
 
   // Emits chat history only to new client when requested.

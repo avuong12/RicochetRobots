@@ -8,8 +8,7 @@ class Game {
     this.selectedRobotColor = undefined;
     this.hasValidBid = false;
     this.bids = [];
-    this.lowestBidSoFar = undefined;
-    this.lowestBidderSoFar = undefined;
+    this.winningBid = undefined;
     this.winnerOfAuction = undefined;
     this.wonTargets = new Set();
     this.claimedTargets = {};
@@ -27,8 +26,7 @@ class Game {
     this.selectedRobotColor = undefined;
     this.hasValidBid = false;
     this.bids = [];
-    this.lowestBidSoFar = undefined;
-    this.lowestBidderSoFar = undefined;
+    this.winningBid = undefined;
     this.winnerOfAuction = undefined;
     this.wonTargets = new Set();
     this.claimedTargets = {};
@@ -66,35 +64,69 @@ class Game {
     return { user: this.socketIdToUsername[socketId], bid: bid };
   }
 
-  bidResults(socketId, bid) {
-    const bidEntry = { user: this.socketIdToUsername[socketId], bid: bid };
-    if (this.lowestBidSoFar === undefined && this.hasValidBid === false) {
-      this.bids.push(bidEntry);
-      this.lowestBidSoFar = this.bids[this.bids.length - 1].bid;
-      this.lowestBidderSoFar = this.bids[this.bids.length - 1].user;
+  logBids(socketId, bid) {
+    const bidEntry = {
+      user: this.socketIdToUsername[socketId],
+      bid: bid,
+      time: Date.now(),
+    };
+    if (this.claimedTargets[bidEntry.user] === undefined) {
+      bidEntry.wonTargets = 0;
+    } else {
+      bidEntry.wonTargets = this.claimedTargets[bidEntry.user].length;
+    }
+    this.bids.push(bidEntry);
+    if (this.hasValidBid === false) {
       this.hasValidBid = true;
-      return {
-        initiateTimer: true,
-        lowestBidder: this.lowestBidderSoFar,
-        lowestBid: this.lowestBidSoFar,
-      };
+      return true;
     }
     if (this.hasValidBid === true) {
-      this.bids = this.insertionSort(this.bids, bidEntry);
+      return false;
     }
-    return {
-      initiateTimer: false,
-      lowestBidder: this.bids[this.bids.length - 1].user,
-      lowestBid: this.bids[this.bids.length - 1].bid,
-    };
   }
 
-  removeUser(socketId) {
-    const userToRemove = this.socketIdToUsername[socketId];
-    this.usernames.delete(userToRemove);
-    delete this.socketIdToUsername[socketId];
-    delete this.usernameToSocketId[userToRemove];
-    return userToRemove;
+  sortBids() {
+    const bids = this.bids;
+    let lower = 0;
+    let upper = bids.length - 1;
+    for (let i = lower; i < upper; i++) {
+      for (let j = upper; j > lower; j--) {
+        if (bids[j].bid > bids[j - 1].bid) {
+          swap(bids, j, j - 1);
+        } else if (bids[j].bid === bids[j - 1].bid) {
+          if (bids[j].wonTargets > bids[j - 1].wonTargets) {
+            swap(bids, j, j - 1);
+          } else if (bids[j].wonTargets === bids[j - 1].wonTargets) {
+            if (bids[j].time > bids[j - 1].time) {
+              swap(bids, j, j - 1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  getAuctionWinner() {
+    const winningBidEntry = this.bids[this.bids.length - 1];
+    this.winnerOfAuction = winningBidEntry.user;
+    this.winningBid = winningBidEntry.bid;
+    return { winner: this.winnerOfAuction, bid: this.winningBid };
+  }
+
+  verifyTargetWinner(steps, target, name) {
+    if (steps > this.lowestBidSoFar || name !== this.winnerOfAuction) {
+      // assign winnerOfAuction to next bidder in bids.
+      // TODO: return next bidder.
+      return false;
+    }
+    if (steps <= this.lowestBidSoFar && name === this.winnerOfAuction) {
+      if (this.claimedTargets[name] === undefined) {
+        this.claimedTargets[name] = [target];
+      } else {
+        this.claimedTargets[name].push(target);
+      }
+    }
+    return this.winnerOfAuction;
   }
 
   insertionSort(bids, input) {
@@ -119,26 +151,38 @@ class Game {
       if (input.bid === bids[i].bid) {
         let k = i;
         while (input.bid === bids[k].bid) {
-          const numberOfOppTargets = this.claimedTargets[bids[k].user].length;
+          let numberOfOppTargets = 0;
+          if (this.claimedTargets[bids[k]] !== undefined) {
+            numberOfOppTargets = this.claimedTargets[bids[k].user].length;
+          }
           if (numberOfOppTargets > numberOfTargets) {
             bids.push(0);
             moveDown(bids, k);
             bids[k + 1] = input;
             break;
+          } else if (number) k--;
+          if (bids[k] === undefined) {
+            break;
           }
-          k--;
         }
       }
     }
     return bids;
   }
+
+  removeUser(socketId) {
+    const userToRemove = this.socketIdToUsername[socketId];
+    this.usernames.delete(userToRemove);
+    delete this.socketIdToUsername[socketId];
+    delete this.usernameToSocketId[userToRemove];
+    return userToRemove;
+  }
 }
 
 module.exports = Game;
 
-function moveDown(bids, pointer) {
-  for (let j = bids.length - 2; j >= pointer; j--) {
-    let last = bids[j];
-    bids[j + 1] = last;
-  }
+function swap(arr, a, b) {
+  const temp = arr[a];
+  arr[a] = arr[b];
+  arr[b] = temp;
 }

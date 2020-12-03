@@ -746,7 +746,7 @@ class RicochetRobots {
     });
 
     // Receives the winner of the auction from server.
-    this.socket.on('get_winner_of_auction', (winner) => {
+    this.socket.on('send_winner_of_auction', (winner) => {
       this.winnerOfAuction = winner;
     });
 
