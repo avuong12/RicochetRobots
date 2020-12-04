@@ -262,15 +262,11 @@ class RicochetRobots {
 
     // Check to see if the robot reached the target spot.
     if (this.allowToMove && this.board.reachedTarget()) {
-      if (this.steps <= this.lowestBidSoFar) {
-        this.sendTargetHasBeenReached(
-          this.steps,
-          this.board.currentTarget,
-          this.winnerOfAuction
-        );
-      } else {
-        this.sendNextLowestBid();
-      }
+      this.sendTargetHasBeenReached(
+        this.steps,
+        this.board.currentTarget,
+        this.winnerOfAuction
+      );
     }
 
     //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
@@ -736,14 +732,10 @@ class RicochetRobots {
       }
     });
 
-    // Receives lowest bid and lowest bidder from server.
-    this.socket.on('lowest_bid_user', (userData, bidData) => {
-      this.setLowestBidUserInfo(userData, bidData);
-    });
-
     // Receives the winner of the auction from server.
     this.socket.on('send_winner_of_auction', (winner) => {
       this.winnerOfAuction = winner;
+      this.allowToMove = false;
     });
 
     this.socket.on('get_user_to_reveal_path', (data) => {

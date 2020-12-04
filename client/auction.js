@@ -58,9 +58,9 @@ class Auction {
         timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else {
-        startTimerDiv.innerHTML = 'Time is Up! Stop bidding.';
         this.getWinnerOfAuction();
         bidDiv.removeChild(timerDiv);
+        bidDiv.removeChild(startTimerDiv);
         this.currentTimer = undefined;
       }
     };
@@ -69,9 +69,13 @@ class Auction {
 
   announceWinner(name, steps) {
     const auctionDiv = document.getElementById('bid_results');
-    const auctionWinnerDiv = document.createElement('div');
-    auctionWinnerDiv.innerText = `Auction Winner: ${name.toUpperCase()}. Reveal Path in ${steps} Steps.`;
-    auctionDiv.appendChild(auctionWinnerDiv);
+    if (auctionDiv.hasChildNodes()) {
+      auctionDiv.firstChild.innerText = `Too Many Steps. The Next Auction Winner: ${name.toUpperCase()}. Reveal Path in ${steps} Steps.`;
+    } else {
+      const auctionWinnerDiv = document.createElement('div');
+      auctionWinnerDiv.innerText = `Times Up! Stop Bidding. Auction Winner: ${name.toUpperCase()}. Reveal Path in ${steps} Steps.`;
+      auctionDiv.appendChild(auctionWinnerDiv);
+    }
   }
 
   getWinnerOfAuction() {

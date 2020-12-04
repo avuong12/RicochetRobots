@@ -35,9 +35,6 @@ app.use((req, res, next) => {
   next(); // needed to continue through express middleware
 });
 
-let targets = new Set();
-let pickedTargets = [];
-
 let game = new Game();
 
 function sendHeartbeat() {
@@ -157,6 +154,17 @@ io.on('connection', (socket) => {
   // Emits the user that made the lowest bid if target was reached.
   socket.on('send_target_has_been_reached', (steps, target, winner) => {
     const roundWinner = game.verifyTargetWinner(steps, target, winner);
+    if (!roundWinner) {
+      const nextAuctionWinner = game.getNextLowestBidder();
+      const nextWinner = nextAuctionWinner.winner;
+      const nextBid = nextAuctionWinner.bid;
+      io.emit('send_winner_of_auction', nextWinner, nextBid);
+      io.emit('get_reset_positions', true);
+      io.to(game.usernameToSocketId[nextWinner]).emit(
+        'get_user_to_reveal_path',
+        nextWinner
+      );
+    }
     io.emit('get_user_and_reached_target', roundWinner, target);
   });
 

@@ -113,18 +113,25 @@ class Game {
     return { winner: this.winnerOfAuction, bid: this.winningBid };
   }
 
+  getNextLowestBidder() {
+    this.bids.pop();
+    const nextEntry = this.bids[this.bids.length - 1];
+    this.winnerOfAuction = nextEntry.user;
+    this.winningBid = nextEntry.bid;
+    return { winner: this.winnerOfAuction, bid: this.winningBid };
+  }
+
   setSelectedRobot(robot) {
     this.selectedRobotColor = robot;
     return this.selectedRobotColor;
   }
 
   verifyTargetWinner(steps, target, name) {
-    if (steps > this.lowestBidSoFar || name !== this.winnerOfAuction) {
+    if (steps > this.winningBid || name !== this.winnerOfAuction) {
       // assign winnerOfAuction to next bidder in bids.
-      // TODO: return next bidder.
       return false;
     }
-    if (steps <= this.lowestBidSoFar && name === this.winnerOfAuction) {
+    if (steps <= this.winningBid && name === this.winnerOfAuction) {
       if (this.claimedTargets[name] === undefined) {
         this.claimedTargets[name] = [target];
       } else {
