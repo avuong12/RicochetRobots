@@ -93,12 +93,14 @@ io.on('connection', (socket) => {
   });
 
   //Emits selected target to all users.
-  socket.on('send_selected_target', (targetCandidate) => {
-    if (!game.setCurrentTarget(targetCandidate)) {
-      io.emit('get_selected_target', false);
+  socket.on('get_selected_target', () => {
+    const targetCandidate = game.ricochetRobots.selectNewTarget();
+    if (!targetCandidate) {
+      // no new candiates;
       return false;
     }
-    io.emit('get_selected_target', JSON.stringify(game));
+    game.setCurrentTarget(targetCandidate);
+    io.emit('send_selected_target', JSON.stringify(game));
   });
 
   // Submitting a bid.

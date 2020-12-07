@@ -1,5 +1,8 @@
+const RicochetRobots = require('./rrobotsToClient');
+
 class Game {
   constructor() {
+    this.ricochetRobots = new RicochetRobots();
     this.robots = undefined;
     this.currentTarget = undefined;
     // May not need targets or pickedTargets.
@@ -37,14 +40,9 @@ class Game {
   }
 
   setCurrentTarget(targetCandidate) {
-    if (this.wonTargets.has(targetCandidate)) {
-      return false;
-    }
     this.pickedTargets.push(targetCandidate);
     this.currentTarget = targetCandidate;
     this.bids = [];
-    this.lowestBidSoFar = undefined;
-    this.lowestBidderSoFar = undefined;
     this.winnerOfAuction = undefined;
     this.hasValidBid = false;
     return true;

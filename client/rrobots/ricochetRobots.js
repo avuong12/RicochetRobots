@@ -31,10 +31,7 @@ class RicochetRobots {
     this.getInitialRobotsPositions();
   }
   selectNewTarget() {
-    // get a candidate for the next target. Do not set currentTarget;
-    let nextTargetCandidate = this.board.pickNextTargetCandidate();
-    // send candidate target to server.
-    this.sendSelectedTarget(nextTargetCandidate);
+    this.getSelectedTarget();
   }
 
   getInitialRobotsPositions() {
@@ -588,8 +585,8 @@ class RicochetRobots {
   }
 
   // Request the server to let all players know the next target.
-  sendSelectedTarget(targetCandidate) {
-    this.socket.emit('send_selected_target', targetCandidate);
+  getSelectedTarget() {
+    this.socket.emit('get_selected_target');
     return false;
   }
 
@@ -695,7 +692,7 @@ class RicochetRobots {
     });
 
     // Receives next target from server.
-    this.socket.on('get_selected_target', (data) => {
+    this.socket.on('send_selected_target', (data) => {
       if (!data) {
         // get another target candidate.
         this.selectNewTarget();
