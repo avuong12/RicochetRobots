@@ -27,17 +27,12 @@ class RicochetRobots {
   }
   startNewGame() {
     // Reset the board.
-    this.sendNewGame();
+    this.getNewGame();
     this.getInitialRobotsPositions();
   }
   selectNewTarget() {
     this.getSelectedTarget();
   }
-
-  // getInitialRobotsPositions() {
-  //   let robotsPositions = this.board.initializedRobotPositionsCandidate();
-  //   this.sendInitialRobotsPositions(robotsPositions);
-  // }
 
   // Deselect the previousely selected robot.
   deselectRobot() {
@@ -53,7 +48,6 @@ class RicochetRobots {
     let robotId = robotIdMap[selectedRobot];
     let newlySelectedRobot = document.getElementById(robotId);
     newlySelectedRobot.classList.toggle('selected-robot');
-    this.board.selectedRobotColor = selectedRobot;
   }
 
   // Only allows the winner of the auction to select robots.
@@ -579,8 +573,8 @@ class RicochetRobots {
     }
   }
   // Request the server to initiate a new game.
-  sendNewGame() {
-    this.socket.emit('send_new_game', true);
+  getNewGame() {
+    this.socket.emit('get_new_game', true);
     return false;
   }
 
@@ -673,10 +667,16 @@ class RicochetRobots {
         this.board.currentTarget = game.currentTarget;
         this.toggleTargetHightlight();
       }
+      if (game.selectedRobotColor !== undefined) {
+        this.board.selectedRobotColor = game.selectedRobotColor;
+        const selectedRobot = this.board.selectedRobotColor;
+        // highlight selected robot.
+        this.selectedRobot(selectedRobot);
+      }
     });
 
     // Receives initation from server to start a new game.
-    this.socket.on('get_new_game', (data) => {
+    this.socket.on('set_new_game', (data) => {
       const game = JSON.parse(data);
       if (data) {
         this.resetGame(game);

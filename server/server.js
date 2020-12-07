@@ -44,10 +44,10 @@ function sendHeartbeat() {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected`);
-
   socket.on('pong', (data) => {
     console.log('Pong received from client');
   });
+
   // Setting a new user.
   socket.on('set_username', (name) => {
     const newName = name.toLowerCase();
@@ -60,6 +60,7 @@ io.on('connection', (socket) => {
       );
       console.log('users:', game.socketIdToUsername);
       io.to(socket.id).emit('set_up_game', JSON.stringify(game));
+      // TODO: incoming user should also see timer and results if joining in during an auction.'
     } else {
       io.to(socket.id).emit('set_username', false);
     }
@@ -86,15 +87,15 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('send_usernames', JSON.stringify(names));
   });
 
-  // Emits inital robots positions to all users.
+  // Server initialized robot positions and place robots on the board. Emits inital robots positions to all users.
   socket.on('get_inital_robots_positions', () => {
     const initialRobotsPositions = game.ricochetRobots.board.initializedRobotPositionsCandidate();
-    game.ricochetRobots.board.initializedRobotPositions();
+    game.ricochetRobots.board.initializedRobotPositions(initialRobotsPositions);
     game.setInitialRobotPositions(initialRobotsPositions);
     io.emit('send_initial_robots_positions', JSON.stringify(game));
   });
 
-  //Emits selected target to all users.
+  // Server selects the target and sets target. Emits selected target to all users.
   socket.on('get_selected_target', () => {
     const targetCandidate = game.ricochetRobots.selectNewTarget();
     if (!targetCandidate) {
@@ -130,7 +131,7 @@ io.on('connection', (socket) => {
     );
   });
 
-  // Emits selected robot to all users.
+  // Server recieves the selected robot from the client. Emits selected robot to all users.
   socket.on('send_selectedRobot', (robot) => {
     const selectedRobot = game.setSelectedRobot(robot);
     io.emit('get_selected_robot', selectedRobot);

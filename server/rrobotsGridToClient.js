@@ -154,7 +154,7 @@ class Grid {
   }
   // robotPosition function will set the row and column for the input color of robot. While loop. Keep generating row and column number until you find an empty cell.
   initializedRobotPositionsCandidate() {
-    let robots = JSON.parse(JSON.stringify(this.robots));
+    let robots = this.robots;
     for (let key in robots) {
       let row = this.generateRandomNumber(this.rows);
       let column = this.generateRandomNumber(this.columns);
