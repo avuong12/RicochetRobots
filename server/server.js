@@ -87,9 +87,11 @@ io.on('connection', (socket) => {
   });
 
   // Emits inital robots positions to all users.
-  socket.on('send_inital_robots_positions', (initialRobotsPositions) => {
+  socket.on('get_inital_robots_positions', () => {
+    const initialRobotsPositions = game.ricochetRobots.board.initializedRobotPositionsCandidate();
+    game.ricochetRobots.board.initializedRobotPositions();
     game.setInitialRobotPositions(initialRobotsPositions);
-    io.emit('get_initial_robots_positions', JSON.stringify(game));
+    io.emit('send_initial_robots_positions', JSON.stringify(game));
   });
 
   //Emits selected target to all users.
@@ -135,12 +137,12 @@ io.on('connection', (socket) => {
   });
 
   // Emits boolean to start new game.
-  socket.on('send_new_game', (set) => {
+  socket.on('get_new_game', (set) => {
     if (!set) {
       return;
     }
     game.setNewGame();
-    io.emit('get_new_game', JSON.stringify(game));
+    io.emit('set_new_game', JSON.stringify(game));
   });
 
   // Emits key direction to all users.

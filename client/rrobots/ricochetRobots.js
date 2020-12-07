@@ -34,10 +34,10 @@ class RicochetRobots {
     this.getSelectedTarget();
   }
 
-  getInitialRobotsPositions() {
-    let robotsPositions = this.board.initializedRobotPositionsCandidate();
-    this.sendInitialRobotsPositions(robotsPositions);
-  }
+  // getInitialRobotsPositions() {
+  //   let robotsPositions = this.board.initializedRobotPositionsCandidate();
+  //   this.sendInitialRobotsPositions(robotsPositions);
+  // }
 
   // Deselect the previousely selected robot.
   deselectRobot() {
@@ -591,8 +591,8 @@ class RicochetRobots {
   }
 
   // Request the server to let all players know the intial positions of the robots.
-  sendInitialRobotsPositions(initialRobotsPositions) {
-    this.socket.emit('send_inital_robots_positions', initialRobotsPositions);
+  getInitialRobotsPositions() {
+    this.socket.emit('get_inital_robots_positions');
     return false;
   }
 
@@ -684,7 +684,7 @@ class RicochetRobots {
     });
 
     // Receives the initial robots positions from server.
-    this.socket.on('get_initial_robots_positions', (data) => {
+    this.socket.on('send_initial_robots_positions', (data) => {
       const game = JSON.parse(data);
       this.board.initializedRobotPositions(game.robots);
       this.placeRobots();
