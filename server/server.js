@@ -148,29 +148,35 @@ io.on('connection', (socket) => {
 
   // Emits key direction to all users.
   socket.on('send_key_direction', (keyDirection) => {
-    io.emit('get_key_direction', keyDirection);
+    const key = game.ricochetRobots.keyboardHandler(keyDirection);
+    if (!key) {
+      return;
+    }
+    if (key.targetReached) {
+      const winner = game.verifyTargetWinner();
+      if (!winner) {
+        const nextAuctionWinner = game.getNextLowestBidder();
+        const nextWinner = nextAuctionWinner.winner;
+        const nextBid = nextAuctionWinner.bid;
+        io.emit('send_winner_of_auction', nextWinner, nextBid);
+        io.emit('get_reset_positions', true);
+        io.to(game.usernameToSocketId[nextWinner]).emit(
+          'get_user_to_reveal_path',
+          nextWinner
+        );
+      }
+      io.emit(
+        'get_user_and_reached_target',
+        winner.roundWinner,
+        winner.wonTarget
+      );
+    }
+    io.emit('get_key_direction', key.direction);
   });
 
   // Emits boolean to reset positions to all users.
   socket.on('send_request_to_reset_positions', (reset) => {
     io.emit('get_reset_positions', reset);
-  });
-
-  // Emits the user that made the lowest bid if target was reached.
-  socket.on('send_target_has_been_reached', (steps, target, winner) => {
-    const roundWinner = game.verifyTargetWinner(steps, target, winner);
-    if (!roundWinner) {
-      const nextAuctionWinner = game.getNextLowestBidder();
-      const nextWinner = nextAuctionWinner.winner;
-      const nextBid = nextAuctionWinner.bid;
-      io.emit('send_winner_of_auction', nextWinner, nextBid);
-      io.emit('get_reset_positions', true);
-      io.to(game.usernameToSocketId[nextWinner]).emit(
-        'get_user_to_reveal_path',
-        nextWinner
-      );
-    }
-    io.emit('get_user_and_reached_target', roundWinner, target);
   });
 
   // Emits chat history only to new client when requested.

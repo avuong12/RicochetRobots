@@ -16,7 +16,7 @@ class RicochetRobots {
     this.board.setWalls(walls);
     this.board.setTargets(targets);
     //this.board.pickNextTarget();
-    this.board.selectedRobotColor = undefined;
+    this.selectedRobotColor = undefined;
     this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
     this.pathCellArray = [];
     this.currentTimer = undefined;
@@ -36,8 +36,8 @@ class RicochetRobots {
 
   // Deselect the previousely selected robot.
   deselectRobot() {
-    if (this.board.selectedRobotColor !== undefined) {
-      let lastSelectedRobotId = robotIdMap[this.board.selectedRobotColor];
+    if (this.selectedRobotColor !== undefined) {
+      let lastSelectedRobotId = robotIdMap[this.selectedRobotColor];
       let lastSelectedRobotSpan = document.getElementById(lastSelectedRobotId);
       lastSelectedRobotSpan.classList.toggle('selected-robot');
     }
@@ -45,6 +45,7 @@ class RicochetRobots {
   }
 
   selectedRobot(selectedRobot) {
+    this.selectedRobotColor = this.board.robots[selectedRobot].color;
     let robotId = robotIdMap[selectedRobot];
     let newlySelectedRobot = document.getElementById(robotId);
     newlySelectedRobot.classList.toggle('selected-robot');
@@ -128,24 +129,24 @@ class RicochetRobots {
   }
 
   moveSelectedRobot(direction) {
-    if (this.board.selectedRobotColor === undefined) {
+    if (this.selectedRobotColor === undefined) {
       return;
     }
 
     // Remove the robot span and move it to the new position.
     // get the cell that contains the robot removeChild.
     let robotSpan = document.getElementById(
-      `${robotIdMap[this.board.selectedRobotColor]}`
+      `${robotIdMap[this.selectedRobotColor]}`
     );
     robotSpan.parentNode.removeChild(robotSpan);
 
     // when there is a selected robot.
-    this.board.moveRobot(this.board.selectedRobotColor, direction);
+    this.board.moveRobot(this.selectedRobotColor, direction);
 
     // move it to the span it belongs to.
     let robots = this.board.getRobots();
-    let row = robots[this.board.selectedRobotColor].row;
-    let column = robots[this.board.selectedRobotColor].column;
+    let row = robots[this.selectedRobotColor].row;
+    let column = robots[this.selectedRobotColor].column;
     let cellSpan = document.getElementById(`${row}, ${column}`);
     cellSpan.appendChild(robotSpan);
   }
@@ -222,30 +223,25 @@ class RicochetRobots {
       moveDirection = MOVE_RIGHT;
     }
     // For tracing the path. Start cell.
-    if (this.board.selectedRobotColor === undefined) {
+    if (this.selectedRobotColor === undefined) {
       return;
     }
     let robots = this.board.getRobots();
-    let selectedRobot = robots[this.board.selectedRobotColor];
+    let selectedRobot = robots[this.selectedRobotColor];
     const robotColor = selectedRobot.color;
     const startRow = selectedRobot.row;
     const startColumn = selectedRobot.column;
     const startCell = { row: startRow, column: startColumn };
 
-    // Check to see if the robot can make move before drawing path.
-    const possibleMoves = this.board.movesForRobot(robotColor);
-    if (possibleMoves !== undefined && possibleMoves.includes(moveDirection)) {
-      this.moveSelectedRobot(moveDirection);
-      this.drawMovingPath({
-        robot: this.board.selectedRobotColor,
-        direction: moveDirection,
-      });
-      this.steps++;
-    }
+    this.moveSelectedRobot(moveDirection);
+    this.drawMovingPath({
+      robot: this.selectedRobotColor,
+      direction: moveDirection,
+    });
 
     // For tracing the path. End cell.
     let robotsAfterMove = this.board.getRobots();
-    let selectedRobotMoved = robotsAfterMove[this.board.selectedRobotColor];
+    let selectedRobotMoved = robotsAfterMove[this.selectedRobotColor];
     const selectedRobotColor = selectedRobotMoved.color;
     const endRow = selectedRobotMoved.row;
     const endColumn = selectedRobotMoved.column;
@@ -259,8 +255,6 @@ class RicochetRobots {
         this.winnerOfAuction
       );
     }
-
-    //this.tracePath(startCell, moveDirection, endCell, selectedRobotColor);
   }
 
   storeTargets(target) {
@@ -640,7 +634,7 @@ class RicochetRobots {
     this.deselectTarget();
     // Deselect the robot of the previous game.
     this.deselectRobot();
-    this.board.selectedRobotColor = game.selectedRobotColor;
+    this.selectedRobotColor = game.selectedRobotColor;
     this.initalRobotsPositions = undefined;
 
     // clear robots
@@ -668,11 +662,14 @@ class RicochetRobots {
         this.toggleTargetHightlight();
       }
       if (game.selectedRobotColor !== undefined) {
-        this.board.selectedRobotColor = game.selectedRobotColor;
-        const selectedRobot = this.board.selectedRobotColor;
+        this.selectedRobotColor = game.selectedRobotColor;
+        const selectedRobot = this.selectedRobotColor;
         // highlight selected robot.
         this.selectedRobot(selectedRobot);
       }
+      // TODO: restore in process timmer and bids.
+      // TODO: restore a traveling path.
+      // TODO: restore the winner of auction and allow move if that is the joining client.
     });
 
     // Receives initation from server to start a new game.

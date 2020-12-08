@@ -42,6 +42,8 @@ class Game {
   setCurrentTarget(targetCandidate) {
     this.pickedTargets.push(targetCandidate);
     this.currentTarget = targetCandidate;
+    this.ricochetRobots.currentTarget = targetCandidate;
+    this.ricochetRobots.setCurrentTargetinGrid();
     this.bids = [];
     this.winnerOfAuction = undefined;
     this.hasValidBid = false;
@@ -119,24 +121,30 @@ class Game {
     return { winner: this.winnerOfAuction, bid: this.winningBid };
   }
 
-  setSelectedRobot(robot) {
-    this.selectedRobotColor = robot;
+  setSelectedRobot(robotColor) {
+    this.selectedRobotColor = robotColor;
+    this.ricochetRobots.selectedRobotColor = robotColor;
     return this.selectedRobotColor;
   }
 
-  verifyTargetWinner(steps, target, name) {
-    if (steps > this.winningBid || name !== this.winnerOfAuction) {
+  verifyTargetWinner() {
+    const steps = this.ricochetRobots.steps;
+    const name = this.winnerOfAuction;
+    this.ricochetRobots.steps = 0;
+    const target = this.currentTarget;
+    if (steps > this.winningBid) {
       // assign winnerOfAuction to next bidder in bids.
       return false;
     }
-    if (steps <= this.winningBid && name === this.winnerOfAuction) {
+    if (steps <= this.winningBid) {
       if (this.claimedTargets[name] === undefined) {
         this.claimedTargets[name] = [target];
       } else {
         this.claimedTargets[name].push(target);
       }
+      this.ricochetRobots.storeTargets(target);
     }
-    return this.winnerOfAuction;
+    return { roundWinner: name, wonTarget: this.currentTarget };
   }
 
   removeUser(socketId) {
