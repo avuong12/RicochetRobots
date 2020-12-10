@@ -31,6 +31,7 @@ class RicochetRobots {
     this.getInitialRobotsPositions();
   }
   selectNewTarget() {
+    // TODO: clear auction.
     this.getSelectedTarget();
   }
 

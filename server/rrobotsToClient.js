@@ -23,11 +23,14 @@ class RicochetRobots {
     // get a candidate for the next target. Do not set currentTarget;
     let nextTargetCandidate = this.board.pickNextTargetCandidate();
     // send candidate target to server.
+    console.log('next target:', nextTargetCandidate);
     if (!nextTargetCandidate) {
+      console.log('there was no target');
       // game is over. Have server declare a winner.
       return false;
     }
     // returns nextTargetCandidate to the server.
+    console.log('next target:', nextTargetCandidate);
     return nextTargetCandidate;
   }
 
@@ -71,6 +74,7 @@ class RicochetRobots {
     // Check to see if the robot reached the target spot.
     // TODO: check if target was reached when robot was moved.
     if (this.board.reachedTarget()) {
+      console.log('target was reached');
       return { direction: key, targetReached: true };
     }
     return { direction: key, targetReached: false };

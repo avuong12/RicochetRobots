@@ -83,6 +83,7 @@ class Auction {
   }
 
   removeBids() {
+    console.log('in remove bids');
     // Clear bids in auction.
     const bids = document.getElementById('auctions');
     bids.innerHTML = '';
@@ -107,7 +108,7 @@ class Auction {
     this.socket.on('send_winner_of_auction', (user, bid) => {
       this.announceWinner(user, bid);
     });
-    this.socket.on('get_selected_target', () => {
+    this.socket.on('send_selected_target', () => {
       this.removeBids();
     });
   }

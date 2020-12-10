@@ -50,6 +50,7 @@ io.on('connection', (socket) => {
 
   // Setting a new user.
   socket.on('set_username', (name) => {
+    console.log(`${socket.id} wants to set a username`);
     const newName = name.toLowerCase();
     if (game.addUser(socket.id, newName) !== false) {
       io.emit('set_username', newName);
@@ -72,7 +73,6 @@ io.on('connection', (socket) => {
     // restore the targets previously won by the user rejoining.
     if (game.claimedTargets.hasOwnProperty(newName)) {
       const targetsPreviouslyWon = game.claimedTargets[newName];
-      console.log('sending user target');
       socket.broadcast.emit(
         'send_targets_won',
         newName,
@@ -83,12 +83,14 @@ io.on('connection', (socket) => {
 
   // Emits all users connected to socket only to new client when requested.
   socket.on('get_usernames', () => {
+    console.log(`${socket.id} asks for usernames`);
     const names = Object.values(game.socketIdToUsername);
     io.to(socket.id).emit('send_usernames', JSON.stringify(names));
   });
 
   // Server initialized robot positions and place robots on the board. Emits inital robots positions to all users.
   socket.on('get_inital_robots_positions', () => {
+    console.log(`${socket.id} asks for inital robot positions`);
     const initialRobotsPositions = game.ricochetRobots.board.initializedRobotPositionsCandidate();
     game.ricochetRobots.board.initializedRobotPositions(initialRobotsPositions);
     game.setInitialRobotPositions(initialRobotsPositions);
@@ -97,6 +99,7 @@ io.on('connection', (socket) => {
 
   // Server selects the target and sets target. Emits selected target to all users.
   socket.on('get_selected_target', () => {
+    console.log(`${socket.id} asks for a target`);
     const targetCandidate = game.ricochetRobots.selectNewTarget();
     if (!targetCandidate) {
       // no new candiates;
@@ -108,6 +111,7 @@ io.on('connection', (socket) => {
 
   // Submitting a bid.
   socket.on('send_bid', (bid) => {
+    console.log(`${socket.id} submits a bid`);
     const numberBid = Number(bid);
     const submission = game.submitBid(socket.id, numberBid);
     io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
@@ -120,8 +124,12 @@ io.on('connection', (socket) => {
 
   // Emits the user that won the auction.
   socket.on('get_winner_of_auction', () => {
+    console.log(`${socket.id} wants to know the winner of auction`);
     game.sortBids();
     const winningAuction = game.getAuctionWinner();
+    if (winningAuction === undefined) {
+      return;
+    }
     const auctionWinner = winningAuction.winner;
     const auctionBid = winningAuction.bid;
     io.to(socket.id).emit('send_winner_of_auction', auctionWinner, auctionBid);
@@ -133,6 +141,7 @@ io.on('connection', (socket) => {
 
   // Server recieves the selected robot from the client. Emits selected robot to all users.
   socket.on('send_selectedRobot', (robot) => {
+    console.log(`${socket.id} sends the robot they selected`);
     const selectedRobot = game.setSelectedRobot(robot);
     io.emit('get_selected_robot', selectedRobot);
   });
@@ -142,8 +151,9 @@ io.on('connection', (socket) => {
     if (!set) {
       return;
     }
-    game.setNewGame();
-    io.emit('set_new_game', JSON.stringify(game));
+    console.log(`${socket.id} wants to start a new game.`);
+    const newGame = game.setNewGame();
+    io.emit('set_new_game', JSON.stringify(newGame));
   });
 
   // Emits key direction to all users.
@@ -165,6 +175,12 @@ io.on('connection', (socket) => {
           nextWinner
         );
       }
+      console.log(
+        'round winner:',
+        winner.roundWinner,
+        'won target:',
+        winner.wonTarget
+      );
       io.emit(
         'get_user_and_reached_target',
         winner.roundWinner,

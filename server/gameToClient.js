@@ -1,38 +1,46 @@
 const RicochetRobots = require('./rrobotsToClient');
 
 class Game {
-  constructor() {
+  constructor(
+    userNames = new Set(),
+    socketToUserMap = {},
+    userTosocketMap = {},
+    chats = []
+  ) {
     this.ricochetRobots = new RicochetRobots();
     this.robots = undefined;
     this.currentTarget = undefined;
-    // May not need targets or pickedTargets.
-    this.targets = new Set();
-    this.pickedTargets = [];
     this.selectedRobotColor = undefined;
     this.hasValidBid = false;
     this.bids = [];
     this.winningBid = undefined;
     this.winnerOfAuction = undefined;
-    this.wonTargets = new Set();
     this.claimedTargets = {};
-    this.usernames = new Set();
-    this.socketIdToUsername = {};
-    this.usernameToSocketId = {};
-    this.chats = [];
+    this.usernames = userNames;
+    this.socketIdToUsername = socketToUserMap;
+    this.usernameToSocketId = userTosocketMap;
+    this.chats = chats;
   }
 
   setNewGame() {
-    this.robots = undefined;
-    this.currentTarget = undefined;
-    this.targets = new Set();
-    this.pickedTargets = [];
-    this.selectedRobotColor = undefined;
-    this.hasValidBid = false;
-    this.bids = [];
-    this.winningBid = undefined;
-    this.winnerOfAuction = undefined;
-    this.wonTargets = new Set();
-    this.claimedTargets = {};
+    let newGame = new Game(
+      this.usernames,
+      this.socketIdToUsername,
+      this.usernameToSocketId,
+      this.chats
+    );
+    // this.robots = undefined;
+    // this.currentTarget = undefined;
+    // this.targets = new Set();
+    // this.pickedTargets = [];
+    // this.selectedRobotColor = undefined;
+    // this.hasValidBid = false;
+    // this.bids = [];
+    // this.winningBid = undefined;
+    // this.winnerOfAuction = undefined;
+    // this.wonTargets = new Set();
+    // this.claimedTargets = {};
+    return newGame;
   }
 
   setInitialRobotPositions(robotPositions) {
@@ -40,7 +48,7 @@ class Game {
   }
 
   setCurrentTarget(targetCandidate) {
-    this.pickedTargets.push(targetCandidate);
+    // may be able to remove.
     this.currentTarget = targetCandidate;
     this.ricochetRobots.currentTarget = targetCandidate;
     this.ricochetRobots.setCurrentTargetinGrid();
@@ -108,6 +116,9 @@ class Game {
 
   getAuctionWinner() {
     const winningBidEntry = this.bids[this.bids.length - 1];
+    if (winningBidEntry === undefined) {
+      return;
+    }
     this.winnerOfAuction = winningBidEntry.user;
     this.winningBid = winningBidEntry.bid;
     return { winner: this.winnerOfAuction, bid: this.winningBid };

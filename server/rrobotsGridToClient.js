@@ -205,18 +205,22 @@ class Grid {
 
   // pickNextTargetCandidate function will return a candidated for the next target.
   pickNextTargetCandidate() {
+    console.log('picking the next target:', this.wonTargets);
     if (this.wonTargets.size === 17) {
       return false;
     }
-    let randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
+    let randomTargetIdx = this.generateRandomNumber(this.targets.length);
     let nextTargetCandidate = this.targets[randomTargetIdx];
-    let nextTargetCandidateColor = nextTargetCandidate.color;
-    let nextTargetCandidateShape = nextTargetCandidate.shape;
+    console.log(
+      'candidate:',
+      `${nextTargetCandidate.color}-${nextTargetCandidate.shape}`
+    );
     while (
       this.wonTargets.has(
-        `${nextTargetCandidateColor}-${nextTargetCandidateShape}`
+        `${nextTargetCandidate.color}-${nextTargetCandidate.shape}`
       )
     ) {
+      console.log('target index:', randomTargetIdx);
       randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
       nextTargetCandidate = this.targets[randomTargetIdx];
     }
