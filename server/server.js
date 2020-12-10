@@ -102,7 +102,6 @@ io.on('connection', (socket) => {
     console.log(`${socket.id} asks for a target`);
     const targetCandidate = game.ricochetRobots.selectNewTarget();
     if (!targetCandidate) {
-      // no new candiates;
       return false;
     }
     game.setCurrentTarget(targetCandidate);
@@ -162,6 +161,7 @@ io.on('connection', (socket) => {
     if (!key) {
       return;
     }
+    io.emit('get_key_direction', key.direction);
     if (key.targetReached) {
       const winner = game.verifyTargetWinner();
       if (!winner) {
@@ -175,19 +175,16 @@ io.on('connection', (socket) => {
           nextWinner
         );
       }
-      console.log(
-        'round winner:',
-        winner.roundWinner,
-        'won target:',
-        winner.wonTarget
-      );
       io.emit(
         'get_user_and_reached_target',
         winner.roundWinner,
         winner.wonTarget
       );
+      if (winner.endGame) {
+        // Declare winner(s).
+        io.emit('send_winners', JSON.stringify(winner.endGame));
+      }
     }
-    io.emit('get_key_direction', key.direction);
   });
 
   // Emits boolean to reset positions to all users.

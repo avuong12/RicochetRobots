@@ -98,6 +98,19 @@ class Auction {
     this.firstBidder = false;
   }
 
+  announceGameWinner(winners) {
+    const numberOfWinners = winners.length;
+    if (numberOfWinners > 1) {
+      let sentence = ['is TIED for the WINNER!'];
+      for (let i = 0; i < numberOfWinners - 1; i++) {
+        sentence.unshift(winners[i].toUpperCase());
+      }
+      alert(sentence.join(' '));
+    } else {
+      alert(`${winners[0].toUpperCase()} IS THE WINNER!`);
+    }
+  }
+
   setupAuctionSocketHandlers() {
     this.socket.on('send_bid', (bid) => {
       this.addBid(bid);
@@ -110,6 +123,11 @@ class Auction {
     });
     this.socket.on('send_selected_target', () => {
       this.removeBids();
+    });
+    // Declares Winner(s) of the game.
+    this.socket.on('send_winners', (data) => {
+      const winners = JSON.parse(data);
+      this.announceGameWinner(winners);
     });
   }
 }

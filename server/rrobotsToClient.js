@@ -74,7 +74,6 @@ class RicochetRobots {
     // Check to see if the robot reached the target spot.
     // TODO: check if target was reached when robot was moved.
     if (this.board.reachedTarget()) {
-      console.log('target was reached');
       return { direction: key, targetReached: true };
     }
     return { direction: key, targetReached: false };

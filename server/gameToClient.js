@@ -139,6 +139,7 @@ class Game {
   }
 
   verifyTargetWinner() {
+    let endGame = false;
     const steps = this.ricochetRobots.steps;
     const name = this.winnerOfAuction;
     this.ricochetRobots.steps = 0;
@@ -154,8 +155,16 @@ class Game {
         this.claimedTargets[name].push(target);
       }
       this.ricochetRobots.storeTargets(target);
+      // TODO: change requirement to 17 after testing.
+      if (this.ricochetRobots.board.wonTargets.size === 3) {
+        endGame = this.getWinner();
+      }
     }
-    return { roundWinner: name, wonTarget: this.currentTarget };
+    return {
+      roundWinner: name,
+      wonTarget: this.currentTarget,
+      endGame: endGame,
+    };
   }
 
   removeUser(socketId) {
@@ -164,6 +173,45 @@ class Game {
     delete this.socketIdToUsername[socketId];
     delete this.usernameToSocketId[userToRemove];
     return userToRemove;
+  }
+
+  getWinner() {
+    // Order the user by points.
+    let scores = [];
+    for (let key in this.claimedTargets) {
+      let playerPoints = {};
+      playerPoints.player = key;
+      playerPoints.points = this.claimedTargets[key].length;
+      scores.push(playerPoints);
+    }
+    this.sortPlayers(scores);
+    const winners = this.getTopScoresPlayers(scores);
+    return winners;
+  }
+
+  sortPlayers(scores) {
+    let lower = 0;
+    let upper = scores.length - 1;
+    for (let i = lower; i < upper; i++) {
+      for (let j = upper; j > lower; j--) {
+        if (scores[j].points < scores[j - 1].points) {
+          swap(scores, j, j - 1);
+        }
+      }
+    }
+  }
+
+  getTopScoresPlayers(scores) {
+    const highestScore = scores[scores.length - 1].points;
+    let winners = [];
+    while (
+      scores.length > 0 &&
+      scores[scores.length - 1].points === highestScore
+    ) {
+      let winner = scores.pop();
+      winners.push(winner.player);
+    }
+    return winners;
   }
 }
 

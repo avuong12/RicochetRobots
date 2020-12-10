@@ -606,13 +606,6 @@ class RicochetRobots {
     return false;
   }
 
-  sendNextLowestBid() {}
-
-  setLowestBidUserInfo(user, bid) {
-    this.lowestBidSoFar = bid;
-    this.lowestBidderSoFar = user;
-  }
-
   // clear the state of the board.
   resetSateOfAuction(game) {
     this.allowToMove = false;

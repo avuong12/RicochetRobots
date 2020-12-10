@@ -206,7 +206,7 @@ class Grid {
   // pickNextTargetCandidate function will return a candidated for the next target.
   pickNextTargetCandidate() {
     console.log('picking the next target:', this.wonTargets);
-    if (this.wonTargets.size === 17) {
+    if (this.wonTargets.size === 3) {
       return false;
     }
     let randomTargetIdx = this.generateRandomNumber(this.targets.length);
