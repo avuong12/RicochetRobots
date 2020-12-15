@@ -205,22 +205,16 @@ class Grid {
 
   // pickNextTargetCandidate function will return a candidated for the next target.
   pickNextTargetCandidate() {
-    console.log('picking the next target:', this.wonTargets);
     if (this.wonTargets.size === 3) {
       return false;
     }
     let randomTargetIdx = this.generateRandomNumber(this.targets.length);
     let nextTargetCandidate = this.targets[randomTargetIdx];
-    console.log(
-      'candidate:',
-      `${nextTargetCandidate.color}-${nextTargetCandidate.shape}`
-    );
     while (
       this.wonTargets.has(
         `${nextTargetCandidate.color}-${nextTargetCandidate.shape}`
       )
     ) {
-      console.log('target index:', randomTargetIdx);
       randomTargetIdx = this.generateRandomNumber(this.targets.length - 1);
       nextTargetCandidate = this.targets[randomTargetIdx];
     }
@@ -307,6 +301,7 @@ class Grid {
       this.robots[robotColor].column,
       ROBOT_CELL
     );
+    console.log('robots after move:', this.robots);
   }
   // moveAllRobots for BFS.
   moveAllRobots(newRobotsPostions) {

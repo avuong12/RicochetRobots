@@ -58,9 +58,9 @@ class Auction {
         timerDiv.style.backgroundColor = 'yellow';
         window.requestAnimationFrame(updateTimer);
       } else {
-        this.getWinnerOfAuction();
         bidDiv.removeChild(timerDiv);
         bidDiv.removeChild(startTimerDiv);
+        this.getWinnerOfAuction();
         this.currentTimer = undefined;
       }
     };
@@ -128,6 +128,11 @@ class Auction {
     this.socket.on('send_winners', (data) => {
       const winners = JSON.parse(data);
       this.announceGameWinner(winners);
+    });
+    this.socket.on('set_new_game', (data) => {
+      if (data) {
+        this.removeBids();
+      }
     });
   }
 }

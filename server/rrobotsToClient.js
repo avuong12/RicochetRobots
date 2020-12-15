@@ -13,7 +13,7 @@ class RicochetRobots {
     this.board.setWalls(Walls);
     this.board.setTargets(Targets);
     this.selectedRobotColor = undefined;
-    this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    this.initalRobotsPositions = undefined;
     this.currentTarget = undefined;
     this.steps = 0;
     this.win;
@@ -23,14 +23,11 @@ class RicochetRobots {
     // get a candidate for the next target. Do not set currentTarget;
     let nextTargetCandidate = this.board.pickNextTargetCandidate();
     // send candidate target to server.
-    console.log('next target:', nextTargetCandidate);
     if (!nextTargetCandidate) {
-      console.log('there was no target');
       // game is over. Have server declare a winner.
       return false;
     }
     // returns nextTargetCandidate to the server.
-    console.log('next target:', nextTargetCandidate);
     return nextTargetCandidate;
   }
 
@@ -44,6 +41,10 @@ class RicochetRobots {
 
   deepCopyRobots(object) {
     return JSON.parse(JSON.stringify(object));
+  }
+
+  setInitialRobots(initialPositions) {
+    this.initalRobotsPositions = this.deepCopyRobots(initialPositions);
   }
 
   keyboardHandler(key) {
@@ -72,7 +73,6 @@ class RicochetRobots {
     }
 
     // Check to see if the robot reached the target spot.
-    // TODO: check if target was reached when robot was moved.
     if (this.board.reachedTarget()) {
       return { direction: key, targetReached: true };
     }
@@ -83,6 +83,18 @@ class RicochetRobots {
     const targetColor = target.color;
     const targetShape = target.shape;
     this.board.wonTargets.add(`${targetColor}-${targetShape}`);
+  }
+
+  resetPositions() {
+    // reset board.
+    const beforeReset = JSON.stringify(this.board.robots);
+    this.board.moveAllRobots(this.initalRobotsPositions);
+    const afterReset = JSON.stringify(this.board.robots);
+    this.steps = 0;
+    if (beforeReset !== afterReset) {
+      return true;
+    }
+    return false;
   }
 }
 module.exports = RicochetRobots;

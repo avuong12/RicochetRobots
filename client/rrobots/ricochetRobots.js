@@ -31,7 +31,6 @@ class RicochetRobots {
     this.getInitialRobotsPositions();
   }
   selectNewTarget() {
-    // TODO: clear auction.
     this.getSelectedTarget();
   }
 
@@ -249,19 +248,13 @@ class RicochetRobots {
     const endCell = { row: endRow, column: endColumn };
 
     // Check to see if the robot reached the target spot.
-    if (this.allowToMove && this.board.reachedTarget()) {
-      this.sendTargetHasBeenReached(
-        this.steps,
-        this.board.currentTarget,
-        this.winnerOfAuction
-      );
-    }
-  }
-
-  storeTargets(target) {
-    const targetColor = target.color;
-    const targetShape = target.shape;
-    this.board.wonTargets.add(`${targetColor}-${targetShape}`);
+    // if (this.allowToMove && this.board.reachedTarget()) {
+    //   this.sendTargetHasBeenReached(
+    //     this.steps,
+    //     this.board.currentTarget,
+    //     this.winnerOfAuction
+    //   );
+    // }
   }
 
   getRobotsAsString() {
@@ -600,12 +593,6 @@ class RicochetRobots {
     return false;
   }
 
-  // Send to server that the target has been reached.
-  sendTargetHasBeenReached(steps, target, winner) {
-    this.socket.emit('send_target_has_been_reached', steps, target, winner);
-    return false;
-  }
-
   // clear the state of the board.
   resetSateOfAuction(game) {
     this.allowToMove = false;
@@ -629,7 +616,6 @@ class RicochetRobots {
     // Deselect the robot of the previous game.
     this.deselectRobot();
     this.selectedRobotColor = game.selectedRobotColor;
-    this.initalRobotsPositions = undefined;
 
     // clear robots
     let robots = this.board.getRobots();
@@ -728,18 +714,22 @@ class RicochetRobots {
 
     this.socket.on('get_user_to_reveal_path', (data) => {
       if (data) {
-        if (this.winnerOfAuction === data) {
-          this.winnerOfAuction = data;
-          this.allowToMove = true;
-          this.selectRobot();
-        }
+        this.winnerOfAuction = data;
+        this.allowToMove = true;
+        this.selectRobot();
+      }
+    });
+
+    this.socket.on('disable_moving', (data) => {
+      if (data) {
+        this.allowToMove = false;
       }
     });
 
     // Receives the user that reached the target from server.
-    this.socket.on('get_user_and_reached_target', (userData, targetData) => {
-      this.storeTargets(targetData);
-    });
+    // this.socket.on('get_user_and_reached_target', (userData, targetData) => {
+    //   this.storeTargets(targetData);
+    // });
   }
 }
 

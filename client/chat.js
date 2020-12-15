@@ -181,7 +181,7 @@ class Chat {
     });
 
     // Recieves an emit to start new game from server.
-    this.socket.on('get_new_game', (data) => {
+    this.socket.on('set_new_game', (data) => {
       if (data) {
         // remove targets in scoreboard.
         let users = document.getElementById('users');

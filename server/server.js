@@ -151,8 +151,8 @@ io.on('connection', (socket) => {
       return;
     }
     console.log(`${socket.id} wants to start a new game.`);
-    const newGame = game.setNewGame();
-    io.emit('set_new_game', JSON.stringify(newGame));
+    game = game.setNewGame();
+    io.emit('set_new_game', JSON.stringify(game));
   });
 
   // Emits key direction to all users.
@@ -168,27 +168,34 @@ io.on('connection', (socket) => {
         const nextAuctionWinner = game.getNextLowestBidder();
         const nextWinner = nextAuctionWinner.winner;
         const nextBid = nextAuctionWinner.bid;
+        const reset = game.ricochetRobots.resetPositions();
+        if (reset) {
+          io.emit('get_reset_positions', true);
+        }
+        io.emit('disable_moving', true);
         io.emit('send_winner_of_auction', nextWinner, nextBid);
-        io.emit('get_reset_positions', true);
         io.to(game.usernameToSocketId[nextWinner]).emit(
           'get_user_to_reveal_path',
           nextWinner
         );
-      }
-      io.emit(
-        'get_user_and_reached_target',
-        winner.roundWinner,
-        winner.wonTarget
-      );
-      if (winner.endGame) {
-        // Declare winner(s).
-        io.emit('send_winners', JSON.stringify(winner.endGame));
+      } else {
+        io.emit(
+          'get_user_and_reached_target',
+          winner.roundWinner,
+          winner.wonTarget
+        );
+        if (winner.endGame) {
+          // Declare winner(s).
+          io.emit('send_winners', JSON.stringify(winner.endGame));
+        }
       }
     }
   });
 
   // Emits boolean to reset positions to all users.
   socket.on('send_request_to_reset_positions', (reset) => {
+    // Reset the step.
+    game.ricochetRobots.resetPositions();
     io.emit('get_reset_positions', reset);
   });
 

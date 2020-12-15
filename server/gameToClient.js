@@ -29,22 +29,12 @@ class Game {
       this.usernameToSocketId,
       this.chats
     );
-    // this.robots = undefined;
-    // this.currentTarget = undefined;
-    // this.targets = new Set();
-    // this.pickedTargets = [];
-    // this.selectedRobotColor = undefined;
-    // this.hasValidBid = false;
-    // this.bids = [];
-    // this.winningBid = undefined;
-    // this.winnerOfAuction = undefined;
-    // this.wonTargets = new Set();
-    // this.claimedTargets = {};
     return newGame;
   }
 
   setInitialRobotPositions(robotPositions) {
     this.robots = robotPositions;
+    this.ricochetRobots.setInitialRobots(robotPositions);
   }
 
   setCurrentTarget(targetCandidate) {
