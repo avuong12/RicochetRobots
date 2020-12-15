@@ -25,7 +25,12 @@ div.game_block {
 }
 div.submission_container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  width: 25%;
+}
+div.output_container {
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
@@ -33,9 +38,9 @@ div.submission_container {
 }
 #username_block {
   flex: none;
-  align-items: flex-start;
   border-style: groove;
   border-color: black;
+  margin-bottom: 75px;
 }
 #messages_block {
   align-self: flex-end;
@@ -45,11 +50,18 @@ div.submission_container {
   height: 250px;
 }
 
+#bid_results {
+  align-self: flex-end;
+  max-height: 250px;
+  height: 250px;
+}
+
 #auction_block {
   flex: none;
-  align-items: flex-start;
   border-style: groove;
   border-color: black;
+  height: 150px;
+  margin-top: 75px;
 }
 
 h3 {

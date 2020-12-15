@@ -2,9 +2,13 @@ ul#auctions {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  max-height: 175px;
+  overflow-y: auto;
+  height: 76px;
 }
 #auctions li {
   padding: 5px 10px;
+  display: flex;
 }
 #auctions li:nth-child(odd) {
   background: #eee;

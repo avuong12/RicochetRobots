@@ -19,6 +19,8 @@ class Auction {
     const newBid = document.createElement('li');
     newBid.innerHTML = bid;
     bids.appendChild(newBid);
+
+    scrollToBottom(bids);
   }
 
   startTimer(bidStarted) {
@@ -83,7 +85,6 @@ class Auction {
   }
 
   removeBids() {
-    console.log('in remove bids');
     // Clear bids in auction.
     const bids = document.getElementById('auctions');
     bids.innerHTML = '';
