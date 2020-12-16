@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
     console.log(`${socket.id} submits a bid`);
     const numberBid = Number(bid);
     const submission = game.submitBid(socket.id, numberBid);
-    io.emit('send_bid', `${submission.user}: ${submission.bid} steps`);
+    io.emit('send_bid', JSON.stringify(submission));
     if (game.logBids(socket.id, numberBid)) {
       io.emit('start_timer', true);
     } else {

@@ -17,10 +17,19 @@ class Auction {
   addBid(bid) {
     const bids = document.getElementById('auctions');
     const newBid = document.createElement('li');
-    newBid.innerHTML = bid;
+    newBid.innerHTML = `${bid.user}: ${bid.bid} steps`;
     bids.appendChild(newBid);
 
     scrollToBottom(bids);
+  }
+
+  restoreBids(bids) {
+    for (let i = 0; i < bids.length; i++) {
+      const bidDiv = document.getElementById('auctions');
+      const newBid = document.createElement('li');
+      newBid.innerHTML = `${bids[i].user}: ${bids[i].bid} steps`;
+      bidDiv.appendChild(newBid);
+    }
   }
 
   startTimer(bidStarted) {
@@ -138,7 +147,7 @@ class Auction {
     const numberOfWinners = winners.length;
     if (numberOfWinners > 1) {
       let sentence = ['is TIED for the WINNER!'];
-      for (let i = 0; i < numberOfWinners - 1; i++) {
+      for (let i = 0; i < numberOfWinners; i++) {
         sentence.unshift(winners[i].toUpperCase());
       }
       alert(sentence.join(' '));
@@ -153,8 +162,12 @@ class Auction {
       if (game.startTime !== undefined) {
         this.restoreTimer(game.startTime);
       }
+      if (game.bids.length > 0) {
+        this.restoreBids(game.bids);
+      }
     });
-    this.socket.on('send_bid', (bid) => {
+    this.socket.on('send_bid', (data) => {
+      const bid = JSON.parse(data);
       this.addBid(bid);
     });
     this.socket.on('start_timer', (bidStarted) => {
