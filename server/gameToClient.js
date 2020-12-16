@@ -20,6 +20,7 @@ class Game {
     this.socketIdToUsername = socketToUserMap;
     this.usernameToSocketId = userTosocketMap;
     this.chats = chats;
+    this.startTime = undefined;
   }
 
   setNewGame() {
@@ -38,17 +39,18 @@ class Game {
   }
 
   setCurrentTarget(targetCandidate) {
-    // may be able to remove.
     this.currentTarget = targetCandidate;
     this.ricochetRobots.currentTarget = targetCandidate;
     this.ricochetRobots.setCurrentTargetinGrid();
     this.bids = [];
     this.winnerOfAuction = undefined;
     this.hasValidBid = false;
+    this.startTime = undefined;
     return true;
   }
 
   addUser(socketId, name) {
+    // username already choosen by another player.
     if (this.usernames.has(name)) {
       return false;
     }
@@ -63,10 +65,11 @@ class Game {
   }
 
   logBids(socketId, bid) {
+    let time = Date.now();
     const bidEntry = {
       user: this.socketIdToUsername[socketId],
       bid: bid,
-      time: Date.now(),
+      time: time,
     };
     if (this.claimedTargets[bidEntry.user] === undefined) {
       bidEntry.wonTargets = 0;
@@ -76,6 +79,7 @@ class Game {
     this.bids.push(bidEntry);
     if (this.hasValidBid === false) {
       this.hasValidBid = true;
+      this.startTime = time;
       return true;
     }
     if (this.hasValidBid === true) {

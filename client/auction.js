@@ -69,6 +69,41 @@ class Auction {
     window.requestAnimationFrame(updateTimer);
   }
 
+  restoreTimer(time) {
+    const firstBidTime = Math.floor(time / 1000);
+    const bidDiv = document.getElementById('bid_results');
+    const startTimerDiv = document.createElement('div');
+    startTimerDiv.innerText = 'TIMER STARTED!';
+    bidDiv.appendChild(startTimerDiv);
+    const timerDiv = document.createElement('div');
+    bidDiv.appendChild(timerDiv);
+    const updateTimer = () => {
+      timerDiv.setAttribute('id', 'timer');
+      // Subsequent time after the timer was pressed.
+      const currentTime = Math.floor(Date.now() / 1000);
+      const secondsRemaining = 60 - (currentTime - firstBidTime);
+      if (secondsRemaining === 60) {
+        timerDiv.innerHTML = 'Time Remaining to Place Bid: 1:00 min';
+        timerDiv.style.backgroundColor = 'yellow';
+        window.requestAnimationFrame(updateTimer);
+      } else if (secondsRemaining < 60 && secondsRemaining >= 10) {
+        timerDiv.innerHTML = `Time Remaining to Place Bid: 0:${secondsRemaining} sec`;
+        timerDiv.style.backgroundColor = 'yellow';
+        window.requestAnimationFrame(updateTimer);
+      } else if (secondsRemaining < 10 && secondsRemaining > 0) {
+        timerDiv.innerHTML = `Time Remaining to Place Bid: 0:0${secondsRemaining} sec`;
+        timerDiv.style.backgroundColor = 'yellow';
+        window.requestAnimationFrame(updateTimer);
+      } else {
+        bidDiv.removeChild(timerDiv);
+        bidDiv.removeChild(startTimerDiv);
+        this.getWinnerOfAuction();
+        this.currentTimer = undefined;
+      }
+    };
+    window.requestAnimationFrame(updateTimer);
+  }
+
   announceWinner(name, steps) {
     const auctionDiv = document.getElementById('bid_results');
     if (auctionDiv.hasChildNodes()) {
@@ -113,6 +148,12 @@ class Auction {
   }
 
   setupAuctionSocketHandlers() {
+    this.socket.on('set_up_game', (data) => {
+      const game = JSON.parse(data);
+      if (game.startTime !== undefined) {
+        this.restoreTimer(game.startTime);
+      }
+    });
     this.socket.on('send_bid', (bid) => {
       this.addBid(bid);
     });

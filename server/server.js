@@ -52,7 +52,8 @@ io.on('connection', (socket) => {
   socket.on('set_username', (name) => {
     console.log(`${socket.id} wants to set a username`);
     const newName = name.toLowerCase();
-    if (game.addUser(socket.id, newName) !== false) {
+    // A brand new user.
+    if (game.addUser(socket.id, newName)) {
       io.emit('set_username', newName);
       io.to(socket.id).emit(
         'highlight_own_username',
@@ -60,9 +61,11 @@ io.on('connection', (socket) => {
         'lightgoldenrodyellow'
       );
       console.log('users:', game.socketIdToUsername);
+      // restore the game.
       io.to(socket.id).emit('set_up_game', JSON.stringify(game));
       // TODO: incoming user should also see timer and results if joining in during an auction.'
     } else {
+      // tell player to choose a different name.
       io.to(socket.id).emit('set_username', false);
     }
     // restore all targets won by all users to new user.
