@@ -68,6 +68,7 @@ io.on('connection', (socket) => {
       io.to(socket.id).emit('set_username', false);
     }
     // restore all targets won by all users to new user.
+    console.log(game.claimedTargets);
     io.to(socket.id).emit(
       'send_all_targets_won',
       JSON.stringify(game.claimedTargets)

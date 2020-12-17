@@ -156,7 +156,7 @@ class Game {
       }
       this.ricochetRobots.storeTargets(target);
       // TODO: change requirement to 17 after testing.
-      if (this.ricochetRobots.board.wonTargets.size === 3) {
+      if (this.ricochetRobots.board.wonTargets.size === 17) {
         endGame = this.getWinner();
       }
     }

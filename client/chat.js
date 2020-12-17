@@ -128,7 +128,6 @@ class Chat {
   }
 
   restoreTargetsForIncomingUser(user, targetsWon) {
-    console.log('restoring for incoming user');
     const targets = JSON.parse(targetsWon);
     for (let i = 0; i < targets.length; i++) {
       this.awardTargetToUser(user, targets[i]);
@@ -181,7 +180,7 @@ class Chat {
     });
 
     // Recieves an emit to start new game from server.
-    this.socket.on('set_new_game', (data) => {
+    this.socket.on('reset_game', (data) => {
       if (data) {
         // remove targets in scoreboard.
         let users = document.getElementById('users');

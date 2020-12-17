@@ -145,9 +145,7 @@ class RicochetGrid {
 
   // Takes initial robots positions from server.
   initializedRobotPositions(robotPositions) {
-    console.log('input robots:', robotPositions);
     this.robots = robotPositions;
-    console.log('initialized robots:', this.robots);
     for (let key in robotPositions) {
       this.setValue(
         robotPositions[key].row,

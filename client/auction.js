@@ -146,10 +146,14 @@ class Auction {
   announceGameWinner(winners) {
     const numberOfWinners = winners.length;
     if (numberOfWinners > 1) {
-      let sentence = ['is TIED for the WINNER!'];
+      let sentence = ['are TIED for the WINNER!'];
       for (let i = 0; i < numberOfWinners; i++) {
-        sentence.unshift(winners[i].toUpperCase());
+        sentence.unshift(`${winners[i].toUpperCase()}`);
       }
+      for (let i = 1; i < sentence.length - 2; i += 2) {
+        sentence.splice(i, 0, ',');
+      }
+      sentence.splice(sentence.length - 2, 0, 'and');
       alert(sentence.join(' '));
     } else {
       alert(`${winners[0].toUpperCase()} IS THE WINNER!`);
@@ -184,7 +188,7 @@ class Auction {
       const winners = JSON.parse(data);
       this.announceGameWinner(winners);
     });
-    this.socket.on('set_new_game', (data) => {
+    this.socket.on('reset_game', (data) => {
       if (data) {
         this.removeBids();
       }

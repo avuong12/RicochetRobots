@@ -69,7 +69,6 @@ class RicochetRobots {
 
   placeRobots() {
     let robots = this.board.getRobots();
-    console.log('robots:', robots);
     for (let key in robots) {
       let robotRowPosition = robots[key].row;
       let robotColumnPosition = robots[key].column;
@@ -104,7 +103,6 @@ class RicochetRobots {
   removeRobots() {
     // robots from previous game.
     let previousRobots = this.board.getRobots();
-    console.log('previous:', previousRobots);
     for (let key in previousRobots) {
       let robotRowPosition = previousRobots[key].row;
       let robotColumnPosition = previousRobots[key].column;
