@@ -320,7 +320,6 @@ class Grid {
   // reachedTarget function will return true if a robot with the same color of the target reached the target.
   // get the location of the target. this.currentTarget
   reachedTarget() {
-    console.log('current target:', this.currentTarget);
     let targetColor = this.currentTarget.color;
     let targetRow = this.currentTarget.row;
     let targetColumn = this.currentTarget.column;

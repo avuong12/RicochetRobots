@@ -8,7 +8,7 @@ class Game {
     chats = []
   ) {
     this.ricochetRobots = new RicochetRobots();
-    this.robots = undefined;
+    this.initialRobotsPositions = undefined;
     this.currentTarget = undefined;
     this.selectedRobotColor = undefined;
     this.hasValidBid = false;
@@ -34,13 +34,19 @@ class Game {
   }
 
   setInitialRobotPositions(robotPositions) {
-    this.robots = robotPositions;
+    this.initialRobotsPositions = this.ricochetRobots.deepCopyRobots(
+      robotPositions
+    );
     this.ricochetRobots.setInitialRobots(robotPositions);
   }
 
   setCurrentTarget(targetCandidate) {
     this.currentTarget = targetCandidate;
     this.ricochetRobots.currentTarget = targetCandidate;
+    this.initialRobotsPositions = this.ricochetRobots.deepCopyRobots(
+      this.ricochetRobots.board.getRobots()
+    );
+    this.ricochetRobots.setInitialRobots(this.initialRobotsPositions);
     this.ricochetRobots.setCurrentTargetinGrid();
     this.bids = [];
     this.winnerOfAuction = undefined;

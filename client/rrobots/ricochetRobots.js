@@ -15,9 +15,8 @@ class RicochetRobots {
     this.board = new RicochetGrid(16, 16);
     this.board.setWalls(walls);
     this.board.setTargets(targets);
-    //this.board.pickNextTarget();
     this.selectedRobotColor = undefined;
-    this.initalRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+    this.initialRobotPositions = undefined;
     this.pathCellArray = [];
     this.currentTimer = undefined;
     this.socket = socket;
@@ -27,8 +26,7 @@ class RicochetRobots {
   }
   startNewGame() {
     // Reset the board.
-    this.getNewGame();
-    this.getInitialRobotsPositions();
+    this.initiateNewGame();
   }
   selectNewTarget() {
     this.getSelectedTarget();
@@ -71,6 +69,7 @@ class RicochetRobots {
 
   placeRobots() {
     let robots = this.board.getRobots();
+    console.log('robots:', robots);
     for (let key in robots) {
       let robotRowPosition = robots[key].row;
       let robotColumnPosition = robots[key].column;
@@ -105,6 +104,7 @@ class RicochetRobots {
   removeRobots() {
     // robots from previous game.
     let previousRobots = this.board.getRobots();
+    console.log('previous:', previousRobots);
     for (let key in previousRobots) {
       let robotRowPosition = previousRobots[key].row;
       let robotColumnPosition = previousRobots[key].column;
@@ -246,15 +246,6 @@ class RicochetRobots {
     const endRow = selectedRobotMoved.row;
     const endColumn = selectedRobotMoved.column;
     const endCell = { row: endRow, column: endColumn };
-
-    // Check to see if the robot reached the target spot.
-    // if (this.allowToMove && this.board.reachedTarget()) {
-    //   this.sendTargetHasBeenReached(
-    //     this.steps,
-    //     this.board.currentTarget,
-    //     this.winnerOfAuction
-    //   );
-    // }
   }
 
   getRobotsAsString() {
@@ -266,9 +257,9 @@ class RicochetRobots {
   }
 
   solveBFS() {
-    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let initialRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let queue = [{ robots: initalRobots, depth: 0, path: [] }];
+    let queue = [{ robots: initialRobots, depth: 0, path: [] }];
 
     while (queue.length > 0) {
       let currentState = queue.shift();
@@ -282,7 +273,7 @@ class RicochetRobots {
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
         // This resets the board to the initial condition.
-        this.board.moveAllRobots(initalRobots);
+        this.board.moveAllRobots(initialRobots);
         this.drawSolvedPath(currentState.path);
         return currentState.path;
       }
@@ -313,14 +304,14 @@ class RicochetRobots {
       }
     }
     // resets the board.
-    this.board.moveAllRobots(initalRobots);
+    this.board.moveAllRobots(initialRobots);
     return false;
   }
 
   dfs(maxDepth) {
-    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let initialRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let stack = [{ robots: initalRobots, depth: 0, path: [] }];
+    let stack = [{ robots: initialRobots, depth: 0, path: [] }];
     while (stack.length > 0) {
       let currentState = stack.pop();
       let currentRobots = currentState.robots;
@@ -332,7 +323,7 @@ class RicochetRobots {
 
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
-        this.board.moveAllRobots(initalRobots);
+        this.board.moveAllRobots(initialRobots);
         return currentState.path;
       }
 
@@ -364,7 +355,7 @@ class RicochetRobots {
     }
 
     // There is no path.
-    this.board.moveAllRobots(initalRobots);
+    this.board.moveAllRobots(initialRobots);
     return null;
   }
 
@@ -406,14 +397,14 @@ class RicochetRobots {
       robotSpans[robotColor] = robotSpan;
     }
 
-    // get the inital positions of the robots when a newtarget is selected.
-    this.board.moveAllRobots(this.initalRobotsPositions);
+    // get the initial positions of the robots when a newtarget is selected.
+    this.board.moveAllRobots(this.initialRobotsPositions);
 
     // move the robots to the initial positions in the DOM.
-    for (let key in this.initalRobotsPositions) {
-      let row = this.initalRobotsPositions[key].row;
-      let column = this.initalRobotsPositions[key].column;
-      let color = this.initalRobotsPositions[key].color;
+    for (let key in this.initialRobotsPositions) {
+      let row = this.initialRobotsPositions[key].row;
+      let column = this.initialRobotsPositions[key].column;
+      let color = this.initialRobotsPositions[key].color;
 
       // Draw the robot to the cell.
       let cellSpan = document.getElementById(`${row}, ${column}`);
@@ -561,7 +552,7 @@ class RicochetRobots {
     }
   }
   // Request the server to initiate a new game.
-  getNewGame() {
+  initiateNewGame() {
     this.socket.emit('get_new_game', true);
     return false;
   }
@@ -574,7 +565,7 @@ class RicochetRobots {
 
   // Request the server to let all players know the intial positions of the robots.
   getInitialRobotsPositions() {
-    this.socket.emit('get_inital_robots_positions');
+    this.socket.emit('get_initial_robots_positions');
     return false;
   }
 
@@ -630,12 +621,12 @@ class RicochetRobots {
   setupSocketHandlersForBoard() {
     this.socket.on('set_up_game', (data) => {
       const game = JSON.parse(data);
-      if (game.robots !== undefined) {
-        this.board.initializedRobotPositions(game.robots);
+      const robots = game.ricochetRobots.board.robots;
+      if (robots[GREEN_ROBOT].row !== undefined) {
+        this.board.robots = robots;
+        this.board.initializedRobotPositions(robots);
         this.placeRobots();
-        this.initialRobotsPositions = this.deepCopyRobots(
-          this.board.getRobots()
-        );
+        this.initialRobotsPositions = game.initialRobotsPositions;
       }
       if (game.currentTarget !== undefined) {
         this.board.currentTarget = game.currentTarget;
@@ -647,25 +638,29 @@ class RicochetRobots {
         // highlight selected robot.
         this.selectedRobot(selectedRobot);
       }
-      // TODO: restore in process timmer and bids.
       // TODO: restore a traveling path.
-      // TODO: restore the winner of auction and allow move if that is the joining client.
     });
 
-    // Receives initation from server to start a new game.
-    this.socket.on('set_new_game', (data) => {
+    this.socket.on('reset_game', (data) => {
       const game = JSON.parse(data);
       if (data) {
         this.resetGame(game);
       }
     });
 
+    // Receives initation from server to start a new game.
+    this.socket.on('set_new_game', (data) => {
+      if (data) {
+        this.getInitialRobotsPositions();
+      }
+    });
+
     // Receives the initial robots positions from server.
     this.socket.on('send_initial_robots_positions', (data) => {
       const game = JSON.parse(data);
-      this.board.initializedRobotPositions(game.robots);
+      this.board.initializedRobotPositions(game.initialRobotsPositions);
       this.placeRobots();
-      this.initialRobotsPositions = this.deepCopyRobots(this.board.getRobots());
+      this.initialRobotsPositions = game.initialRobotsPositions;
     });
 
     // Receives next target from server.
@@ -682,9 +677,7 @@ class RicochetRobots {
         this.deselectTarget();
         this.board.selectedTarget(game.currentTarget);
         this.toggleTargetHightlight();
-        this.initalRobotsPositions = this.deepCopyRobots(
-          this.board.getRobots()
-        );
+        this.initialRobotsPositions = game.initialRobotsPositions;
       }
     });
 
@@ -725,11 +718,6 @@ class RicochetRobots {
         this.allowToMove = false;
       }
     });
-
-    // Receives the user that reached the target from server.
-    // this.socket.on('get_user_and_reached_target', (userData, targetData) => {
-    //   this.storeTargets(targetData);
-    // });
   }
 }
 

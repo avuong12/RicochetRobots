@@ -63,7 +63,6 @@ io.on('connection', (socket) => {
       console.log('users:', game.socketIdToUsername);
       // restore the game.
       io.to(socket.id).emit('set_up_game', JSON.stringify(game));
-      // TODO: incoming user should also see timer and results if joining in during an auction.'
     } else {
       // tell player to choose a different name.
       io.to(socket.id).emit('set_username', false);
@@ -91,9 +90,9 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('send_usernames', JSON.stringify(names));
   });
 
-  // Server initialized robot positions and place robots on the board. Emits inital robots positions to all users.
-  socket.on('get_inital_robots_positions', () => {
-    console.log(`${socket.id} asks for inital robot positions`);
+  // Server initialized robot positions and place robots on the board. Emits initial robots positions to all users.
+  socket.on('get_initial_robots_positions', () => {
+    console.log(`${socket.id} asks for initial robot positions`);
     const initialRobotsPositions = game.ricochetRobots.board.initializedRobotPositionsCandidate();
     game.ricochetRobots.board.initializedRobotPositions(initialRobotsPositions);
     game.setInitialRobotPositions(initialRobotsPositions);
@@ -155,7 +154,8 @@ io.on('connection', (socket) => {
     }
     console.log(`${socket.id} wants to start a new game.`);
     game = game.setNewGame();
-    io.emit('set_new_game', JSON.stringify(game));
+    io.emit('reset_game', JSON.stringify(game));
+    io.to(socket.id).emit('set_new_game', true);
   });
 
   // Emits key direction to all users.
