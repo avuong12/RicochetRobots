@@ -4,7 +4,7 @@
   "description": "A one dimensional game for 1- multiple plays. There is a grid with randomly placed walls/ barriers.  There are target spots, with a uquine color and design.  There is a set of robots with different colors.  A token matching one of the target spots on the grid is revealed. The Goal: Find the shortest path to get the robot of the same color as the token to the target spot. With multiple players: Be the first to find the shortest path to get the robot to the target spot. A player that finds the path calls out the number of steps the robot takes to get to the target spot. A one minute timer starts and other players have one minute to find a shorter path. - Restrictions:   1. Determining the path must be done visually. No hands on the board until the player with the short path bid can show the path.   2. Robots can only move up, down, left, right.   3. The robots must hit a wall to stop moving.",
   "main": "server/server.js",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "socket.io": "^2.4.0"
   },
